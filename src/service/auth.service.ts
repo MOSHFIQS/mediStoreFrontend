@@ -1,20 +1,18 @@
-import { env } from "@/env";
+import { cookies } from "next/headers"
+import jwt from "jsonwebtoken"
 
-const AUTH_URL = env.AUTH_URL;
+export const serverAuthService = {
+     getDecodedToken: async () => {   
+          const cookieStore = await cookies()  
+          const tokenCookie = cookieStore.get("token")
 
-export const authService = {
-     async getMe() {
+          if (!tokenCookie) return null
+
           try {
-               const res = await fetch(`${AUTH_URL}/me`, {
-                    credentials: "include",
-                    cache: "no-store",
-               })
-
-               if (!res.ok) return null
-
-               const data = await res.json()
-               return data.data?.user ?? null
-          } catch {
+               const decoded = jwt.verify(tokenCookie.value, process.env.JWT_SECRET!)
+               return decoded
+          } catch (err) {
+               console.log("JWT invalid or expired:", err)
                return null
           }
      }
