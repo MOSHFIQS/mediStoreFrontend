@@ -1,24 +1,63 @@
-import { cookies } from "next/headers"
-import jwt from "jsonwebtoken"
-import { JwtUserPayload } from "@/types/user.types"
 
-export const serverAuthService = {
-     getDecodedToken: async (): Promise<JwtUserPayload | null> => {
-          const cookieStore = await cookies()
-          const tokenCookie = cookieStore.get("token")
+import { env } from "@/env"
 
-          if (!tokenCookie) return null
 
-          try {
-               const decoded = jwt.verify(
-                    tokenCookie.value,
-                    process.env.JWT_SECRET!
-               ) as JwtUserPayload 
+const AUTH_URL = env.NEXT_PUBLIC_AUTH_URL
 
-               return decoded
-          } catch (err) {
-               console.log("JWT invalid or expired:", err)
-               return null
-          }
+export interface SignUpPayload {
+     name: string
+     email: string
+     password: string
+     role: string,
+     image : string
+}
+
+export interface SignInPayload {
+     email: string
+     password: string
+}
+
+
+export const authService = {
+
+     async signUp(payload: SignUpPayload) {
+          const res = await fetch(`${AUTH_URL}/register`, {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               credentials: "include",
+               body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          return {
+               ok: res.ok,
+               data,
+               message: data.message,
+          };
+     },
+
+
+     async signIn(payload: SignInPayload) {
+          const res = await fetch(`${AUTH_URL}/login`, {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               credentials: "include",
+               body: JSON.stringify(payload),
+          });
+
+          const data = await res.json();
+
+          return {
+               ok: res.ok,
+               data,
+               message: data.message,
+          };
      }
+
+
+
+
+    
+
 }

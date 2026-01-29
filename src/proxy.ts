@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Roles } from "./constants/roles"
-import { serverAuthService } from "./service/auth.service";
+import { decodeToken } from "./service/decodeToken.service";
 
 
 export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
-     const data = await serverAuthService.getDecodedToken()
+     const data = await decodeToken.getDecodedToken()
 
      const role = data?.role
 
@@ -13,20 +13,21 @@ export async function proxy(request: NextRequest) {
      const isSeller = role === Roles.seller
      const isCustomer = role === Roles.customer
 
-     // ADMIN restrictions
+
      if (isAdmin && (pathname.startsWith("/dashboard") || pathname.startsWith("/seller-dashboard"))) {
           return NextResponse.redirect(new URL("/admin-dashboard", request.url))
      }
 
-     // SELLER restrictions
+
      if (isSeller && (pathname.startsWith("/dashboard") || pathname.startsWith("/admin-dashboard"))) {
           return NextResponse.redirect(new URL("/seller-dashboard", request.url))
      }
 
-     // CUSTOMER restrictions
+
      if (isCustomer && (pathname.startsWith("/admin-dashboard") || pathname.startsWith("/seller-dashboard"))) {
           return NextResponse.redirect(new URL("/dashboard", request.url))
      }
+     
 
      return NextResponse.next()
 }
