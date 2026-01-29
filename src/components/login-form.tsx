@@ -21,8 +21,6 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 
-const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL
-
 const formSchema = z.object({
      password: z.string().min(8, "Minimum length is 8"),
      email: z.email()
@@ -47,7 +45,6 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
                if (!result.ok) {
                     toast.error(result.message || "Invalid credentials", { id: toastId });
 
-                    // 👇 Tell the form submission failed (no crash)
                     return {
                          form: "Invalid email or password",
                     };
