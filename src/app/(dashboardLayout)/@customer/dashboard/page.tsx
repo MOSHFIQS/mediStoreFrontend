@@ -1,11 +1,10 @@
-import React from 'react';
 
-const UserDashboard = () => {
+const CustomerDashboard = () => {
      return (
           <div>
-               this is user dashboard
+               this is customer dashboard
           </div>
      );
 };
 
-export default UserDashboard;
+export default CustomerDashboard;

@@ -6,12 +6,21 @@ import {
      SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/roles"
+import { serverAuthService } from "@/service/auth.service"
 import { ReactNode } from "react"
 
 export default async function DashboardLayout({ admin, customer,seller }: { admin: ReactNode, customer: ReactNode,seller : ReactNode }) {
-     // const { data } = await userService.getSession()
+    const data =await serverAuthService.getDecodedToken()
+    console.log(data);
+
+
+     if (!data) {
+          return <div>Please login</div>
+     }
+
+
      const userInfo = {
-          role : "CUSTOMER"
+          role : data.role
      }
 
      let content
@@ -28,7 +37,6 @@ export default async function DashboardLayout({ admin, customer,seller }: { admi
      }
 
 
-     // console.log(data);
      return (
           <SidebarProvider>
                <AppSidebar user={userInfo} />
