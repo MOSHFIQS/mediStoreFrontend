@@ -13,23 +13,27 @@ import {
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/roles";
 import { adminRoutes } from "@/routes/adminRoutes";
-import { userRoutes } from "@/routes/userRoutes";
+import { customerRoutes } from "@/routes/customerRoutes";
+import { sellerRoutes } from "@/routes/sellerRoutes";
 import Link from "next/link";
 import { Route } from "@/types/routes.type";
 
 
 
 export function AppSidebar({ user, ...props }: { user: { role: string } & React.ComponentProps<typeof Sidebar> }) {
-     let routes : Route[] = []
+     let routes: Route[] = []
 
      switch (user.role) {
           case Roles.admin:
                routes = adminRoutes
                break;
-          case Roles.user:
-               routes = userRoutes
+          case Roles.customer:
+               routes = customerRoutes
                break;
-     
+          case Roles.seller:
+               routes = sellerRoutes
+               break;
+
           default:
                routes = []
                break;
