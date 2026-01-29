@@ -160,7 +160,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                              <Field>
                                                   <FieldLabel htmlFor={field.name}>image</FieldLabel>
                                                   <Input
-                                                       type="password"
+                                                       type="text"
                                                        id={field.name}
                                                        name={field.name}
                                                        value={field.state.value}

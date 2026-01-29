@@ -1,63 +1,28 @@
-
-import { env } from "@/env"
-
-
-const AUTH_URL = env.NEXT_PUBLIC_AUTH_URL
-
-export interface SignUpPayload {
-     name: string
-     email: string
-     password: string
-     role: string,
-     image : string
-}
-
-export interface SignInPayload {
-     email: string
-     password: string
-}
-
+import { apiFetch } from "@/lib/api"
 
 export const authService = {
-
-     async signUp(payload: SignUpPayload) {
-          const res = await fetch(`${AUTH_URL}/register`, {
+     signUp: (payload: {
+          name: string
+          email: string
+          password: string
+          role: string
+          image?: string
+     }) =>
+          apiFetch("/auth/register", {
                method: "POST",
-               headers: { "Content-Type": "application/json" },
-               credentials: "include",
                body: JSON.stringify(payload),
-          });
+          }),
 
-          const data = await res.json();
-
-          return {
-               ok: res.ok,
-               data,
-               message: data.message,
-          };
-     },
-
-
-     async signIn(payload: SignInPayload) {
-          const res = await fetch(`${AUTH_URL}/login`, {
+     signIn: (payload: { email: string; password: string }) =>
+          apiFetch("/auth/login", {
                method: "POST",
-               headers: { "Content-Type": "application/json" },
-               credentials: "include",
                body: JSON.stringify(payload),
-          });
+          }),
 
-          const data = await res.json();
+     getMe: () => apiFetch("/auth/me"),
 
-          return {
-               ok: res.ok,
-               data,
-               message: data.message,
-          };
-     }
-
-
-
-
-    
-
+     logout: () =>
+          apiFetch("/auth/logout", {
+               method: "POST",
+          }),
 }
