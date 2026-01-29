@@ -3,7 +3,7 @@ import { decodeToken } from "@/service/decodeToken.service";
 
 
 const HomePage = async () => {
-     const data  =await decodeToken.getDecodedToken()
+     const data = await decodeToken.getDecodedUser()
      console.log(data);
      return (
           <div>

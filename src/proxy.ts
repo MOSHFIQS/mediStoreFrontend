@@ -5,7 +5,7 @@ import { decodeToken } from "./service/decodeToken.service";
 
 export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
-     const data = await decodeToken.getDecodedToken()
+     const data = await decodeToken.getDecodedUser()
 
      const role = data?.role
 
@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
      if (isCustomer && (pathname.startsWith("/admin-dashboard") || pathname.startsWith("/seller-dashboard"))) {
           return NextResponse.redirect(new URL("/dashboard", request.url))
      }
-     
+
 
      return NextResponse.next()
 }

@@ -10,7 +10,7 @@ import { decodeToken } from "@/service/decodeToken.service"
 import { ReactNode } from "react"
 
 export default async function DashboardLayout({ admin, customer,seller }: { admin: ReactNode, customer: ReactNode,seller : ReactNode }) {
-    const data =await decodeToken.getDecodedToken()
+     const data = await decodeToken.getDecodedUser()
     console.log(data);
 
 

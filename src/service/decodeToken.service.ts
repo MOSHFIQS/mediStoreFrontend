@@ -5,7 +5,7 @@ import { JwtUserPayload } from "@/types/user.types"
 
 
 export const decodeToken = {
-     getDecodedToken: async (): Promise<JwtUserPayload | null> => {
+     getDecodedUser: async (): Promise<JwtUserPayload | null> => {
           const cookieStore = await cookies()
           const tokenCookie = cookieStore.get("token")
 
