@@ -59,7 +59,6 @@ export default function AllMedicines() {
 
      return (
           <div className="p-4">
-               {/* Category Filter */}
                <div className="mb-4 flex flex-wrap gap-2">
                     <Button
                          variant={selectedCategory === null ? "default" : "outline"}
@@ -78,7 +77,7 @@ export default function AllMedicines() {
                     ))}
                </div>
 
-               {/* Medicine Cards */}
+           
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {filteredMedicines.map((med) => (
                          <Card key={med.id} className="shadow-md hover:shadow-lg transition-shadow">
@@ -109,7 +108,7 @@ export default function AllMedicines() {
                               </CardContent>
                               <CardFooter>
                                    <Button
-                                        onClick={() => router.push(`/${med.id}`)}
+                                        onClick={() => router.push(`/medicines/${med.id}`)}
                                         variant="outline"
                                         className="w-full"
                                    >

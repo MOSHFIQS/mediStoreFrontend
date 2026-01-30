@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { medicineService } from "@/service/medicine.service";
 import {
      Card,
@@ -10,8 +9,8 @@ import {
      CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Router from "next/router";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 export interface Medicine {
      id: string;
@@ -23,25 +22,18 @@ export interface Medicine {
 }
 
 export default function AllMedicines() {
-     const [medicines, setMedicines] = useState<Medicine[]>([]);
-     const [loading, setLoading] = useState(true);
      const router = useRouter()
 
-     useEffect(() => {
-          async function fetchMedicines() {
+     const { data: medicines = [], isLoading } = useQuery<Medicine[], Error>({
+          queryKey: ["medicines"],
+          queryFn: async () => {
                const res = await medicineService.getAll();
-               if (res.ok) {
-                    setMedicines(res.data.data);
-               } else {
-                    console.error("Failed to fetch medicines:", res.message);
-               }
-               setLoading(false);
-          }
+               if (!res.ok) throw new Error(res.message);
+               return res.data.data;
+          },
+     });
 
-          fetchMedicines();
-     }, []);
-
-     if (loading) return <p>Loading...</p>;
+     if (isLoading) return <p>Loading...</p>;
      if (!medicines.length) return <p>No medicines found.</p>;
 
      return (

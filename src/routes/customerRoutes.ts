@@ -6,8 +6,8 @@ export const customerRoutes: Route[] = [
           title: "customer sidebar",
           items: [
                {
-                    title: "Create Blog",
-                    url: "/dashboard/create-blog",
+                    title: "My Orders",
+                    url: "/dashboard/my-orders",
                },
                {
                     title: "Home",
