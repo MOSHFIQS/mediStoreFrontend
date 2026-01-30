@@ -6,7 +6,7 @@ export default function CommonLayout({
      children: React.ReactNode;
 }) {
      return (
-          <div>
+          <div className="max-w-[90vw] mx-auto">
               <Navbar />
                {children}
           </div>

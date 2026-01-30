@@ -1,17 +1,12 @@
-// "use client"
-import { medicineService } from "@/service/medicine.service";
-import { sessionService } from "@/service/token.service";
+import AllMedicines from "@/components/ui/AllMedicines";
 
 
 
 const HomePage = async () => {
-     // const data = await sessionService.getUserFromToken()
-     // const sellersMedicines = await medicineService.getSellerMedicines()
-     // console.log(sellersMedicines);
-     // console.log(data);
      return (
           <div>
                home page
+               <AllMedicines />
           </div>
      );
 };
