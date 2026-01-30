@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner"
 import { categoryService } from "@/service/category.service"
 import { medicineService } from "@/service/medicine.service"
+import { imageHostingService } from "@/service/image-hosting.service"
 
 interface Category {
      id: string
@@ -44,24 +45,48 @@ export default function CreateMedicinePage() {
                name: "",
                price: "",
                stock: "",
-               image: "",
+               photo: [] as File[],
                categoryId: "",
                description: ""
           },
           onSubmit: async ({ value }) => {
-               const res = await medicineService.create({
-                    ...value,
-                    price: Number(value.price),
-                    stock: Number(value.stock),
-               })
+               try {
+                    // 🔥 upload image first
+                    const file = value.photo?.[0]
+                    if (!file) {
+                         toast.error("Please select an image")
+                         return
+                    }
 
-               if (res.ok) {
-                    toast.success("Medicine created")
-                    form.reset()
-               } else {
-                    toast.error(res.message || "Failed to create medicine")
+                    const uploadRes = await imageHostingService.uploadImage(file)
+
+                    if (!uploadRes.ok || !uploadRes.url) {
+                         toast.error("Image upload failed")
+                         return
+                    }
+
+                    // 🚀 send data to backend with image URL
+                    const res = await medicineService.create({
+                         name: value.name,
+                         description: value.description,
+                         categoryId: value.categoryId,
+                         price: Number(value.price),
+                         stock: Number(value.stock),
+                         image: uploadRes.url,   // 👈 URL from hosting service
+                    })
+
+                    if (res.ok) {
+                         toast.success("Medicine created")
+                         form.reset()
+                    } else {
+                         toast.error(res.message || "Failed to create medicine")
+                    }
+
+               } catch (err) {
+                    toast.error("Something went wrong")
                }
-          },
+          }
+
      })
 
      return (
@@ -166,24 +191,26 @@ export default function CreateMedicinePage() {
                               </form.Field>
 
                               {/* Image */}
-                              <form.Field name="image">
+                              {/* Image Upload */}
+                              <form.Field name="photo">
                                    {(field) => {
                                         const isInvalid =
                                              field.state.meta.isTouched && !field.state.meta.isValid
+
                                         return (
-                                             <Field>
-                                                  <FieldLabel htmlFor={field.name}>Image URL</FieldLabel>
+                                             <Field data-invalid={isInvalid}>
+                                                  <FieldLabel>Medicine Image</FieldLabel>
                                                   <Input
-                                                       id={field.name}
-                                                       name={field.name}
-                                                       value={field.state.value}
-                                                       onChange={(e) => field.handleChange(e.target.value)}
+                                                       type="file"
+                                                       accept="image/*"
+                                                       onChange={(e) => field.handleChange(Array.from(e.target.files || []))}
                                                   />
                                                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
                                         )
                                    }}
                               </form.Field>
+
 
                               {/* Category Select */}
                               <form.Field name="categoryId">
