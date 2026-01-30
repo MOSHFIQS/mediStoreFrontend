@@ -8,6 +8,10 @@ export const customerRoutes: Route[] = [
                {
                     title: "Create Blog",
                     url: "/dashboard/create-blog",
+               },
+               {
+                    title: "Home",
+                    url: "/",
                }
 
           ],
