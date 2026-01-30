@@ -11,6 +11,20 @@ import {
      TableCell,
 } from "@/components/ui/table"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Pencil, Trash2, Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+
+import {
+     AlertDialog,
+     AlertDialogTrigger,
+     AlertDialogContent,
+     AlertDialogHeader,
+     AlertDialogTitle,
+     AlertDialogDescription,
+     AlertDialogFooter,
+} from "@/components/ui/alert-dialog"
 
 interface Medicine {
      id: string
@@ -25,23 +39,45 @@ interface Medicine {
 export default function AllMedicines() {
      const [medicines, setMedicines] = useState<Medicine[]>([])
      const [loading, setLoading] = useState(true)
+     const [deleteId, setDeleteId] = useState<string | null>(null)
+     const [isDialogOpen, setIsDialogOpen] = useState(false)
+     const router = useRouter()
+
+     const loadMedicines = async () => {
+          const res = await medicineService.getAll()
+          if (res.ok) {
+               setMedicines(res.data.data)
+          }
+          setLoading(false)
+     }
 
      useEffect(() => {
-          const loadMedicines = async () => {
-               const res = await medicineService.getAll()
-               if (res.ok) {
-                    setMedicines(res.data.data)
-               }
-               setLoading(false)
-          }
-
           loadMedicines()
      }, [])
 
+     const handleDelete = async () => {
+          if (!deleteId) return
+          const res = await medicineService.delete(deleteId)
+          if (res.ok) {
+               toast.success("Medicine deleted")
+               loadMedicines()
+          } else {
+               toast.error("Delete failed")
+          }
+          setIsDialogOpen(false)
+          setDeleteId(null)
+     }
+
      return (
           <Card>
-               <CardHeader>
+               <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>All Medicines</CardTitle>
+
+
+                    <Button onClick={() => router.push("/seller-dashboard/create-medicine")}>
+                         <Plus className="w-4 h-4 mr-2" />
+                         Add Medicine
+                    </Button>
                </CardHeader>
 
                <CardContent>
@@ -57,6 +93,7 @@ export default function AllMedicines() {
                                         <TableHead>Seller</TableHead>
                                         <TableHead>Price</TableHead>
                                         <TableHead>Stock</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                    </TableRow>
                               </TableHeader>
 
@@ -81,12 +118,53 @@ export default function AllMedicines() {
                                              <TableCell>৳ {med.price}</TableCell>
                                              <TableCell>
                                                   {med.stock > 0 ? (
-                                                       <span className="text-green-600 font-medium">
-                                                            {med.stock}
-                                                       </span>
+                                                       <span className="text-green-600 font-medium">{med.stock}</span>
                                                   ) : (
                                                        <span className="text-red-600 font-medium">Out</span>
                                                   )}
+                                             </TableCell>
+
+                                             {/* ACTION BUTTONS */}
+                                             <TableCell className="text-right space-x-2">
+                                                  <Button
+                                                       size="icon"
+                                                       variant="outline"
+                                                       onClick={() =>
+                                                            router.push(`/seller-dashboard/update-medicine/${med.id}`)
+                                                       }
+                                                  >
+                                                       <Pencil className="w-4 h-4" />
+                                                  </Button>
+
+                                                  <AlertDialog open={isDialogOpen && deleteId === med.id} onOpenChange={setIsDialogOpen}>
+                                                       <AlertDialogTrigger asChild>
+                                                            <Button
+                                                                 size="icon"
+                                                                 variant="destructive"
+                                                                 onClick={() => setDeleteId(med.id)}
+                                                            >
+                                                                 <Trash2 className="w-4 h-4" />
+                                                            </Button>
+                                                       </AlertDialogTrigger>
+
+                                                       <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                 <AlertDialogTitle>Delete Medicine?</AlertDialogTitle>
+                                                                 <AlertDialogDescription>
+                                                                      Are you sure you want to delete "{med.name}"? This action cannot be undone.
+                                                                 </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+
+                                                            <AlertDialogFooter>
+                                                                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                                                                      Cancel
+                                                                 </Button>
+                                                                 <Button variant="destructive" onClick={handleDelete}>
+                                                                      Delete
+                                                                 </Button>
+                                                            </AlertDialogFooter>
+                                                       </AlertDialogContent>
+                                                  </AlertDialog>
                                              </TableCell>
                                         </TableRow>
                                    ))}
