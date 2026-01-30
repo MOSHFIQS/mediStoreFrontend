@@ -13,6 +13,10 @@ export const medicineService = {
                body: JSON.stringify(payload),
           }),
 
+     getSellerMedicines: () =>
+          apiFetch("/medicines/seller"),
+
+
      update: (id: string, payload: any) =>
           apiFetch(`/medicines/seller/${id}`, {
                method: "PUT",

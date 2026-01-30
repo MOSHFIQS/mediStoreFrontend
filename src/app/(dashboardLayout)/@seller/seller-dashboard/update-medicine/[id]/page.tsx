@@ -38,8 +38,8 @@ const medicineFormSchema = z.object({
 })
 
 export default function UpdateMedicinePage() {
-     const params = useParams()
-     const medicineId = "1e72313a-77dd-4c8f-98cb-698b4ba95999"
+     const {id} = useParams()
+     const medicineId = id as string 
      const [categories, setCategories] = useState<Category[]>([])
      const [loading, setLoading] = useState(false)
      const [medicine, setMedicine] = useState<any>(null)
