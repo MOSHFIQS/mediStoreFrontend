@@ -13,6 +13,11 @@ export const sellerRoutes: Route[] = [
                     title: "All Medicine",
                     url: "/seller-dashboard/medicines",
                },
+               
+               {
+                    title: "My Orders",
+                    url: "/seller-dashboard/my-orders",
+               },
                {
                     title: "Home",
                     url: "/",

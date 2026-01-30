@@ -20,7 +20,7 @@ export const orderService = {
 
      // Seller
      getSellerOrders: () =>
-          apiFetch("/orders/seller"),
+          apiFetch("/orders/seller/my-orders"),
 
      updateStatus: (id: string, status: string) =>
           apiFetch(`/orders/seller/${id}`, {

@@ -14,6 +14,12 @@ export async function apiFetch(
      })
 
      const data = await res.json()
+     if (!res.ok) {
+          // Throw an error so React Query goes to onError
+          throw new Error(data.message || "API request failed");
+     }
+
+     console.log(data.message);
 
      return {
           ok: res.ok,
