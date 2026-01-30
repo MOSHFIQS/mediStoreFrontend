@@ -6,8 +6,8 @@ export const sellerRoutes: Route[] = [
           title: "seller sidebar",
           items: [
                {
-                    title: "Create Blog",
-                    url: "/dashboard/create-blog",
+                    title: "Create Medicine",
+                    url: "/seller-dashboard/create-medicine",
                },
                {
                     title: "Home",

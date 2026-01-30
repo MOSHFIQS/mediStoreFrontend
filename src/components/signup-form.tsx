@@ -48,24 +48,24 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           validators: {
                onSubmit: formSchema,
           },
-           onSubmit: async ({ value }) => {
-                         const toastId = toast.loading(`Creating ${value.role}...`);
-                         const userRegisterInfo = {...value}
-                         console.log(userRegisterInfo);
-          
-                         const result = await authService.signUp(userRegisterInfo);
-          
-                         if (!result.ok) {
-                              toast.error(result.message || `${value.role} Registered Failed`, { id: toastId });
-          
-                              return {
-                                   form: "Invalid email or password",
-                              };
-                         }
-          
-                         toast.success(`${value.role} Registered Successfully`, { id: toastId });
-                         console.log("Registered user:", result.data.data.user);
-                    }
+          onSubmit: async ({ value }) => {
+               const toastId = toast.loading(`Creating ${value.role}...`);
+               const userRegisterInfo = { ...value }
+               console.log(userRegisterInfo);
+
+               const result = await authService.signUp(userRegisterInfo);
+
+               if (!result.ok) {
+                    toast.error(result.message || `${value.role} Registered Failed`, { id: toastId });
+
+                    return {
+                         form: "Invalid email or password",
+                    };
+               }
+
+               toast.success(`${value.role} Registered Successfully`, { id: toastId });
+               console.log("Registered user:", result.data.data.user);
+          }
      });
 
      return (
@@ -183,10 +183,10 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                              field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
                                              <Field orientation="responsive" data-invalid={isInvalid}>
-                                                 
-                                                       {isInvalid && (
-                                                            <FieldError errors={field.state.meta.errors} />
-                                                       )}
+
+                                                  {isInvalid && (
+                                                       <FieldError errors={field.state.meta.errors} />
+                                                  )}
                                                   <Select
                                                        name={field.name}
                                                        value={field.state.value}
