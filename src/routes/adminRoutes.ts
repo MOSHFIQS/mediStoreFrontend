@@ -6,8 +6,12 @@ export const adminRoutes: Route[] = [
           title: "admin sidebar",
           items: [
                {
-                    title: "Analytics",
-                    url: "/analytics",
+                    title: "All Category",
+                    url: "/admin-dashboard/all-category",
+               },
+               {
+                    title: "Create Category",
+                    url: "/admin-dashboard/create-category",
                }
           ],
      }
