@@ -1,13 +1,13 @@
-import { authService } from "@/service/auth.service";
-import { decodeToken } from "@/service/decodeToken.service";
+import { sessionService } from "@/service/token.service";
+
 
 
 const HomePage = async () => {
-     const data = await decodeToken.getDecodedUser()
+     const data = await sessionService.getUserFromToken()
      console.log(data);
      return (
           <div>
-               home page 
+               home page
           </div>
      );
 };

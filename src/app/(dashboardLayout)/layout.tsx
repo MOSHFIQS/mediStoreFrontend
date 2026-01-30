@@ -6,12 +6,12 @@ import {
      SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/roles"
-import { decodeToken } from "@/service/decodeToken.service"
+import { sessionService } from "@/service/token.service"
 import { ReactNode } from "react"
 
-export default async function DashboardLayout({ admin, customer,seller }: { admin: ReactNode, customer: ReactNode,seller : ReactNode }) {
-     const data = await decodeToken.getDecodedUser()
-    console.log(data);
+export default async function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
+     const data = await sessionService.getUserFromToken()
+     console.log(data);
 
 
      if (!data) {
@@ -20,7 +20,7 @@ export default async function DashboardLayout({ admin, customer,seller }: { admi
 
 
      const userInfo = {
-          role : data.role
+          role: data.role
      }
 
      let content

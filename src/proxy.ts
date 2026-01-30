@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Roles } from "./constants/roles"
-import { decodeToken } from "./service/decodeToken.service";
+import { sessionService } from "./service/token.service";
 
 
 export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
-     const data = await decodeToken.getDecodedUser()
+     const data = await sessionService.getUserFromToken()
 
      const role = data?.role
 
