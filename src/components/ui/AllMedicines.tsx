@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { medicineService } from "@/service/medicine.service";
+import { categoryService } from "@/service/category.service";
 import {
      Card,
      CardHeader,
@@ -10,6 +12,8 @@ import {
      CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { Category } from "@/types/category.type";
 
 export interface Medicine {
      id: string;
@@ -18,65 +22,103 @@ export interface Medicine {
      price: number;
      stock: number;
      image?: string;
+     categoryId?: string;
 }
 
 export default function AllMedicines() {
-     const [medicines, setMedicines] = useState<Medicine[]>([]);
-     const [loading, setLoading] = useState(true);
+     const router = useRouter();
+     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-     useEffect(() => {
-          async function fetchMedicines() {
+     // Fetch categories
+     const { data: categories = [] } = useQuery<Category[], Error>({
+          queryKey: ["categories"],
+          queryFn: async () => {
+               const res = await categoryService.getAll();
+               if (!res.ok) throw new Error(res.message);
+               return res.data.data;
+          },
+     });
+
+     // Fetch medicines
+     const { data: medicines = [], isLoading } = useQuery<Medicine[], Error>({
+          queryKey: ["medicines"],
+          queryFn: async () => {
                const res = await medicineService.getAll();
-               if (res.ok) {
-                    setMedicines(res.data.data);
-               } else {
-                    console.error("Failed to fetch medicines:", res.message);
-               }
-               setLoading(false);
-          }
+               if (!res.ok) throw new Error(res.message);
+               return res.data.data;
+          },
+     });
 
-          fetchMedicines();
-     }, []);
+     // Filter medicines by category
+     const filteredMedicines = selectedCategory
+          ? medicines.filter((med) => med.categoryId === selectedCategory)
+          : medicines;
 
-     if (loading) return <p>Loading...</p>;
+     if (isLoading) return <p>Loading...</p>;
      if (!medicines.length) return <p>No medicines found.</p>;
 
      return (
-          <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-               {medicines.map((med) => (
-                    <Card key={med.id} className="shadow-md hover:shadow-lg transition-shadow">
-                         <CardHeader>
-                              <CardTitle>{med.name}</CardTitle>
-                         </CardHeader>
-                         {med.image ? (
-                              <img
-                                   src={med.image}
-                                   alt={med.name}
-                                   className="w-full h-48 object-contain rounded-md"
-                                   onError={(e) =>
-                                   (e.currentTarget.src =
-                                        "https://i.ibb.co/whX8gJjd/medicine-capsule-medical-pills-illustration-png.png")
-                                   }
-                              />
-                         ) : (
-                              <img
-                                   src="https://i.ibb.co/whX8gJjd/medicine-capsule-medical-pills-illustration-png.png"
-                                   alt="default medicine"
-                                   className="w-full h-48 object-contain rounded-md"
-                              />
-                         )}
-                         <CardContent>
-                              <p className="text-sm text-gray-600 mb-2">{med.description}</p>
-                              <p className="font-semibold">Price: {med.price}tk</p>
-                              <p className="text-gray-500">Stock: {med.stock} items</p>
-                         </CardContent>
-                         <CardFooter>
-                              <Button variant="outline" className="w-full">
-                                   Add to Cart
-                              </Button>
-                         </CardFooter>
-                    </Card>
-               ))}
+          <div className="p-4">
+               {/* Category Filter */}
+               <div className="mb-4 flex flex-wrap gap-2">
+                    <Button
+                         variant={selectedCategory === null ? "default" : "outline"}
+                         onClick={() => setSelectedCategory(null)}
+                    >
+                         All
+                    </Button>
+                    {categories.map((cat) => (
+                         <Button
+                              key={cat.id}
+                              variant={selectedCategory === cat.id ? "default" : "outline"}
+                              onClick={() => setSelectedCategory(cat.id)}
+                         >
+                              {cat.name}
+                         </Button>
+                    ))}
+               </div>
+
+               {/* Medicine Cards */}
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {filteredMedicines.map((med) => (
+                         <Card key={med.id} className="shadow-md hover:shadow-lg transition-shadow">
+                              <CardHeader>
+                                   <CardTitle>{med.name}</CardTitle>
+                              </CardHeader>
+                              {med.image ? (
+                                   <img
+                                        src={med.image}
+                                        alt={med.name}
+                                        className="w-full h-48 object-contain rounded-md"
+                                        onError={(e) =>
+                                        (e.currentTarget.src =
+                                             "https://i.ibb.co/whX8gJjd/medicine-capsule-medical-pills-illustration-png.png")
+                                        }
+                                   />
+                              ) : (
+                                   <img
+                                        src="https://i.ibb.co/whX8gJjd/medicine-capsule-medical-pills-illustration-png.png"
+                                        alt="default medicine"
+                                        className="w-full h-48 object-contain rounded-md"
+                                   />
+                              )}
+                              <CardContent>
+                                   <p className="text-sm text-gray-600 mb-2">{med.description}</p>
+                                   <p className="font-semibold">Price: {med.price}tk</p>
+                                   <p className="text-gray-500">Stock: {med.stock} items</p>
+                              </CardContent>
+                              <CardFooter>
+                                   <Button
+                                        onClick={() => router.push(`/${med.id}`)}
+                                        variant="outline"
+                                        className="w-full"
+                                   >
+                                        View More to Buy
+                                   </Button>
+                              </CardFooter>
+                         </Card>
+                    ))}
+               </div>
           </div>
      );
 }

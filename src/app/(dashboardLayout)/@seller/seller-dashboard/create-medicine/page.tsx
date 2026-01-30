@@ -15,11 +15,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { categoryService } from "@/service/category.service"
 import { medicineService } from "@/service/medicine.service"
 import { imageHostingService } from "@/service/image-hosting.service"
+import { Category } from "@/types/category.type"
 
-interface Category {
-     id: string
-     name: string
-}
+
 
 
 const medicineFormSchema = z.object({
