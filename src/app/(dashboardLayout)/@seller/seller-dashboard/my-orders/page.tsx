@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
      Table,
      TableHeader,
@@ -11,57 +11,69 @@ import {
      TableCell,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { orderService } from "@/service/order.service";
 
-interface SellerOrderItem {
+interface Customer {
      id: string;
-     quantity: number;
-     price: number;
+     name: string;
+     phone: string | null;
+}
+
+interface OrderItem {
+     id: string;
+     medicineId: string;
      medicine: {
+          id: string;
           name: string;
+          price: number;
      };
+     orderId: string;
+     price: number;
+     quantity: number;
 }
 
-interface SellerOrder {
+export interface SellerOrder {
      id: string;
-     buyer: string;
+     customerId: string;
+     customer: Customer;
      address: string;
-     totalPrice: number;
+     items: OrderItem[];
      status: string;
+     totalPrice: number;
      createdAt: string;
-     items: SellerOrderItem[];
+     updatedAt: string;
 }
-
-// const fetchSellerOrders = async (): Promise<SellerOrder[]> => {
-//      const res = await apiFetch("/orders/seller");
-//      if (!res.ok) throw new Error(res.message);
-//      return res.data.data;
-// };
-
-const statusColor = (status: string) => {
-     switch (status) {
-          case "CANCELLED":
-               return "red";
-          case "DELIVERED":
-               return "green";
-          case "PROCESSING":
-               return "yellow";
-          default:
-               return "blue";
-     }
-};
 
 export default function MyOrdersPage() {
-     const { data: orders = [], isLoading,error } = useQuery<SellerOrder[]>({
-               queryKey: ["my-orders"],
-               queryFn: async () => {
-                    const res = await orderService.getSellerOrders();
-                    if (!res.ok) throw new Error(res.message);
-                    return res.data.data;
-               },
-          });
-          console.log(orders);
+     const queryClient = useQueryClient();
+     const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+
+     const { data: orders = [], isLoading, error } = useQuery<SellerOrder[]>({
+          queryKey: ["my-orders"],
+          queryFn: async () => {
+               const res = await orderService.getSellerOrders();
+               if (!res.ok) throw new Error(res.message);
+               return res.data.data;
+          },
+     });
+
+     const updateStatusMutation = useMutation({
+          mutationFn: ({ id, status }: { id: string; status: string }) =>
+               orderService.updateStatus(id, status),
+
+          onMutate: ({ id }) => {
+               setUpdatingOrderId(id); // track updating row
+          },
+
+          onSettled: () => {
+               setUpdatingOrderId(null);
+               queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+          },
+     });
+
+     const handleStatusChange = (orderId: string, newStatus: string) => {
+          updateStatusMutation.mutate({ id: orderId, status: newStatus });
+     };
 
      if (isLoading) return <p className="p-6">Loading orders...</p>;
      if (error) return <p className="p-6 text-red-600">Failed to load orders</p>;
@@ -79,37 +91,65 @@ export default function MyOrdersPage() {
                          <Table>
                               <TableHeader>
                                    <TableRow>
-                                        <TableHead>ID</TableHead>
-                                        <TableHead>Buyer</TableHead>
-                                        <TableHead>Address</TableHead>
-                                        <TableHead>Total Price</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Items</TableHead>
-                                        <TableHead>Placed On</TableHead>
+                                        {["Buyer", "Address", "Total Price", "Items", "Placed On", "Status"].map(
+                                             (head) => (
+                                                  <TableHead key={head} className="text-center">
+                                                       {head}
+                                                  </TableHead>
+                                             )
+                                        )}
                                    </TableRow>
                               </TableHeader>
+
                               <TableBody>
                                    {orders.map((order) => (
                                         <TableRow key={order.id}>
-                                             <TableCell>{order.id}</TableCell>
-                                             <TableCell>{order.buyer}</TableCell>
-                                             <TableCell>{order.address}</TableCell>
-                                             <TableCell>{order.totalPrice} tk</TableCell>
-                                             <TableCell>
-                                                  <Badge variant="outline" className={`bg-${statusColor(order.status)}-100 text-${statusColor(order.status)}-700`}>
-                                                       {order.status}
-                                                  </Badge>
+                                             <TableCell className="text-center">
+                                                  {order.customer.name}
                                              </TableCell>
-                                             <TableCell>
-                                                  <ul className="list-disc list-inside">
-                                                       {order.items.map((item) => (
-                                                            <li key={item.id}>
-                                                                 {item.medicine.name} × {item.quantity} ({item.price * item.quantity} tk)
-                                                            </li>
-                                                       ))}
-                                                  </ul>
+
+                                             <TableCell className="text-center">
+                                                  {order.address}
                                              </TableCell>
-                                             <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
+
+                                             <TableCell className="text-center">
+                                                  {order.totalPrice} tk
+                                             </TableCell>
+
+                                             <TableCell className="text-center">
+                                                  {order.items.map((item) => (
+                                                       <div key={item.id}>
+                                                            {item.medicine.name} × {item.quantity} (
+                                                            {item.price * item.quantity} tk)
+                                                       </div>
+                                                  ))}
+                                             </TableCell>
+
+                                             <TableCell className="text-center">
+                                                  {new Date(order.createdAt).toLocaleString()}
+                                             </TableCell>
+
+                                             <TableCell className="text-center">
+                                                  {updatingOrderId === order.id ? (
+                                                       <span className="text-sm text-gray-500 animate-pulse">
+                                                            Updating...
+                                                       </span>
+                                                  ) : (
+                                                       <select
+                                                            value={order.status}
+                                                            onChange={(e) =>
+                                                                 handleStatusChange(order.id, e.target.value)
+                                                            }
+                                                            className="border rounded px-2 py-1"
+                                                       >
+                                                            <option value="PENDING">Pending</option>
+                                                            <option value="PROCESSING">Processing</option>
+                                                            <option value="SHIPPED">Shipped</option>
+                                                            <option value="DELIVERED">Delivered</option>
+                                                            <option value="CANCELLED">Cancelled</option>
+                                                       </select>
+                                                  )}
+                                             </TableCell>
                                         </TableRow>
                                    ))}
                               </TableBody>
