@@ -20,6 +20,7 @@ import {
      SheetTrigger,
 } from "@/components/ui/sheet";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthProvider";
 
 interface MenuItem {
      title: string;
@@ -50,6 +51,8 @@ interface Navbar1Props {
           };
      };
 }
+
+
 
 const Navbar = ({
      logo = {
@@ -83,6 +86,19 @@ const Navbar = ({
      },
      className,
 }: Navbar1Props) => {
+
+
+     
+     const { user, refreshUser } = useAuth()
+     console.log(user);
+
+     const logout = async () => {
+          await fetch("/api/auth/logout", { method: "POST" })
+          await refreshUser()
+     }
+
+
+     
      return (
           <section className={cn("py-4 ", className)}>
                <div className="">
@@ -109,9 +125,15 @@ const Navbar = ({
                               </div>
                          </div>
                          <div className="flex gap-2">
+                              <div>{user?.email}</div>
                               <Button asChild variant="outline" size="sm">
                                    <Link href={auth.login.url}>{auth.login.title}</Link>
                               </Button>
+
+                              <Button  variant="outline" onClick={logout} size="sm" >
+                                   Logout
+                              </Button>
+
                               <Button asChild size="sm">
                                    <Link href={auth.signup.url}>{auth.signup.title}</Link>
                               </Button>
@@ -159,6 +181,9 @@ const Navbar = ({
                                              <div className="flex flex-col gap-3">
                                                   <Button asChild variant="outline">
                                                        <Link href={auth.login.url}>{auth.login.title}</Link>
+                                                  </Button>
+                                                  <Button  variant="outline" onSubmit={logout} size="sm">
+                                                       Logout
                                                   </Button>
                                                   <Button asChild>
                                                        <Link href={auth.signup.url}>{auth.signup.title}</Link>

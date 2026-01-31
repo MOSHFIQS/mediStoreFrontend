@@ -15,72 +15,75 @@ import {
      FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useForm } from "@tanstack/react-form"
+import { toast } from "sonner"
+import * as z from "zod"
 import { authService } from "@/service/auth.service"
-import { useForm } from "@tanstack/react-form";
-import { toast } from "sonner";
-import * as z from "zod";
-
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthProvider"
 
 const formSchema = z.object({
      password: z.string().min(8, "Minimum length is 8"),
-     email: z.email()
-});
+     email: z.string().email("Invalid email"),
+})
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
+     const { refreshUser } = useAuth() 
+     const router = useRouter()
 
      const form = useForm({
           defaultValues: {
                email: "",
-               password: ""
+               password: "",
           },
           validators: {
                onSubmit: formSchema,
           },
           onSubmit: async ({ value }) => {
-               const toastId = toast.loading("Finding User...");
-               const userLoginInfo = {...value};
+               const toastId = toast.loading("Logging in...")
+               try {
+                    const result = await authService.signIn(value)
 
-               const result = await authService.signIn(userLoginInfo);
+                    if (!result.ok) {
+                         toast.error(result.message || "Invalid credentials", { id: toastId })
+                         return { form: "Invalid email or password" }
+                    }
 
-               if (!result.ok) {
-                    toast.error(result.message || "Invalid credentials", { id: toastId });
+                    await refreshUser()
 
-                    return {
-                         form: "Invalid email or password",
-                    };
+                    toast.success("Logged in successfully!", { id: toastId })
+
+                    router.push("/")
+
+               } catch (err) {
+                    console.error(err)
+                    toast.error("Something went wrong", { id: toastId })
                }
-
-               toast.success("User Login Successfully", { id: toastId });
-               console.log("Logged in user:", result.data.user);
-          }
-
-
-     });
+          },
+     })
 
      return (
           <Card {...props}>
                <CardHeader>
-                    <CardTitle>Login your account</CardTitle>
-                    <CardDescription>
-                         Enter your information below to Login your account
-                    </CardDescription>
+                    <CardTitle>Login to your account</CardTitle>
+                    <CardDescription>Enter your information below to login</CardDescription>
                </CardHeader>
+
                <CardContent>
                     <form
                          id="login-form"
                          onSubmit={(e) => {
-                              e.preventDefault();
-                              form.handleSubmit();
+                              e.preventDefault()
+                              form.handleSubmit()
                          }}
                     >
                          <FieldGroup>
                               <form.Field
                                    name="email"
                                    children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
-                                             <Field>
+                                             <Field data-invalid={isInvalid}>
                                                   <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                                                   <Input
                                                        type="email"
@@ -89,20 +92,17 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        value={field.state.value}
                                                        onChange={(e) => field.handleChange(e.target.value)}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
                               />
                               <form.Field
                                    name="password"
                                    children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
-                                             <Field>
+                                             <Field data-invalid={isInvalid}>
                                                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                                                   <Input
                                                        type="password"
@@ -111,18 +111,15 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        value={field.state.value}
                                                        onChange={(e) => field.handleChange(e.target.value)}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
                               />
-
-
                          </FieldGroup>
                     </form>
                </CardContent>
+
                <CardFooter className="flex flex-col gap-5 justify-end">
                     <Button form="login-form" type="submit" className="w-full">
                          Login

@@ -2,7 +2,8 @@ import AllMedicines from "@/components/ui/AllMedicinesDemo";
 
 
 
-const HomePage = async () => {
+const HomePage =  () => {
+     
      return (
           <div>
                home page

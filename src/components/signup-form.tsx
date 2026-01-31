@@ -20,6 +20,8 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "./ui/select";
 import { authService } from "@/service/auth.service"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthProvider"
 
 
 const userRoles = [
@@ -37,6 +39,9 @@ const formSchema = z.object({
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
+     const { refreshUser } = useAuth()
+     const router = useRouter()
+
      const form = useForm({
           defaultValues: {
                name: "",
@@ -49,23 +54,20 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                onSubmit: formSchema,
           },
           onSubmit: async ({ value }) => {
-               const toastId = toast.loading(`Creating ${value.role}...`);
-               const userRegisterInfo = { ...value }
-               console.log(userRegisterInfo);
+               const toastId = toast.loading(`Creating ${value.role}...`)
 
-               const result = await authService.signUp(userRegisterInfo);
+               const result = await authService.signUp(value)
 
                if (!result.ok) {
-                    toast.error(result.message || `${value.role} Registered Failed`, { id: toastId });
-
-                    return {
-                         form: "Invalid email or password",
-                    };
+                    toast.error(result.message || "Registration failed", { id: toastId })
+                    return { form: "Registration failed" }
                }
 
-               toast.success(`${value.role} Registered Successfully`, { id: toastId });
-               console.log("Registered user:", result.data.data.user);
+               await refreshUser() 
+               toast.success("Account created & logged in!", { id: toastId })
+               router.push("/") 
           }
+
      });
 
      return (
