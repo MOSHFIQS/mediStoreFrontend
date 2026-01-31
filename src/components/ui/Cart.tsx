@@ -126,7 +126,7 @@ export default function Cart() {
                               </Card>
                          ))}
 
-                         {/* Address form */}
+                 
                          <Card>
                               <CardHeader>
                                    <CardTitle>Delivery Address</CardTitle>
