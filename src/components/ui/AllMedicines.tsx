@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { medicineService } from "@/service/medicine.service";
 import { categoryService } from "@/service/category.service";
@@ -14,8 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Category } from "@/types/category.type";
-import { useAuth } from "@/context/AuthProvider";
-import { toast } from "sonner";
 
 export interface Medicine {
      id: string;
@@ -29,16 +27,15 @@ export interface Medicine {
 
 export default function AllMedicines() {
      const router = useRouter();
-     const {user} = useAuth()
      const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
 
-     useEffect(() => {
-          if (!user) {
-               toast.error("Login first to access this page");
-               router.push("/login"); 
-          }
-     }, [user, router]);
+     // useEffect(() => {
+     //      if (!user) {
+     //           toast.error("Login first to access this page");
+     //           router.push("/login"); 
+     //      }
+     // }, [user, router]);
 
 
      // Fetch categories

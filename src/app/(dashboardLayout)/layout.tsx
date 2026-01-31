@@ -1,4 +1,4 @@
-"use client"
+
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -7,29 +7,30 @@ import {
      SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/roles"
-import { useAuth } from "@/context/AuthProvider"
-import { useRouter } from "next/navigation"
-import { ReactNode, useEffect } from "react"
-import { toast } from "sonner"
+import { sessionService } from "@/service/token.service"
+import { ReactNode } from "react"
 
-export default  function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
+export default async  function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
 
-     const {user} = useAuth()
-     const router = useRouter()
+     const data = await sessionService.getUserFromToken()
+     console.log(data);
+   
+     // const {user} = useAuth()
+     // const router = useRouter()
 
-     useEffect(() => {
-          if (!user) {
-               toast.error("Login first to access this page");
-               router.push("/login");
-          }
-     }, [user, router]);
+     // useEffect(() => {
+     //      if (!user) {
+     //           toast.error("Login first to access this page");
+     //           router.push("/login");
+     //      }
+     // }, [user, router]);
 
 
 
 
 
      const userInfo = {
-          role: user?.role as string
+          role: data?.role as string
      }
 
      let content
