@@ -30,14 +30,6 @@ export default function AllMedicines() {
      const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
 
-     // useEffect(() => {
-     //      if (!user) {
-     //           toast.error("Login first to access this page");
-     //           router.push("/login"); 
-     //      }
-     // }, [user, router]);
-
-
      // Fetch categories
      const { data: categories = [] } = useQuery<Category[], Error>({
           queryKey: ["categories"],

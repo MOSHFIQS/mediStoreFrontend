@@ -1,14 +1,15 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { medicineService } from "@/service/medicine.service";
 import { orderService } from "@/service/order.service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import {  useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthProvider";
 
 interface Medicine {
      id: string;
@@ -23,11 +24,18 @@ export default function MedicineDetailsPage() {
      const { id } = useParams();
      const router = useRouter();
      const medicineId = id as string
+     const {user} = useAuth()
 
      const [quantity, setQuantity] = useState(1);
      const [address, setAddress] = useState("");
 
-     // 🧪 Fetch medicine
+     const pathname = usePathname()
+     console.log(pathname);
+
+
+
+
+
      const { data: medicine, isLoading } = useQuery<Medicine>({
           queryKey: ["medicine", id],
           queryFn: async () => {
@@ -38,9 +46,11 @@ export default function MedicineDetailsPage() {
           enabled: !!id,
      });
 
-     // 🛒 Create order
+
      const { mutate: createOrder, isPending } = useMutation({
           mutationFn: async () => {
+               if (!user) throw new Error("Login required to create an order");
+
                if (!address) throw new Error("Address is required");
 
                const res = await orderService.create({

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface MenuItem {
      title: string;
@@ -93,6 +93,7 @@ const Navbar = ({
      const { user, refreshUser } = useAuth()
      const router = useRouter()
      console.log(user);
+     const pathname = usePathname()
 
      const logout = async () => {
           await fetch("/api/auth/logout", { method: "POST" })
@@ -105,7 +106,6 @@ const Navbar = ({
      return (
           <section className={cn("py-4 ", className)}>
                <div className="">
-                    {/* Desktop Menu */}
                     <nav className="hidden items-center justify-between lg:flex">
                          <div className="flex items-center gap-6">
                               {/* Logo */}
@@ -138,7 +138,7 @@ const Navbar = ({
                                         :
                                         <>
                                              <Button asChild variant="outline" size="sm">
-                                                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                                                  <Link href={`${auth.login.url}?redirect=${pathname}`}>{auth.login.title}</Link>
                                              </Button>
                                              <Button asChild size="sm">
                                                   <Link href={auth.signup.url}>{auth.signup.title}</Link>
