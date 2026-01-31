@@ -1,4 +1,4 @@
-import AllMedicines from "@/components/ui/AllMedicinesDemo";
+import AllMedicines from "@/components/ui/AllMedicines";
 
 
 
