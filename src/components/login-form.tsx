@@ -19,7 +19,7 @@ import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import * as z from "zod"
 import { authService } from "@/service/auth.service"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter} from "next/navigation"
 import { useAuth } from "@/context/AuthProvider"
 
 const formSchema = z.object({
@@ -30,9 +30,9 @@ const formSchema = z.object({
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
      const { refreshUser } = useAuth() 
      const router = useRouter()
-     const searchParams = useSearchParams();
-     const redirect = searchParams.get("redirect") || "/";
-     console.log(redirect);
+     // const searchParams = useSearchParams();
+     // const redirect = searchParams.get("redirect") || "/";
+     // console.log(redirect);
 
 
      const form = useForm({
@@ -59,7 +59,8 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
 
 
                    
-                         router.push(`${redirect}`)
+                         // router.push(`${redirect}`)
+                         router.push(`/`)
 
                } catch (err) {
                     console.error(err)
