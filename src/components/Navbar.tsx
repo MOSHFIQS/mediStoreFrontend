@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
      title: string;
@@ -88,17 +89,19 @@ const Navbar = ({
 }: Navbar1Props) => {
 
 
-     
+
      const { user, refreshUser } = useAuth()
+     const router = useRouter()
      console.log(user);
 
      const logout = async () => {
           await fetch("/api/auth/logout", { method: "POST" })
           await refreshUser()
+          router.push("/")
      }
 
 
-     
+
      return (
           <section className={cn("py-4 ", className)}>
                <div className="">
@@ -126,17 +129,25 @@ const Navbar = ({
                          </div>
                          <div className="flex gap-2">
                               <div>{user?.email}</div>
-                              <Button asChild variant="outline" size="sm">
-                                   <Link href={auth.login.url}>{auth.login.title}</Link>
-                              </Button>
+                              {
+                                   (user?.id) ?
+                                        <Button variant="outline" onClick={logout} size="sm" >
+                                             Logout
+                                        </Button>
 
-                              <Button  variant="outline" onClick={logout} size="sm" >
-                                   Logout
-                              </Button>
+                                        :
+                                        <>
+                                             <Button asChild variant="outline" size="sm">
+                                                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                                             </Button>
+                                             <Button asChild size="sm">
+                                                  <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                                             </Button>
+                                        </>
+                              }
 
-                              <Button asChild size="sm">
-                                   <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                              </Button>
+
+
                          </div>
                     </nav>
 
@@ -179,15 +190,22 @@ const Navbar = ({
                                              </Accordion>
 
                                              <div className="flex flex-col gap-3">
-                                                  <Button asChild variant="outline">
-                                                       <Link href={auth.login.url}>{auth.login.title}</Link>
-                                                  </Button>
-                                                  <Button  variant="outline" onSubmit={logout} size="sm">
-                                                       Logout
-                                                  </Button>
-                                                  <Button asChild>
-                                                       <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                                                  </Button>
+                                                  {
+                                                       (user?.id) ?
+                                                            <Button variant="outline" onClick={logout} size="sm" >
+                                                                 Logout
+                                                            </Button>
+
+                                                            :
+                                                            <>
+                                                                 <Button asChild variant="outline" size="sm">
+                                                                      <Link href={auth.login.url}>{auth.login.title}</Link>
+                                                                 </Button>
+                                                                 <Button asChild size="sm">
+                                                                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                                                                 </Button>
+                                                            </>
+                                                  }
                                              </div>
                                         </div>
                                    </SheetContent>

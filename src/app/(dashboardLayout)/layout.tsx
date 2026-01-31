@@ -1,3 +1,4 @@
+"use client"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -6,21 +7,29 @@ import {
      SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Roles } from "@/constants/roles"
-import { sessionService } from "@/service/token.service"
-import { ReactNode } from "react"
+import { useAuth } from "@/context/AuthProvider"
+import { useRouter } from "next/navigation"
+import { ReactNode, useEffect } from "react"
+import { toast } from "sonner"
 
-export default async function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
-     const data = await sessionService.getUserFromToken()
-     console.log(data);
+export default  function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
+
+     const {user} = useAuth()
+     const router = useRouter()
+
+     useEffect(() => {
+          if (!user) {
+               toast.error("Login first to access this page");
+               router.push("/login");
+          }
+     }, [user, router]);
 
 
-     if (!data) {
-          return <div>Please login</div>
-     }
+
 
 
      const userInfo = {
-          role: data.role
+          role: user?.role as string
      }
 
      let content

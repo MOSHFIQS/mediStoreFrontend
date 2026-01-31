@@ -5,7 +5,10 @@ import { useState, useEffect } from "react"
 
 type User = {
      id: string
-     email: string
+     email: string,
+     role : string,
+     status : string,
+     name : string
 }
 
 type AuthContextType = {
@@ -23,10 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      const loadUser = async () => {
           setLoading(true)
           try {
-               const res = await fetch("/api/me", {
-                    cache: "no-store",
-                    credentials: "include", // critical for httpOnly cookie
-               })
+               const res = await fetch("/api/me")
                const data = await res.json()
                setUser(data)
           } catch (err) {
