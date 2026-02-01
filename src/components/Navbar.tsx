@@ -84,7 +84,7 @@ const Navbar = ({
      
      const { user, refreshUser } = useAuth()
      const router = useRouter()
-     console.log(user);
+     // console.log(user);
      const pathname = usePathname()
      if (user) {
           menu.push({
