@@ -1,10 +1,10 @@
-import { apiFetchServer } from "@/lib/api"
+import { apiFetchClient } from "@/lib/api"
 
 export const adminService = {
-     getUsers: () => apiFetchServer("/admin/users"),
+     getUsers: () => apiFetchClient("/admin/users"),
 
      updateUserStatus: (id: string, status: string) =>
-          apiFetchServer(`/admin/users/${id}`, {
+          apiFetchClient(`/admin/users/${id}`, {
                method: "PATCH",
                body: JSON.stringify({ status }),
           }),

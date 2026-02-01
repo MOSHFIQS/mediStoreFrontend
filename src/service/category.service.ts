@@ -1,10 +1,10 @@
-import { apiFetchServer } from "@/lib/api"
+import { apiFetchClient } from "@/lib/api"
 
 export const categoryService = {
-     getAll: () => apiFetchServer("/categories"),
+     getAll: () => apiFetchClient("/categories"),
 
      create: (name: string) =>
-          apiFetchServer("/categories", {
+          apiFetchClient("/categories", {
                method: "POST",
                body: JSON.stringify({ name }),
           }),

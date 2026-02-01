@@ -1,29 +1,25 @@
-import { apiFetchServer } from "@/lib/api"
+import { apiFetchClient } from "@/lib/api"
 
 export const orderService = {
-     create: (payload: any) =>
-          apiFetchServer("/orders", {
-               method: "POST",
-               body: JSON.stringify(payload),
-          }),
+
 
      getMyOrders: () =>
-          apiFetchServer("/orders"),
+          apiFetchClient("/orders"),
 
      getById: (id: string) =>
-          apiFetchServer(`/orders/${id}`),
+          apiFetchClient(`/orders/${id}`),
 
      cancel: (id: string) =>
-          apiFetchServer(`/orders/${id}`, {
+          apiFetchClient(`/orders/${id}`, {
                method: "PATCH",
           }),
 
      // Seller
      getSellerOrders: () =>
-          apiFetchServer("/orders/seller/my-orders"),
+          apiFetchClient("/orders/seller/my-orders"),
 
      updateStatus: (id: string, status: string) =>
-          apiFetchServer(`/orders/seller/${id}`, {
+          apiFetchClient(`/orders/seller/${id}`, {
                method: "PATCH",
                body: JSON.stringify({ status }),
           }),

@@ -1,6 +1,6 @@
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL
 
-export async function apiFetchServer(
+export async function apiFetchClient(
      endpoint: string,
      options?: RequestInit
 ) {
@@ -15,7 +15,6 @@ export async function apiFetchServer(
 
      const data = await res.json()
      if (!res.ok) {
-          // Throw an error so React Query goes to onError
           throw new Error(data.message || "API request failed");
      }
 
