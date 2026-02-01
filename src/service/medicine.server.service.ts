@@ -39,12 +39,18 @@ export const medicineServiceServer = {
                body: JSON.stringify(payload),
           }),
 
+     update: (id: string, payload: any) =>
+          apiFetchServerMain(`/medicines/seller/${id}`, {
+               method: "PUT",
+               body: JSON.stringify(payload),
+          }),
+
      getSellerMedicines: () =>
           apiFetchServerMain("/medicines/seller"),
 
      delete: (id: string) =>
-               apiFetchServerMain(`/medicines/seller/${id}`, {
-                    method: "DELETE",
-               }),
+          apiFetchServerMain(`/medicines/seller/${id}`, {
+               method: "DELETE",
+          }),
 
 }

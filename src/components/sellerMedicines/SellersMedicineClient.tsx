@@ -48,7 +48,7 @@ export default function SellersMedicineClient({ medicines }: any) {
                                    <TableHead>Image</TableHead>
                                    <TableHead>Name</TableHead>
                                    <TableHead>Category</TableHead>
-                                   <TableHead>Seller</TableHead>
+                                   {/* <TableHead>Seller</TableHead> */}
                                    <TableHead>Price</TableHead>
                                    <TableHead>Stock</TableHead>
                                    <TableHead className="text-right">Actions</TableHead>
@@ -65,7 +65,7 @@ export default function SellersMedicineClient({ medicines }: any) {
                                         </TableCell>
                                         <TableCell>{med.name}</TableCell>
                                         <TableCell>{med.category?.name || "—"}</TableCell>
-                                        <TableCell>{med.seller?.name || "—"}</TableCell>
+                                        {/* <TableCell>{med.seller?.name || "—"}</TableCell> */}
                                         <TableCell>৳ {med.price}</TableCell>
                                         <TableCell>
                                              {med.stock > 0

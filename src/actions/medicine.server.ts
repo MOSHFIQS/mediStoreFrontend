@@ -31,6 +31,13 @@ export async function createMedicineAction(formData: FormData) {
      return true
 }
 
+export async function updateMedicineAction(id: string, data: any) {
+     const res = await medicineServiceServer.update(id, data)
+     if (!res.ok) throw new Error(res.message)
+
+     revalidatePath("/seller-dashboard/medicines")
+}
+
 
 export async function deleteMedicineAction(id: string) {
      const res = await medicineServiceServer.delete(id)
