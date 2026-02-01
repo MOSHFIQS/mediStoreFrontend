@@ -7,7 +7,7 @@ export const sessionService = {
      getUserFromToken: async (): Promise<JwtUserPayload | null> => {
           const cookieStore = await cookies()
           console.log(cookieStore.getAll());
-          const token = cookieStore.get("medi_store_cookie")?.value
+          const token = cookieStore.get("token")?.value
 
           if (!token) return null
 

@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
      const setCookie = (token: string) => {
-          Cookies.set("medi_store_cookie", token, { expires: 7 });
+          Cookies.set("token", token, { expires: 7 });
      };
 
      return (

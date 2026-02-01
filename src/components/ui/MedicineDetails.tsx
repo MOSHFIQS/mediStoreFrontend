@@ -25,12 +25,13 @@ export default function MedicineDetailsPage() {
      const router = useRouter();
      const medicineId = id as string
      const {user} = useAuth()
+     console.log(user);
 
      const [quantity, setQuantity] = useState(1);
      const [address, setAddress] = useState("");
 
      const pathname = usePathname()
-     console.log(pathname);
+     // console.log(pathname);
 
 
 

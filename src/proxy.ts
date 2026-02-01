@@ -9,6 +9,8 @@ export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
      const data = await sessionService.getUserFromToken()
 
+     console.log("data",data);
+
      
 
      const role = data?.role
