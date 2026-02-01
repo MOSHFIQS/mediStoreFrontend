@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
      const setCookie = (token: string) => {
+          localStorage.setItem("token", token)
           Cookies.set("token", token, { expires: 7 });
      };
 

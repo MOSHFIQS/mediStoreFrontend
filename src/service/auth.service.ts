@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api"
+import { apiFetchServer } from "@/lib/api"
 
 export const authService = {
      signUp: (payload: {
@@ -8,21 +8,21 @@ export const authService = {
           role: string
           image?: string
      }) =>
-          apiFetch("/auth/register", {
+          apiFetchServer("/auth/register", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
      signIn: (payload: { email: string; password: string }) =>
-          apiFetch("/auth/login", {
+          apiFetchServer("/auth/login", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
-     getMe: () => apiFetch("/auth/me"),
+     getMe: () => apiFetchServer("/auth/me"),
 
      logout: () =>
-          apiFetch("/auth/logout", {
+          apiFetchServer("/auth/logout", {
                method: "POST",
           }),
 }

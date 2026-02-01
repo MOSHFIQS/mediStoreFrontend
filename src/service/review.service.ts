@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api"
+import { apiFetchServer } from "@/lib/api"
 
 
 export interface CreateReviewPayload {
@@ -9,10 +9,10 @@ export interface CreateReviewPayload {
 
 
 export const reviewService = {
-     getAll: () => apiFetch("/review"),
+     getAll: () => apiFetchServer("/review"),
 
-     create: (payload : CreateReviewPayload) =>
-          apiFetch("/review", {
+     create: (payload: CreateReviewPayload) =>
+          apiFetchServer("/review", {
                method: "POST",
                body: JSON.stringify(payload),
           }),

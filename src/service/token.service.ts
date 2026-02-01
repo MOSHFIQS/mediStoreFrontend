@@ -6,14 +6,14 @@ import { JwtUserPayload } from "@/types/user.types"
 export const sessionService = {
      getUserFromToken: async (): Promise<JwtUserPayload | null> => {
           const cookieStore = await cookies()
-          console.log(cookieStore.getAll());
           const token = cookieStore.get("token")?.value
 
           if (!token) return null
 
           try {
-               return jwt.verify(token, process.env.JWT_SECRET!) as JwtUserPayload
-          } catch {
+               return jwt.verify(token, process.env.JWT_SECRET as string) as JwtUserPayload
+          } catch (err){
+               console.log("JWT invalid or expired:", err);
                return null
           }
      },

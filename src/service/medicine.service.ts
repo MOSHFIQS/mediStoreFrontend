@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api"
+import { apiFetchServer } from "@/lib/api"
 
 
 interface GetMedicinesParams {
@@ -27,30 +27,30 @@ export const medicineService = {
           const endpoint = `/medicines${searchParams.toString() ? `?${searchParams.toString()}` : ""
                }`
 
-          return apiFetch(endpoint)
+          return apiFetchServer(endpoint)
      },
 
      getById: (id: string) =>
-          apiFetch(`/medicines/${id}`),
+          apiFetchServer(`/medicines/${id}`),
 
      create: (payload: any) =>
-          apiFetch("/medicines/seller", {
+          apiFetchServer("/medicines/seller", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
      getSellerMedicines: () =>
-          apiFetch("/medicines/seller"),
+          apiFetchServer("/medicines/seller"),
 
 
      update: (id: string, payload: any) =>
-          apiFetch(`/medicines/seller/${id}`, {
+          apiFetchServer(`/medicines/seller/${id}`, {
                method: "PUT",
                body: JSON.stringify(payload),
           }),
 
      delete: (id: string) =>
-          apiFetch(`/medicines/seller/${id}`, {
+          apiFetchServer(`/medicines/seller/${id}`, {
                method: "DELETE",
           }),
 }
