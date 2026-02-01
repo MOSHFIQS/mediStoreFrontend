@@ -6,6 +6,13 @@ export const orderServiceServer = {
                method: "POST",
                body: JSON.stringify(payload),
           }),
+
+     updateStatus: (id: string, status: string) =>
+          apiFetchServerMain(`/orders/seller/${id}`, {
+               method: "PATCH",
+               body: JSON.stringify({ status }),
+          }),
+
      getMyOrders: () =>
           apiFetchServerMain("/orders"),
 
@@ -13,4 +20,8 @@ export const orderServiceServer = {
           apiFetchServerMain(`/orders/${id}`, {
                method: "PATCH",
           }),
+
+          getSellerOrders: () =>
+                    apiFetchServerMain("/orders/seller/my-orders"),
+
 }

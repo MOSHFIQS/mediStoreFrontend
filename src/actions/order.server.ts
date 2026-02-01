@@ -1,6 +1,7 @@
 "use server";
 
 import { orderServiceServer } from "@/service/order.server.service";
+import { revalidatePath } from "next/cache";
 
 // Server action to create an order
 export async function createOrderAction({
@@ -43,6 +44,20 @@ export async function createCartOrderAction({
      if (!res.ok) throw new Error(res.message);
 
      return res;
+}
+
+export async function updateOrderStatusAction(
+     orderId: string,
+     status: string
+) {
+     const res = await orderServiceServer.updateStatus(orderId, status);
+
+     if (!res.ok) {
+          return { success: false, message: res.message };
+     }
+
+     revalidatePath("/my-orders");
+     return { success: true };
 }
 
 
