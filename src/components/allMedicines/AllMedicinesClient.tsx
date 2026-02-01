@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -24,6 +24,11 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
      const [comment, setComment] = useState("");
      const [isSubmitting, setIsSubmitting] = useState(false);
 
+     // Filters only for /medicines
+     const [search, setSearch] = useState("");
+     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+     const [selectedPrice, setSelectedPrice] = useState<string>("all");
+
      const { data: cart = [] } = useQuery({
           queryKey: ["cart"],
           queryFn: () => Promise.resolve(getCart()),
@@ -44,50 +49,132 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
           }
      };
 
+     // Price ranges for dropdown
+     const priceRanges = [
+          { label: "All", value: "all" },
+          { label: "0 - 100 tk", value: "0-100" },
+          { label: "101 - 500 tk", value: "101-500" },
+          { label: "501+ tk", value: "501+" },
+     ];
+
+     const filteredMedicines = useMemo(() => {
+          return initialMedicines.filter((med: any) => {
+               const matchesSearch = med.name.toLowerCase().includes(search.toLowerCase());
+
+               const matchesCategory = selectedCategory === "all" || med.categoryId === selectedCategory;
+
+               let matchesPrice = true;
+               if (selectedPrice !== "all") {
+                    const [min, max] = selectedPrice.split("-").map(Number);
+                    if (max) {
+                         matchesPrice = med.price >= min && med.price <= max;
+                    } else {
+                         matchesPrice = med.price >= min;
+                    }
+               }
+
+               return matchesSearch && matchesCategory && matchesPrice;
+          });
+     }, [initialMedicines, search, selectedCategory, selectedPrice]);
+
+     const medicinesToShow = pathname === "/" ? filteredMedicines.slice(0, 8) : filteredMedicines;
+
      return (
           <div className="p-4">
-               {/* CATEGORY FILTERS ONLY ON /medicines */}
                {pathname === "/medicines" && (
-                    <div className="mb-4 flex flex-wrap gap-2">
-                         <Button
-                              variant={!searchParams.get("category") ? "default" : "outline"}
-                              onClick={() => router.push("/medicines")}
-                         >
-                              All
-                         </Button>
+                    <div className="mb-4 flex flex-wrap gap-4 items-end">
+                         {/* Search */}
+                         <div className="flex flex-col gap-2">
+                              <Label>Search by name</Label>
+                              <input
+                                   type="text"
+                                   value={search}
+                                   onChange={(e) => setSearch(e.target.value)}
+                                   className="border rounded px-2 py-1"
+                                   placeholder="Search..."
+                              />
+                         </div>
 
-                         {categories?.map((cat: any) => (
-                              <Button
-                                   key={cat.id}
-                                   variant={searchParams.get("category") === cat.id ? "default" : "outline"}
-                                   onClick={() => router.push(`/medicines?category=${cat.id}`)}
+                         <div className="flex flex-col gap-2">
+                              <Label>Category</Label>
+                              <select
+                                   value={selectedCategory}
+                                   onChange={(e) => setSelectedCategory(e.target.value)}
+                                   className="border rounded px-2 py-1"
                               >
-                                   {cat.name}
-                              </Button>
-                         ))}
+                                   <option value="all">All</option>
+                                   {categories?.map((cat: any) => (
+                                        <option key={cat.id} value={cat.id}>
+                                             {cat.name}
+                                        </option>
+                                   ))}
+                              </select>
+                         </div>
+
+                         <div className="flex flex-col gap-2">
+                              <Label>Price</Label>
+                              <select
+                                   value={selectedPrice}
+                                   onChange={(e) => setSelectedPrice(e.target.value)}
+                                   className="border rounded px-2 py-1"
+                              >
+                                   {priceRanges.map((range) => (
+                                        <option key={range.value} value={range.value}>
+                                             {range.label}
+                                        </option>
+                                   ))}
+                              </select>
+                         </div>
+
+                         <Button onClick={() => { setSearch(""); setSelectedCategory("all"); setSelectedPrice("all"); }}>
+                              Reset
+                         </Button>
                     </div>
                )}
 
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {initialMedicines?.map((med: any) => {
+               <div
+                    className={
+                         pathname === "/"
+                              ? "grid grid-cols-2 md:grid-cols-4 gap-4"
+                              : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                    }
+               >
+                    {medicinesToShow.map((med: any) => {
                          const itemInCart = cart.find((i: any) => i.medicineId === med.id);
 
                          return (
-                              <Card key={med.id}>
-                                   <CardHeader>
-                                        <CardTitle>{med.name}</CardTitle>
+                              <Card key={med.id} className=" rounded-lg overflow-hidden border border-gray-200 flex flex-col">
+                        
+
+                                   <CardHeader className="px-4 ">
+                                        <CardTitle className="text-lg font-semibold">{med.name}</CardTitle>
                                    </CardHeader>
+            
+                                   <div className="w-full h-48 flex justify-center items-center ">
+                                        <img
+                                             src={med.image || "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg"}
+                                             alt={med.name}
+                                             className="max-h-full object-contain"
+                                             onError={(e) => {
+                                                  (e.currentTarget as HTMLImageElement).src =
+                                                       "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg";
+                                             }}
+                                        />
+                                   </div>
 
-                                   <img src={med.image} alt={med.name} className="w-full h-48 object-contain" />
-
-                                   <CardContent>
-                                        <p>{med.description}</p>
-                                        <p>Price: {med.price} tk</p>
-                                        <p>Stock: {med.stock}</p>
+                                   <CardContent className="px-4 pt-2 flex-1">
+                                        <p className="text-sm text-gray-700 mb-2 line-clamp-3">{med.description}</p>
+                                        <p className="font-medium text-gray-900">Price: {med.price} tk</p>
+                                        <p className="text-sm text-gray-500">Stock: {med.stock}</p>
                                    </CardContent>
 
-                                   <CardFooter className="flex gap-2">
-                                        <Button onClick={() => router.push(`/medicines/${med.id}`)}>BUY</Button>
+                                   <CardFooter className="px-4 py-3 flex gap-2 flex-wrap">
+                                        <Button
+                                             onClick={() => router.push(`/medicines/${med.id}`)}
+                                             className="flex-1"
+                                        >
+                                             BUY
+                                        </Button>
 
                                         <Button
                                              onClick={() => {
@@ -102,13 +189,16 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                                   toast.success("Added to cart");
                                              }}
                                              disabled={(itemInCart?.quantity as number) >= med.stock}
+                                             className="flex-1"
                                         >
                                              Add To Cart {itemInCart ? `(${itemInCart.quantity})` : ""}
                                         </Button>
 
                                         <Dialog open={reviewOpen === med.id} onOpenChange={(o) => setReviewOpen(o ? med.id : null)}>
                                              <DialogTrigger asChild>
-                                                  <Button variant="secondary"><MessageSquareText /></Button>
+                                                  <Button variant="secondary" className="flex-1">
+                                                       <MessageSquareText />
+                                                  </Button>
                                              </DialogTrigger>
 
                                              <DialogContent>
@@ -117,15 +207,26 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                                   </DialogHeader>
 
                                                   <Label>Rating</Label>
-                                                  <div className="flex gap-1">
+                                                  <div className="flex gap-1 mb-2">
                                                        {[1, 2, 3, 4, 5].map((star) => (
                                                             <button key={star} onClick={() => setRating(star)}>
-                                                                 <Star className={star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
+                                                                 <Star
+                                                                      className={
+                                                                           star <= rating
+                                                                                ? "fill-yellow-400 text-yellow-400"
+                                                                                : "text-gray-300"
+                                                                      }
+                                                                 />
                                                             </button>
                                                        ))}
                                                   </div>
 
-                                                  <Textarea value={comment} onChange={(e) => setComment(e.target.value)} />
+                                                  <Textarea
+                                                       value={comment}
+                                                       onChange={(e) => setComment(e.target.value)}
+                                                       placeholder="Write your review..."
+                                                       className="mb-2"
+                                                  />
 
                                                   <Button
                                                        onClick={() => handleReviewSubmit(med.id)}
@@ -138,6 +239,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                         </Dialog>
                                    </CardFooter>
                               </Card>
+
                          );
                     })}
                </div>
