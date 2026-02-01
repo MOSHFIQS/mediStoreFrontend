@@ -5,9 +5,9 @@ import { JwtUserPayload } from "@/types/user.types"
 
 export const sessionService = {
      getUserFromToken: async (): Promise<JwtUserPayload | null> => {
-          const cookieStore = await cookies()   
+          const cookieStore = await cookies()
           console.log(cookieStore.getAll());
-          const token = cookieStore.get("medi-store-cookie")?.value
+          const token = cookieStore.get("medi_store_cookie")?.value
 
           if (!token) return null
 
