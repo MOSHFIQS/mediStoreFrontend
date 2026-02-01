@@ -73,10 +73,6 @@ const Navbar = ({
                title: "Medicines",
                url: "/medicines",
           },
-          {
-               title: "Dashboard",
-               url: "/dashboard",
-          },
      ],
      auth = {
           login: { title: "Login", url: "/login" },
@@ -85,11 +81,17 @@ const Navbar = ({
      className,
 }: Navbar1Props) => {
 
-
+     
      const { user, refreshUser } = useAuth()
      const router = useRouter()
      console.log(user);
      const pathname = usePathname()
+     if (user) {
+          menu.push({
+               title: "Dashboard",
+               url: "/dashboard",
+          })
+     }
 
      const logout = async () => {
           await fetch("/api/auth/logout", { method: "POST" })
