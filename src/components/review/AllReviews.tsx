@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { reviewService } from "@/service/review.service";
+import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
@@ -20,17 +19,12 @@ interface Review {
      };
 }
 
-export default function AllReviews() {
-     const { data: reviews = [], isLoading } = useQuery<Review[]>({
-          queryKey: ["reviews"],
-          queryFn: async () => {
-               const res = await reviewService.getAll();
-               if (!res.ok) throw new Error(res.message);
-               return res.data.data;
-          },
-     });
+interface Props {
+     initialReviews: Review[];
+}
 
-     if (isLoading) return <p className="p-6 text-center">Loading reviews...</p>;
+export default function AllReviews({ initialReviews }: Props) {
+     const [reviews] = useState<Review[]>(initialReviews);
 
      if (!reviews.length)
           return <p className="p-6 text-center text-muted-foreground">No reviews yet</p>;
@@ -38,10 +32,7 @@ export default function AllReviews() {
      return (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 p-4">
                {reviews.map((review) => (
-                    <Card
-                         key={review.id}
-                         className="rounded-2xl shadow-sm hover:shadow-md transition"
-                    >
+                    <Card key={review.id} className=" hover:shadow-md transition">
                          <CardHeader className="flex flex-row items-center gap-3 pb-2">
                               <Avatar>
                                    <AvatarFallback>
@@ -51,14 +42,12 @@ export default function AllReviews() {
 
                               <div className="flex flex-col">
                                    <span className="font-medium text-sm">{review.user.name}</span>
-                                   <span className="text-xs text-muted-foreground">
-                                        {review.medicine.name}
-                                   </span>
+                                   <span className="text-xs text-muted-foreground">{review.medicine.name}</span>
                               </div>
                          </CardHeader>
 
                          <CardContent className="space-y-3">
-                              {/* ⭐ Rating */}
+                         
                               <div className="flex gap-1">
                                    {[1, 2, 3, 4, 5].map((star) => (
                                         <Star
@@ -71,12 +60,10 @@ export default function AllReviews() {
                                    ))}
                               </div>
 
-                              {/* 💬 Comment */}
                               <p className="text-sm text-muted-foreground leading-relaxed">
                                    "{review.comment}"
                               </p>
 
-                              {/* 📅 Date */}
                               <p className="text-xs text-right text-muted-foreground">
                                    {new Date(review.createdAt).toLocaleDateString()}
                               </p>

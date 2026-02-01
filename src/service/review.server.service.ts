@@ -9,6 +9,8 @@ export interface CreateReviewPayload {
 }
 
 export const reviewServiceServer = {
+     getAll: () => apiFetchServerMain("/review"),
+
      create: (payload: CreateReviewPayload) =>
           apiFetchServerMain("/review", {
                method: "POST",
