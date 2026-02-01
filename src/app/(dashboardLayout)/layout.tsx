@@ -9,11 +9,15 @@ import {
 import { Roles } from "@/constants/roles"
 import { sessionService } from "@/service/token.service"
 import { ReactNode } from "react"
+import { redirect } from "next/navigation";
 
 export default async  function DashboardLayout({ admin, customer, seller }: { admin: ReactNode, customer: ReactNode, seller: ReactNode }) {
 
      const data = await sessionService.getUserFromToken()
      console.log(data);
+     if (!data) {
+          redirect("/login");
+     }
    
      // const {user} = useAuth()
      // const router = useRouter()
