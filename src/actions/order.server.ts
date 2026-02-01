@@ -23,3 +23,24 @@ export async function createOrderAction({
 
      return res;
 }
+
+
+export async function createCartOrderAction({
+     items,
+     address,
+}: {
+     items: { medicineId: string; quantity: number }[];
+     address: string;
+}) {
+     if (!address) throw new Error("Address is required");
+     if (!items || items.length === 0) throw new Error("Cart is empty");
+
+     const res = await orderServiceServer.create({
+          address,
+          items,
+     });
+
+     if (!res.ok) throw new Error(res.message);
+
+     return res;
+}

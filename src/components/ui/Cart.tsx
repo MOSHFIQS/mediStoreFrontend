@@ -13,13 +13,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CartItem, getCart, saveCart, clearCart } from "@/lib/cart";
-import { orderService } from "@/service/order.service";
 import { toast } from "sonner";
+import { createCartOrderAction } from "@/actions/order.server";
 
 export default function Cart() {
      const queryClient = useQueryClient();
 
-     // Cart query
      const { data: cart = [] } = useQuery<CartItem[]>({
           queryKey: ["cart"],
           queryFn: () => Promise.resolve(getCart()),
@@ -51,25 +50,16 @@ export default function Cart() {
           updateCart(newCart);
      };
 
-     // TanStack Form for address
      const form = useForm({
-          defaultValues: {
-               address: "",
-          },
+          defaultValues: { address: "" },
           onSubmit: async ({ value }) => {
                if (cart.length === 0) return toast.error("Cart is empty!");
 
-               const payload = {
-                    address: value.address,
-                    items: cart.map((item) => ({
-                         medicineId: item.medicineId,
-                         quantity: item.quantity,
-                    })),
-               };
-
                try {
-                    const res = await orderService.create(payload);
-                    if (!res.ok) throw new Error(res.message);
+                    await createCartOrderAction({
+                         address: value.address,
+                         items: cart.map((item) => ({ medicineId: item.medicineId, quantity: item.quantity })),
+                    });
 
                     toast.success("Order placed successfully!");
                     clearCart();
@@ -91,7 +81,6 @@ export default function Cart() {
                     <p>Your cart is empty</p>
                ) : (
                     <>
-                         {/* Cart Items */}
                          {cart.map((item) => (
                               <Card key={item.medicineId}>
                                    <CardHeader>
@@ -112,21 +101,24 @@ export default function Cart() {
                                                   <span>{item.quantity}</span>
                                                   <Button
                                                        size="sm"
-                                                       onClick={() => increment(item.medicineId, 100)} // Replace 100 with real stock
+                                                       onClick={() => increment(item.medicineId, 100)} // replace 100 with stock if available
                                                        disabled={item.quantity >= 100}
                                                   >
                                                        +
                                                   </Button>
                                              </div>
                                         </div>
-                                        <Button size="sm" variant="destructive" onClick={() => handleRemove(item.medicineId)}>
+                                        <Button
+                                             size="sm"
+                                             variant="destructive"
+                                             onClick={() => handleRemove(item.medicineId)}
+                                        >
                                              Remove
                                         </Button>
                                    </CardContent>
                               </Card>
                          ))}
 
-                 
                          <Card>
                               <CardHeader>
                                    <CardTitle>Delivery Address</CardTitle>
@@ -151,7 +143,7 @@ export default function Cart() {
                                                                       id={field.name}
                                                                       value={field.state.value}
                                                                       onChange={(e) => field.handleChange(e.target.value)}
-                                                                      placeholder="Example : House 12, Road 3, Gulshan, Dhaka 1212, Bangladesh"
+                                                                      placeholder="Example: House 12, Road 3, Gulshan, Dhaka 1212, Bangladesh"
                                                                       required
                                                                  />
                                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
