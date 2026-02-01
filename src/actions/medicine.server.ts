@@ -2,6 +2,7 @@
 
 import { imageHostingService } from "@/service/image-hosting.service"
 import { medicineServiceServer } from "@/service/medicine.server.service"
+import { revalidatePath } from "next/cache"
 
 export async function createMedicineAction(formData: FormData) {
      const name = formData.get("name") as string
@@ -28,4 +29,12 @@ export async function createMedicineAction(formData: FormData) {
 
      if (!res.ok) throw new Error(res.message)
      return true
+}
+
+
+export async function deleteMedicineAction(id: string) {
+     const res = await medicineServiceServer.delete(id)
+     if (!res.ok) throw new Error(res.message)
+
+     revalidatePath("/seller-dashboard/medicines")
 }

@@ -34,8 +34,17 @@ export const medicineServiceServer = {
           apiFetchServerMain(`/medicines/${id}`),
 
      create: (payload: any) =>
-               apiFetchServerMain("/medicines/seller", {
-                    method: "POST",
-                    body: JSON.stringify(payload),
+          apiFetchServerMain("/medicines/seller", {
+               method: "POST",
+               body: JSON.stringify(payload),
+          }),
+
+     getSellerMedicines: () =>
+          apiFetchServerMain("/medicines/seller"),
+
+     delete: (id: string) =>
+               apiFetchServerMain(`/medicines/seller/${id}`, {
+                    method: "DELETE",
                }),
+
 }

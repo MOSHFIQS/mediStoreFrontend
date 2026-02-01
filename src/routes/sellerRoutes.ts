@@ -11,7 +11,7 @@ export const sellerRoutes: Route[] = [
                },
                {
                     title: "All Medicine",
-                    url: "/seller-dashboard/medicines",
+                    url: "/seller-dashboard/seller-medicines",
                },
                
                {
