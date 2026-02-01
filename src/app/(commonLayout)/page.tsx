@@ -2,6 +2,7 @@
 import { medicineServiceServer } from "@/service/medicine.server.service";
 import { categoryServiceServer } from "@/service/category.server.service";
 import AllMedicinesClient from "@/components/allMedicines/AllMedicinesClient";
+import { CarouselPlugin } from "@/components/banner/Banner";
 
 export default async function HomePage({
      searchParams,
@@ -19,9 +20,12 @@ export default async function HomePage({
      if (!catRes.ok) return <p className="p-4">Failed to load categories</p>;
 
      return (
-          <AllMedicinesClient
-               initialMedicines={medRes.data.data}
-               categories={catRes.data.data}
-          />
+          <>
+               <CarouselPlugin />
+               <AllMedicinesClient
+                    initialMedicines={medRes.data.data}
+                    categories={catRes.data.data}
+               />
+          </>
      );
 }
