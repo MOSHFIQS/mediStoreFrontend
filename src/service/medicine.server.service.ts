@@ -32,4 +32,10 @@ export const medicineServiceServer = {
 
      getById: (id: string) =>
           apiFetchServerMain(`/medicines/${id}`),
+
+     create: (payload: any) =>
+               apiFetchServerMain("/medicines/seller", {
+                    method: "POST",
+                    body: JSON.stringify(payload),
+               }),
 }

@@ -6,4 +6,11 @@ export const orderServiceServer = {
                method: "POST",
                body: JSON.stringify(payload),
           }),
+     getMyOrders: () =>
+          apiFetchServerMain("/orders"),
+
+     cancel: (id: string) =>
+          apiFetchServerMain(`/orders/${id}`, {
+               method: "PATCH",
+          }),
 }

@@ -44,3 +44,12 @@ export async function createCartOrderAction({
 
      return res;
 }
+
+
+export async function cancelOrderAction(orderId: string) {
+
+     const res = await orderServiceServer.cancel(orderId);
+     if (!res.ok) throw new Error(res.message);
+
+     return res;
+}
