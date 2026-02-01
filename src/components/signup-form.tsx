@@ -39,7 +39,7 @@ const formSchema = z.object({
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
-     const { refreshUser } = useAuth()
+     const { refreshUser, setCookie } = useAuth()
      const router = useRouter()
 
      const form = useForm({
@@ -57,15 +57,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                const toastId = toast.loading(`Creating ${value.role}...`)
 
                const result = await authService.signUp(value)
+               if (result.data.data.token){
+                    setCookie(result.data.data.token)
+               }
 
                if (!result.ok) {
                     toast.error(result.message || "Registration failed", { id: toastId })
                     return { form: "Registration failed" }
                }
 
-               await refreshUser() 
+               await refreshUser()
                toast.success("Account created & logged in!", { id: toastId })
-               router.push("/") 
+               router.push("/")
           }
 
      });

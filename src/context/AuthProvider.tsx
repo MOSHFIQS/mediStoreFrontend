@@ -2,19 +2,21 @@
 
 import React, { createContext, useContext } from "react"
 import { useState, useEffect } from "react"
+import Cookies from 'js-cookie';
 
 type User = {
      id: string
      email: string,
-     role : string,
-     status : string,
-     name : string
+     role: string,
+     status: string,
+     name: string
 }
 
 type AuthContextType = {
      user: User | null
      loading: boolean
-     refreshUser: () => Promise<void>
+     refreshUser: () => Promise<void>,
+     setCookie: (token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -26,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      const loadUser = async () => {
           setLoading(true)
           try {
-               const res = await fetch("/api/me",{
+               const res = await fetch("/api/me", {
                     method: "GET",
                     credentials: "include", // send HTTP-only cookie
                })
@@ -44,8 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           loadUser()
      }, [])
 
+
+     const setCookie = (token: string) => {
+          Cookies.set("token", token, { expires: 7 });
+     };
+
      return (
-          <AuthContext.Provider value={{ user, loading, refreshUser: loadUser }}>
+          <AuthContext.Provider value={{ user, loading, refreshUser: loadUser, setCookie }}>
                {children}
           </AuthContext.Provider>
      )

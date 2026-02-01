@@ -28,7 +28,7 @@ const formSchema = z.object({
 })
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
-     const { refreshUser } = useAuth() 
+     const { refreshUser , setCookie} = useAuth() 
      const router = useRouter()
      // const searchParams = useSearchParams();
      // const redirect = searchParams.get("redirect") || "/";
@@ -51,6 +51,10 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
                     if (!result.ok) {
                          toast.error(result.message || "Invalid credentials", { id: toastId })
                          return { form: "Invalid email or password" }
+                    }
+
+                    if (result.data.data.token) {
+                         setCookie(result.data.data.token)
                     }
 
                     await refreshUser()

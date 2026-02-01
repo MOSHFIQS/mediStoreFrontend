@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { Roles } from "./constants/roles"
 import { sessionService } from "./service/token.service";
+export const dynamic = "force-dynamic"
+
 
 
 export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
      const data = await sessionService.getUserFromToken()
+
+     
 
      const role = data?.role
 

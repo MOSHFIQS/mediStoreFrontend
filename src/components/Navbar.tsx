@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface MenuItem {
      title: string;
@@ -83,7 +84,6 @@ const Navbar = ({
      },
      className,
 }: Navbar1Props) => {
-
 
 
      const { user, refreshUser } = useAuth()
