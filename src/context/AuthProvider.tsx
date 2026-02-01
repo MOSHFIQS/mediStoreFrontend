@@ -26,7 +26,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      const loadUser = async () => {
           setLoading(true)
           try {
-               const res = await fetch("/api/me")
+               const res = await fetch("/api/me",{
+                    method: "GET",
+                    credentials: "include", // send HTTP-only cookie
+               })
                const data = await res.json()
                setUser(data)
           } catch (err) {

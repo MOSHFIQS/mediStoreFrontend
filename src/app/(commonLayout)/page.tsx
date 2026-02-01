@@ -3,6 +3,8 @@ import AllMedicines from "@/components/ui/AllMedicines";
 
 
 const HomePage =  () => {
+   
+
      
      return (
           <div>
