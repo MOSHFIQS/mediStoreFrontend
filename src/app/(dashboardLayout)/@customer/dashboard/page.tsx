@@ -1,10 +1,10 @@
+// app/customer-dashboard/page.tsx
+import { redirect } from "next/navigation";
 
 const CustomerDashboard = () => {
-     return (
-          <div>
-               this is customer dashboard
-          </div>
-     );
+     redirect("/dashboard/profile");
+
+     // return null;
 };
 
 export default CustomerDashboard;

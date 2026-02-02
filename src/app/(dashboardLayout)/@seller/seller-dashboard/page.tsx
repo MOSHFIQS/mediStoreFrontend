@@ -1,11 +1,10 @@
-import React from 'react';
+// app/customer-dashboard/page.tsx
+import { redirect } from "next/navigation";
 
-const SellerDashboard = () => {
-     return (
-          <div>
-               this is seller dashboard
-          </div>
-     );
+const CustomerDashboard = () => {
+     redirect("/seller-dashboard/profile");
+
+     // return null;
 };
 
-export default SellerDashboard;
+export default CustomerDashboard;
