@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, Sele
 import { authService } from "@/service/auth.service"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/context/AuthProvider"
-
+import { imageHostingService } from "@/service/image-hosting.service"
 
 const userRoles = [
      { label: "CUSTOMER", value: "CUSTOMER" },
@@ -34,11 +34,10 @@ const formSchema = z.object({
      password: z.string().min(8, "Minimum length is 8"),
      email: z.email(),
      role: z.enum(["CUSTOMER", "SELLER"]),
-     image: z.string()
+     image: z.array(z.instanceof(File)).min(1, "Please upload a profile image")
 });
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-
      const { setCookie } = useAuth()
      const router = useRouter()
 
@@ -48,7 +47,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                email: "",
                password: "",
                role: "CUSTOMER",
-               image: ""
+               image: [] as File[]
           },
           validators: {
                onSubmit: formSchema,
@@ -56,20 +55,32 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           onSubmit: async ({ value }) => {
                const toastId = toast.loading(`Creating ${value.role}...`)
 
-               const result = await authService.signUp(value)
-               if (result.ok) {
-                    setCookie(result.data.data.user, result.data.data.token)
+               // Upload first image file
+               const file = value.image[0]
+               const uploadRes = await imageHostingService.uploadImage(file)
+               if (!uploadRes.ok || !uploadRes.url) {
+                    toast.error("Image upload failed", { id: toastId })
+                    return
                }
 
-               if (!result.ok) {
+               const finalPayload = {
+                    name: value.name,
+                    email: value.email,
+                    password: value.password,
+                    role: value.role,
+                    image: uploadRes.url
+               }
+
+               const result = await authService.signUp(finalPayload)
+               if (result.ok) {
+                    setCookie(result.data.data.user, result.data.data.token)
+                    toast.success("Account created & logged in!", { id: toastId })
+                    router.push("/")
+               } else {
                     toast.error(result.message || "Registration failed", { id: toastId })
                     return { form: "Registration failed" }
                }
-
-               toast.success("Account created & logged in!", { id: toastId })
-               router.push("/")
           }
-
      });
 
      return (
@@ -82,18 +93,16 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                </CardHeader>
                <CardContent>
                     <form
-                         id="login-form"
+                         id="signup-form"
                          onSubmit={(e) => {
                               e.preventDefault();
                               form.handleSubmit();
                          }}
                     >
                          <FieldGroup>
-                              <form.Field
-                                   name="name"
-                                   children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                              <form.Field name="name">
+                                   {(field) => {
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
                                              <Field data-invalid={isInvalid}>
                                                   <FieldLabel htmlFor={field.name}>Name</FieldLabel>
@@ -104,20 +113,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        value={field.state.value}
                                                        onChange={(e) => field.handleChange(e.target.value)}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
-                              />
-                              <form.Field
-                                   name="email"
-                                   children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                              </form.Field>
+
+                              <form.Field name="email">
+                                   {(field) => {
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
-                                             <Field>
+                                             <Field data-invalid={isInvalid}>
                                                   <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                                                   <Input
                                                        type="email"
@@ -126,20 +132,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        value={field.state.value}
                                                        onChange={(e) => field.handleChange(e.target.value)}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
-                              />
-                              <form.Field
-                                   name="password"
-                                   children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                              </form.Field>
+
+                              <form.Field name="password">
+                                   {(field) => {
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
-                                             <Field>
+                                             <Field data-invalid={isInvalid}>
                                                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                                                   <Input
                                                        type="password"
@@ -148,56 +151,44 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        value={field.state.value}
                                                        onChange={(e) => field.handleChange(e.target.value)}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
-                              />
-                              <form.Field
-                                   name="image"
-                                   children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid;
+                              </form.Field>
+
+                              {/* Image upload */}
+                              <form.Field name="image">
+                                   {(field) => {
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
-                                             <Field>
-                                                  <FieldLabel htmlFor={field.name}>image</FieldLabel>
+                                             <Field data-invalid={isInvalid}>
+                                                  <FieldLabel>Profile Image</FieldLabel>
                                                   <Input
-                                                       type="text"
-                                                       id={field.name}
-                                                       name={field.name}
-                                                       value={field.state.value}
-                                                       onChange={(e) => field.handleChange(e.target.value)}
+                                                       type="file"
+                                                       accept="image/*"
+                                                       onChange={(e) => field.handleChange(Array.from(e.target.files || []))}
                                                   />
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                              </Field>
-                                        );
+                                        )
                                    }}
-                              />
+                              </form.Field>
 
-
-
-                              <form.Field
-                                   name="role"
-                                   children={(field) => {
-                                        const isInvalid =
-                                             field.state.meta.isTouched && !field.state.meta.isValid
+                              {/* Role select */}
+                              <form.Field name="role">
+                                   {(field) => {
+                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                                         return (
                                              <Field orientation="responsive" data-invalid={isInvalid}>
-
-                                                  {isInvalid && (
-                                                       <FieldError errors={field.state.meta.errors} />
-                                                  )}
+                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                                   <Select
                                                        name={field.name}
                                                        value={field.state.value}
                                                        onValueChange={field.handleChange}
                                                   >
                                                        <SelectTrigger
-                                                            id="form-tanstack-select-language"
+                                                            id="form-tanstack-select-role"
                                                             aria-invalid={isInvalid}
                                                             className="min-w-[120px]"
                                                        >
@@ -206,10 +197,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                                        <SelectContent position="item-aligned">
                                                             <SelectSeparator />
                                                             {userRoles.map((role) => (
-                                                                 <SelectItem
-                                                                      key={role.value}
-                                                                      value={role.value}
-                                                                 >
+                                                                 <SelectItem key={role.value} value={role.value}>
                                                                       {role.label}
                                                                  </SelectItem>
                                                             ))}
@@ -218,17 +206,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                                              </Field>
                                         )
                                    }}
-                              />
-
-
-
-
-
+                              </form.Field>
                          </FieldGroup>
                     </form>
                </CardContent>
                <CardFooter className="flex flex-col gap-5 justify-end">
-                    <Button form="login-form" type="submit" className="w-full">
+                    <Button form="signup-form" type="submit" className="w-full">
                          Register
                     </Button>
                </CardFooter>
