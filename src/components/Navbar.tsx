@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { ProfileDropdown } from "./ui/ProfileDropdown";
 
 interface MenuItem {
      title: string;
@@ -81,7 +82,7 @@ const Navbar = ({
      className,
 }: Navbar1Props) => {
 
-     
+
      const { user, logout } = useAuth()
      console.log(user);
      const router = useRouter()
@@ -125,12 +126,16 @@ const Navbar = ({
                               </div>
                          </div>
                          <div className="flex gap-2">
-                              <div>{user?.email}</div>
+                              {/* <div>{user?.email}</div> */}
+
                               {
                                    (user?.id) ?
-                                        <Button variant="outline" onClick={handleLogout} size="sm" >
-                                             Logout
-                                        </Button>
+                                        <>
+                                             <ProfileDropdown user={user} handleLogout={handleLogout}/>
+                                             <Button variant="outline" onClick={handleLogout} size="sm" >
+                                                  Logout
+                                             </Button>
+                                        </>
 
                                         :
                                         <>
