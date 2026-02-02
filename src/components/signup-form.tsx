@@ -55,32 +55,40 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           onSubmit: async ({ value }) => {
                const toastId = toast.loading(`Creating ${value.role}...`)
 
-               // Upload first image file
-               const file = value.image[0]
-               const uploadRes = await imageHostingService.uploadImage(file)
-               if (!uploadRes.ok || !uploadRes.url) {
-                    toast.error("Image upload failed", { id: toastId })
-                    return
-               }
+               try {
+                    // Upload first image file
+                    const file = value.image[0]
+                    const uploadRes = await imageHostingService.uploadImage(file)
+                    if (!uploadRes.ok || !uploadRes.url) {
+                         toast.error("Image upload failed", { id: toastId })
+                         return
+                    }
 
-               const finalPayload = {
-                    name: value.name,
-                    email: value.email,
-                    password: value.password,
-                    role: value.role,
-                    image: uploadRes.url
-               }
+                    const finalPayload = {
+                         name: value.name,
+                         email: value.email,
+                         password: value.password,
+                         role: value.role,
+                         image: uploadRes.url
+                    }
 
-               const result = await authService.signUp(finalPayload)
-               if (result.ok) {
+                    const result = await authService.signUp(finalPayload)
+                    if (!result.ok) {
+                         toast.error(result.message || "Registration failed", { id: toastId })
+                         return { form: "Registration failed" }
+                    }
+
+                    // Success
                     setCookie(result.data.data.user, result.data.data.token)
                     toast.success("Account created & logged in!", { id: toastId })
                     router.push("/")
-               } else {
-                    toast.error(result.message || "Registration failed", { id: toastId })
-                    return { form: "Registration failed" }
+
+               } catch (error: any) {
+                    console.error("Signup error:", error)
+                    toast.error(error.message ||"Something went wrong during signup", { id: toastId })
                }
           }
+
      });
 
      return (
