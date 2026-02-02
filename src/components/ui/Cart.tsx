@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CartItem, getCart, saveCart, clearCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { createCartOrderAction } from "@/actions/order.action";
+import EmptyPage from "../emptyPage/EmptyPage";
 
 export default function Cart() {
      const queryClient = useQueryClient();
@@ -78,7 +79,7 @@ export default function Cart() {
                <h2 className="text-2xl font-bold">My Cart</h2>
 
                {cart.length === 0 ? (
-                    <p>cart is empty</p>
+                    <EmptyPage />
                ) : (
                     <>
                          {cart.map((item) => (

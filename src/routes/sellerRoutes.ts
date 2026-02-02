@@ -25,6 +25,10 @@ export const sellerRoutes: Route[] = [
                {
                     title: "Home",
                     url: "/",
+               },
+               {
+                    title: "Shop",
+                    url: "/medicines",
                }
           ],
      }

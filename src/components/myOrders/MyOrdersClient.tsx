@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import EmptyPage from "../emptyPage/EmptyPage";
 
 interface OrderItem {
      id: string;
@@ -39,7 +40,7 @@ export default function MyOrdersClient({ initialOrders }: { initialOrders: Order
           });
      };
 
-     if (!initialOrders.length) return <p className="p-6">No orders found.</p>;
+     if (!initialOrders.length) return <EmptyPage />
 
      const statusClasses: Record<string, string> = {
           CANCELLED: "bg-red-100 text-red-600",

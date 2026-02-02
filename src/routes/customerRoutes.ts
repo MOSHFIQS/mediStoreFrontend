@@ -20,6 +20,10 @@ export const customerRoutes: Route[] = [
                {
                     title: "Home",
                     url: "/",
+               },
+               {
+                    title: "Shop",
+                    url: "/medicines",
                }
 
           ],
