@@ -93,7 +93,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                     pathname === '/' &&
                     <div>
                          <h2 className="text-3xl font-bold mb-2 text-center">Wellness at Your Fingertips</h2>
-                              <p className="text-gray-600 text-center mb-6"> Simple steps you can take today to improve your wellness and feel your best.</p>
+                         <p className="text-gray-600 text-center mb-6"> Simple steps you can take today to improve your wellness and feel your best.</p>
                     </div>
 
 

@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import Loading from "../loading/Loading";
 
 export interface Category {
      id: string;
@@ -45,9 +46,7 @@ export default function AllCategories({ initialCategories }: Props) {
 
                     <CardContent>
                          {loading ? (
-                              <div className="flex justify-center py-10">
-                                   <Loader2 className="animate-spin h-6 w-6" />
-                              </div>
+                              <Loading />
                          ) : (
                               <Table>
                                    <TableHeader>

@@ -1,6 +1,6 @@
 import { Spinner } from "@/components/ui/spinner";
 
-const Loading = () => {
+ const Loading = () => {
      return (
           <div className="flex items-center justify-center min-h-screen">
                <p className="animate-pulse text-muted-foreground flex items-center gap-2">

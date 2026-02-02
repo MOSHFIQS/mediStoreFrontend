@@ -18,7 +18,7 @@ export default function Footer() {
                          <ul className="space-y-2">
                               <li><a href="/" className="hover:text-green-400 transition">Home</a></li>
                               <li><a href="/medicines" className="hover:text-green-400 transition">Shop</a></li>
-                              <li><a href="/health-tips" className="hover:text-green-400 transition">Health Tips</a></li>
+                              <li><a href="/" className="hover:text-green-400 transition">Health Tips</a></li>
                          </ul>
                     </div>
 
