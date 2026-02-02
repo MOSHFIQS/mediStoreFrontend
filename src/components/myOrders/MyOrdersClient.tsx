@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { cancelOrderAction } from "@/actions/order.server";
+import { cancelOrderAction } from "@/actions/order.action";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ export default function MyOrdersClient({ initialOrders }: { initialOrders: Order
                try {
                     await cancelOrderAction(orderId);
                     toast.success("Order cancelled");
-                    router.refresh(); // 🔥 re-fetch server component
+                    router.refresh(); 
                } catch (err: any) {
                     toast.error(err.message);
                }

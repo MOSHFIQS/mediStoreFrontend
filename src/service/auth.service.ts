@@ -1,5 +1,13 @@
 import { apiFetchClient } from "@/lib/api"
 
+
+
+export interface UpdateProfilePayload {
+     name?: string
+     phone?: string
+     image?: string
+}
+
 export const authService = {
      signUp: (payload: {
           name: string
@@ -19,7 +27,14 @@ export const authService = {
                body: JSON.stringify(payload),
           }),
 
-     getMe: () => apiFetchClient("/auth/me"),
+     getMe: () => apiFetchClient("/user/me"),
+
+     updateMe: (payload: UpdateProfilePayload) =>
+          apiFetchClient("/users/me", {
+               method: "PATCH",
+               body: JSON.stringify(payload),
+          }),
+
 
      logout: () =>
           apiFetchClient("/auth/logout", {

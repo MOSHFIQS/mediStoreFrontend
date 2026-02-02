@@ -6,6 +6,10 @@ export const sellerRoutes: Route[] = [
           title: "seller sidebar",
           items: [
                {
+                    title: "Profile",
+                    url: "/admin-dashboard/seller-profile",
+               },
+               {
                     title: "Create Medicine",
                     url: "/seller-dashboard/create-medicine",
                },
@@ -13,7 +17,7 @@ export const sellerRoutes: Route[] = [
                     title: "All Medicine",
                     url: "/seller-dashboard/seller-medicines",
                },
-               
+
                {
                     title: "My Orders",
                     url: "/seller-dashboard/my-orders",
@@ -22,7 +26,6 @@ export const sellerRoutes: Route[] = [
                     title: "Home",
                     url: "/",
                }
-
           ],
      }
 ]

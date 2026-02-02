@@ -28,10 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      const loadUser = async () => {
           setLoading(true)
           try {
-               const res = await fetch("/api/me", {
-                    method: "GET",
-                    credentials: "include", // send HTTP-only cookie
-               })
+               const res = await fetch("/api/me")
                const data = await res.json()
                setUser(data)
           } catch (err) {
@@ -48,7 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
      const setCookie = (token: string) => {
-          localStorage.setItem("token", token)
           Cookies.set("token", token, { expires: 7 });
      };
 

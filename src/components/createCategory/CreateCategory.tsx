@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { createCategoryAction } from "@/actions/category.server";
+import { createCategoryAction } from "@/actions/category.action";
 
 export default function CreateCategory() {
      const [loading, setLoading] = useState(false);
@@ -43,8 +43,8 @@ export default function CreateCategory() {
      });
 
      return (
-          <div className="max-w-xl mx-auto mt-10">
-               <Card>
+          <div className=" mt-10">
+               <Card className="max-w-2xl mx-auto">
                     <CardHeader>
                          <CardTitle>Create Category</CardTitle>
                          <CardDescription>

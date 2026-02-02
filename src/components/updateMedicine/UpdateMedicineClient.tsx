@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
-import { updateMedicineAction } from "@/actions/medicine.server"
+import { updateMedicineAction } from "@/actions/medicine.action"
 
 const schema = z.object({
      name: z.string().min(1),

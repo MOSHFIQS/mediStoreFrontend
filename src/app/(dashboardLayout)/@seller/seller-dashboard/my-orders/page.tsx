@@ -9,7 +9,7 @@ export default async function MyOrdersPage() {
           return <p className="p-6 text-red-600">Failed to load orders</p>;
      }
 
-     const orders = res.data.data;
+     const orders = res?.data?.data;
 
      if (!orders.length) {
           return <p className="p-6">No orders found</p>;

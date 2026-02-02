@@ -13,7 +13,7 @@ import {
      AlertDialog, AlertDialogTrigger, AlertDialogContent,
      AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
-import { deleteMedicineAction } from "@/actions/medicine.server"
+import { deleteMedicineAction } from "@/actions/medicine.action"
 
 export default function SellersMedicineClient({ medicines }: any) {
      const router = useRouter()
@@ -48,7 +48,7 @@ export default function SellersMedicineClient({ medicines }: any) {
                                    <TableHead>Image</TableHead>
                                    <TableHead>Name</TableHead>
                                    <TableHead>Category</TableHead>
-                                   {/* <TableHead>Seller</TableHead> */}
+                                   
                                    <TableHead>Price</TableHead>
                                    <TableHead>Stock</TableHead>
                                    <TableHead className="text-right">Actions</TableHead>
@@ -65,7 +65,7 @@ export default function SellersMedicineClient({ medicines }: any) {
                                         </TableCell>
                                         <TableCell>{med.name}</TableCell>
                                         <TableCell>{med.category?.name || "—"}</TableCell>
-                                        {/* <TableCell>{med.seller?.name || "—"}</TableCell> */}
+                                        
                                         <TableCell>৳ {med.price}</TableCell>
                                         <TableCell>
                                              {med.stock > 0

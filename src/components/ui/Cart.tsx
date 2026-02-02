@@ -14,7 +14,7 @@ import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CartItem, getCart, saveCart, clearCart } from "@/lib/cart";
 import { toast } from "sonner";
-import { createCartOrderAction } from "@/actions/order.server";
+import { createCartOrderAction } from "@/actions/order.action";
 
 export default function Cart() {
      const queryClient = useQueryClient();

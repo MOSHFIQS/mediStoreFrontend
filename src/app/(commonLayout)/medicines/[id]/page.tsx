@@ -21,7 +21,7 @@ export default async function MedicineDetailsPage({ params }: { params: Promise<
 
      return (
           <MedicineDetailsClient
-               medicine={res.data.data}
+               medicine={res?.data?.data}
           />
      );
 }

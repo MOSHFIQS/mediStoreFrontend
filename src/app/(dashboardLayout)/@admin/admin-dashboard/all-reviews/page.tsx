@@ -9,5 +9,5 @@ export default async function ReviewsPage() {
           return <p className="p-6 text-center text-red-600">{res.message}</p>;
      }
 
-     return <AllReviews initialReviews={res.data.data} />;
+     return <AllReviews initialReviews={res?.data?.data} />;
 }

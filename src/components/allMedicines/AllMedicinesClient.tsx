@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { MessageSquareText, Star } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { createReviewAction } from "@/actions/review.server";
+import { createReviewAction } from "@/actions/review.action";
 
 export default function AllMedicinesClient({ initialMedicines, categories }: any) {
      const router = useRouter();

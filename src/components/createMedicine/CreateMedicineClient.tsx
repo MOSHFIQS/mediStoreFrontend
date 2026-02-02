@@ -2,7 +2,7 @@
 
 import { useTransition } from "react"
 import { toast } from "sonner"
-import { createMedicineAction } from "@/actions/medicine.server"
+import { createMedicineAction } from "@/actions/medicine.action"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
