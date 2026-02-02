@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createOrderAction } from "@/actions/order.action";
+import { useAuth } from "@/context/AuthProvider";
 
 interface Medicine {
      id: string;
@@ -22,8 +23,18 @@ export default function MedicineDetailsClient({ medicine }: { medicine: Medicine
      const [quantity, setQuantity] = useState(1);
      const [address, setAddress] = useState("");
      const [isPending, setIsPending] = useState(false);
+     const {user} = useAuth()
 
      const handlePlaceOrder = async () => {
+          if(!user) {
+               toast.error("Not Log In")
+               return
+          }
+          if (user.role !== "CUSTOMER") {
+               toast.error("Only Customer Can Buy Medicine");
+               return;
+          }
+
           setIsPending(true);
           try {
                await createOrderAction({

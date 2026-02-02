@@ -21,7 +21,7 @@ export default function EmptyPage() {
                     </p>
 
                     <Link href={'/'}
-                         className="w-full bg-primary text-white py-2 rounded-md font-medium hover:opacity-90 transition"
+                         className="w-full bg-primary text-white py-2 rounded-md font-medium hover:opacity-90 transition px-2"
                     >
                          Go Home
                     </Link>

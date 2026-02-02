@@ -16,9 +16,11 @@ import { CartItem, getCart, saveCart, clearCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { createCartOrderAction } from "@/actions/order.action";
 import EmptyPage from "../emptyPage/EmptyPage";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function Cart() {
      const queryClient = useQueryClient();
+     const {user} = useAuth()
 
      const { data: cart = [] } = useQuery<CartItem[]>({
           queryKey: ["cart"],
@@ -54,6 +56,14 @@ export default function Cart() {
      const form = useForm({
           defaultValues: { address: "" },
           onSubmit: async ({ value }) => {
+               if (!user) {
+                    toast.error("Not Log In")
+                    return
+               }
+               if (user.role !== "CUSTOMER") {
+                    toast.error("Only Customer Can Buy Medicine");
+                    return;
+               }
                if (cart.length === 0) return toast.error("Cart is empty!");
 
                try {

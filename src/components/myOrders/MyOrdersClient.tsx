@@ -35,7 +35,7 @@ export default function MyOrdersClient({ initialOrders }: { initialOrders: Order
                     toast.success("Order cancelled");
                     router.refresh(); 
                } catch (err: any) {
-                    toast.error(err.message);
+                    toast.error(err.message );
                }
           });
      };
