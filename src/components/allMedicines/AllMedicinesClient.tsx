@@ -29,7 +29,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
      const [search, setSearch] = useState("");
      const [selectedCategory, setSelectedCategory] = useState<string>("all");
      const [selectedPrice, setSelectedPrice] = useState<string>("all");
-     const {user} = useAuth()
+     const { user } = useAuth()
 
      const { data: cart = [] } = useQuery({
           queryKey: ["cart"],
@@ -38,11 +38,11 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
 
      const handleReviewSubmit = async (medicineId: string) => {
 
-          if(!user){
+          if (!user) {
                router.push('/login')
                return
           }
-          
+
           setIsSubmitting(true);
           try {
                await createReviewAction({ medicineId, rating, comment });
@@ -89,6 +89,15 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
 
      return (
           <div className="p-4">
+               {
+                    pathname === '/' &&
+                    <div>
+                         <h2 className="text-3xl font-bold mb-2 text-center">Wellness at Your Fingertips</h2>
+                              <p className="text-gray-600 text-center mb-6"> Simple steps you can take today to improve your wellness and feel your best.</p>
+                    </div>
+
+
+               }
                {pathname === "/medicines" && (
                     <div className="mb-4 flex flex-wrap gap-4 items-end">
                          {/* Search */}
@@ -141,23 +150,19 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                )}
 
                <div
-                    className={
-                         pathname === "/"
-                              ? "grid grid-cols-2 md:grid-cols-4 gap-4"
-                              : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                    }
+                    className={"grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"}
                >
                     {medicinesToShow.map((med: any) => {
                          const itemInCart = cart.find((i: any) => i.medicineId === med.id);
 
                          return (
                               <Card key={med.id} className="  overflow-hidden border border-gray-300 flex flex-col">
-                        
+
 
                                    <CardHeader className="px-4 ">
                                         <CardTitle className="text-lg font-semibold">{med.name}</CardTitle>
                                    </CardHeader>
-            
+
                                    <div className="w-full h-48 flex justify-center items-center ">
                                         <img
                                              src={med.image || "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg"}
@@ -216,7 +221,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                                                  router.push('/login');
                                                                  toast.error("Please Login to Submit a Review");
                                                             }}
-                                                  >
+                                                       >
                                                             <MessageSquareText />
                                                        </Button>
                                                   )}
