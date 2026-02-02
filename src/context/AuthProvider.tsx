@@ -1,64 +1,69 @@
 "use client"
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import Cookies from "js-cookie";
+import { User } from '@/types/user.types';
 
-import React, { createContext, useContext } from "react"
-import { useState, useEffect } from "react"
-import Cookies from 'js-cookie';
 
-type User = {
-     id: string
-     email: string,
-     role: string,
-     status: string,
-     name: string
-}
 
+//  Context type
 type AuthContextType = {
-     user: User | null
-     loading: boolean
-     refreshUser: () => Promise<void>,
-     setCookie: (token: string) => void;
-}
+     user: User | null;
+     setCookie: (userData: User, token: string) => void;
+     setUser: (user: User | null) => void;
+     logout: () => void;
+     token: string | null;
+};
 
-const AuthContext = createContext<AuthContextType | null>(null)
+//  Create context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-     const [user, setUser] = useState<User | null>(null)
-     const [loading, setLoading] = useState(true)
+//  Provider props type
+type AuthProviderProps = {
+     children: ReactNode;
+};
 
-     const loadUser = async () => {
-          setLoading(true)
-          try {
-               const res = await fetch("/api/me")
-               const data = await res.json()
-               setUser(data)
-          } catch (err) {
-               console.error("Failed to load user:", err)
-               setUser(null)
-          } finally {
-               setLoading(false)
-          }
-     }
+//  Provider
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+     const [user, setUser] = useState<User | null>(null);
+     const [token, setToken] = useState<string | null>(null);
 
+     // Load user and token from cookies
      useEffect(() => {
-          loadUser()
-     }, [])
+          const cookieToken = Cookies.get("token");
+          const cookieUser = Cookies.get("user");
+          if (cookieToken) setToken(cookieToken);
+          if (cookieUser) setUser(JSON.parse(cookieUser));
+     }, []);
 
+     const setCookie = (userData: User, token: string) => {
+          setUser(userData);
+          setToken(token);
 
-     const setCookie = (token: string) => {
+          // Save in cookies
           Cookies.set("token", token, { expires: 7 });
+          localStorage.setItem('token', token);
+          Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+     };
+
+     const logout = () => {
+          setUser(null);
+          setToken(null);
+          Cookies.remove("token");
+          Cookies.remove("user");
      };
 
      return (
-          <AuthContext.Provider value={{ user, loading, refreshUser: loadUser, setCookie }}>
+          <AuthContext.Provider value={{ user, setUser, logout, setCookie, token }}>
                {children}
           </AuthContext.Provider>
-     )
-}
+     );
+};
 
-export const useAuth = () => {
-     const ctx = useContext(AuthContext)
-     if (!ctx) {
-          throw new Error("useAuth must be used inside AuthProvider")
+
+export const useAuth = (): AuthContextType => {
+     const context = useContext(AuthContext);
+     if (!context) {
+          throw new Error("useAuth must be used within AuthProvider");
      }
-     return ctx
-}
+     return context;
+};

@@ -82,9 +82,9 @@ const Navbar = ({
 }: Navbar1Props) => {
 
      
-     const { user, refreshUser } = useAuth()
+     const { user, logout } = useAuth()
+     console.log(user);
      const router = useRouter()
-     // console.log(user);
      const pathname = usePathname()
      if (user) {
           menu.push({
@@ -93,9 +93,8 @@ const Navbar = ({
           })
      }
 
-     const logout = async () => {
-          await fetch("/api/auth/logout", { method: "POST" })
-          await refreshUser()
+     const handleLogout = async () => {
+          logout()
           router.push("/")
      }
 
@@ -129,7 +128,7 @@ const Navbar = ({
                               <div>{user?.email}</div>
                               {
                                    (user?.id) ?
-                                        <Button variant="outline" onClick={logout} size="sm" >
+                                        <Button variant="outline" onClick={handleLogout} size="sm" >
                                              Logout
                                         </Button>
 
@@ -190,7 +189,7 @@ const Navbar = ({
                                              <div className="flex flex-col gap-3">
                                                   {
                                                        (user?.id) ?
-                                                            <Button variant="outline" onClick={logout} size="sm" >
+                                                            <Button variant="outline" onClick={handleLogout} size="sm" >
                                                                  Logout
                                                             </Button>
 

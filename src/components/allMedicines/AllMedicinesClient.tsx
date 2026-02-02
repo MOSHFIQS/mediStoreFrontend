@@ -143,7 +143,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                          const itemInCart = cart.find((i: any) => i.medicineId === med.id);
 
                          return (
-                              <Card key={med.id} className=" rounded-lg overflow-hidden border border-gray-200 flex flex-col">
+                              <Card key={med.id} className="  overflow-hidden border border-gray-300 flex flex-col">
                         
 
                                    <CardHeader className="px-4 ">
