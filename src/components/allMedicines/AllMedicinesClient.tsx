@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { MessageSquareText, Star } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { createReviewAction } from "@/actions/review.action";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function AllMedicinesClient({ initialMedicines, categories }: any) {
      const router = useRouter();
@@ -28,6 +29,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
      const [search, setSearch] = useState("");
      const [selectedCategory, setSelectedCategory] = useState<string>("all");
      const [selectedPrice, setSelectedPrice] = useState<string>("all");
+     const {user} = useAuth()
 
      const { data: cart = [] } = useQuery({
           queryKey: ["cart"],
@@ -35,6 +37,12 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
      });
 
      const handleReviewSubmit = async (medicineId: string) => {
+
+          if(!user){
+               router.push('/login')
+               return
+          }
+          
           setIsSubmitting(true);
           try {
                await createReviewAction({ medicineId, rating, comment });
@@ -196,10 +204,24 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
 
                                         <Dialog open={reviewOpen === med.id} onOpenChange={(o) => setReviewOpen(o ? med.id : null)}>
                                              <DialogTrigger asChild>
-                                                  <Button variant="secondary" className="flex-1">
-                                                       <MessageSquareText />
-                                                  </Button>
+                                                  {user ? (
+                                                       <Button variant="secondary" className="flex-1">
+                                                            <MessageSquareText />
+                                                       </Button>
+                                                  ) : (
+                                                       <Button
+                                                            variant="secondary"
+                                                            className="flex-1"
+                                                            onClick={() => {
+                                                                 router.push('/login');
+                                                                 toast.error("Please Login to Submit a Review");
+                                                            }}
+                                                  >
+                                                            <MessageSquareText />
+                                                       </Button>
+                                                  )}
                                              </DialogTrigger>
+
 
                                              <DialogContent>
                                                   <DialogHeader>

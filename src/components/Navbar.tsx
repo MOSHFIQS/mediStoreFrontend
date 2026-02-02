@@ -62,17 +62,17 @@ const Navbar = ({
           url: "/",
           src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
           alt: "logo",
-          title: "Next Blog",
+          title: "Medi Store",
      },
      menu = [
           { title: "Home", url: "/" },
           {
-               title: "My Cart",
-               url: "/cart",
+               title: "Shop",
+               url: "/medicines",
           },
           {
-               title: "Medicines",
-               url: "/medicines",
+               title: "My Cart",
+               url: "/cart",
           },
      ],
      auth = {

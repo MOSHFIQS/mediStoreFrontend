@@ -75,10 +75,10 @@ export default function Cart() {
 
      return (
           <div className="p-4 space-y-6">
-               <h2 className="text-2xl font-bold">Your Cart</h2>
+               <h2 className="text-2xl font-bold">My Cart</h2>
 
                {cart.length === 0 ? (
-                    <p>Your cart is empty</p>
+                    <p>cart is empty</p>
                ) : (
                     <>
                          {cart.map((item) => (
