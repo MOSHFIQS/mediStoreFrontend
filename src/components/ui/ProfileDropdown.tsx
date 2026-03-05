@@ -12,7 +12,8 @@ import Link from "next/link"
 
 export function ProfileDropdown({ user, handleLogout }: { user: User, handleLogout: () => void }) {
      return (
-          <DropdownMenu>
+        <div className="relative flex flex-col">
+            <DropdownMenu>
                <DropdownMenuTrigger asChild>
                     <div className="rounded-full border border-gray-300 w-[35px] h-[35px] overflow-hidden">
                          <img
@@ -28,13 +29,13 @@ export function ProfileDropdown({ user, handleLogout }: { user: User, handleLogo
                     </div>
 
                </DropdownMenuTrigger>
-               <DropdownMenuContent className="w-60 mr-1" align="start">
+               <DropdownMenuContent className="w-60 -left-34 absolute lg:block hidden" >
                     <DropdownMenuGroup>
                          <DropdownMenuLabel className="border border-gray-300">
                               <div>
                                    <div className="text-xs font-normal">My Account</div>
                                    <div> Hi, {user.name}</div>
-                                   <div className="text-black">{user.email}</div>
+                                   <div className="text-black text-nowrap">{user.email}</div>
                               </div>
                          </DropdownMenuLabel>
 
@@ -45,5 +46,6 @@ export function ProfileDropdown({ user, handleLogout }: { user: User, handleLogo
 
                </DropdownMenuContent>
           </DropdownMenu>
+        </div>
      )
 }
