@@ -12,21 +12,20 @@ interface GetMedicinesParams {
 
 export const medicineServiceServer = {
 
-     getAll: async function (params?: GetMedicinesParams) {
-          const searchParams = new URLSearchParams()
+     getAll: async function (params?: { categoryId?: string; search?: string }) {
+          const searchParams = new URLSearchParams();
 
           if (params) {
                Object.entries(params).forEach(([key, value]) => {
                     if (value !== undefined && value !== null && value !== "") {
-                         searchParams.append(key, String(value))
+                         searchParams.append(key, String(value));
                     }
-               })
+               });
           }
 
-          const endpoint = `/medicines${searchParams.toString() ? `?${searchParams.toString()}` : ""
-               }`
+          const endpoint = `/medicines${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
-          return apiFetchServerMain(endpoint)
+          return apiFetchServerMain(endpoint);
      },
 
 

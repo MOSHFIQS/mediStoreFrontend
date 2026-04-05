@@ -1,14 +1,19 @@
-
 import { medicineServiceServer } from "@/service/medicine.server.service";
 import { categoryServiceServer } from "@/service/category.server.service";
 import AllMedicinesClient from "@/components/allMedicines/AllMedicinesClient";
 
-export default async function AllMedicinesPage({ searchParams }: { searchParams: Promise<{ category: string }> }) {
-     const categoryId = (await searchParams).category
-     console.log(categoryId);
+export default async function AllMedicinesPage({
+     searchParams,
+}: {
+     searchParams: Promise<{ category?: string; search?: string }>;
+}) {
+     const { category: categoryId, search } = await searchParams;
 
      const [medRes, catRes] = await Promise.all([
-          medicineServiceServer.getAll(categoryId ? { categoryId } : {}),
+          // Pass both categoryId and search to getAll
+          medicineServiceServer.getAll(
+               categoryId ? { categoryId, search } : { search }
+          ),
           categoryServiceServer.getAll(),
      ]);
 

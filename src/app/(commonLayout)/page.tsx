@@ -10,9 +10,10 @@ import FeaturedSection from "@/components/featuredSection/FeaturedSection";
 export default async function HomePage({
      searchParams,
 }: {
-     searchParams: { category?: string };
+     searchParams: Promise<{ category?: string }>;
 }) {
-     const categoryId = searchParams.category;
+     const params = await searchParams; 
+     const categoryId = params.category;
 
      const [medRes, catRes] = await Promise.all([
           medicineServiceServer.getAll(categoryId ? { categoryId } : {}),
