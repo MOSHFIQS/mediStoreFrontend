@@ -1,8 +1,9 @@
+
+
+
 "use client";
 
 import { Menu } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Accordion } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
      NavigationMenu,
@@ -20,182 +21,202 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
-import { ProfileDropdown } from "./ui/ProfileDropdown";
 
-interface MenuItem {
-     title: string;
-     url: string;
-     description?: string;
-     icon?: React.ReactNode;
-     items?: MenuItem[];
-}
-
-interface Navbar1Props {
-     className?: string;
-     logo?: {
-          url: string;
-          src: string;
-          alt: string;
-          title: string;
-          className?: string;
-     };
-     menu?: MenuItem[];
-     auth?: {
-          login: { title: string; url: string };
-          signup: { title: string; url: string };
-     };
-}
-
-const Navbar = ({
-     logo = {
-          url: "/",
-          src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
-          alt: "logo",
-          title: "Medi Store",
-     },
-     menu = [
-          { title: "Home", url: "/" },
-          { title: "Shop", url: "/medicines" },
-          { title: "My Cart", url: "/cart" },
-     ],
-     auth = {
-          login: { title: "Login", url: "/login" },
-          signup: { title: "Register", url: "/register" },
-     },
-     className,
-}: Navbar1Props) => {
+const Navbar = () => {
      const { user, logout, loading } = useAuth();
      const router = useRouter();
      const pathname = usePathname();
 
-     const computedMenu = user?.id
-          ? [...menu, { title: "Dashboard", url: "/dashboard" }]
-          : menu;
 
      const handleLogout = () => {
           logout();
           router.push("/");
      };
 
+     const menu = [
+          { title: "Home", url: "/" },
+          { title: "All Medicines", url: "/medicines" },
+          { title: "My Cart", url: "/cart" },
+     ];
+
+  
+
+     const isActive = (url: string) => {
+          if (url === "/") {
+               return pathname === "/";
+          }
+          return pathname === url || pathname.startsWith(url + "/");
+     };
+
      if (loading) {
           return (
-               <section className={cn("py-4", className)}>
+               <section className="py-4">
                     <div className="h-10" />
                </section>
           );
      }
 
      return (
-          <section className={cn("py-4", className)}>
+          <section className="py-6  sticky top-0 z-50 ">
                <div>
-                    <nav className="hidden items-center justify-between lg:flex">
-                         <div className="flex items-center gap-6">
-                              <Link href={logo.url} className="flex items-center gap-2">
-                                   <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
-                                   <span className="text-lg font-semibold tracking-tighter">
-                                        {logo.title}
-                                   </span>
+                 
+                    <nav className="hidden items-center justify-between lg:flex px-4">
+
+                         <div className="flex items-center justify-center gap-10">
+                              {/* Logo */}
+                              <Link href="/" className="flex items-center gap-2">
+                                   <img src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg" className="max-h-8" />
+                                   <span className="text-lg font-semibold">Medi Store</span>
                               </Link>
 
-                              <NavigationMenu>
-                                   <NavigationMenuList>
-                                        {computedMenu.map((item) => renderMenuItem(item))}
-                                   </NavigationMenuList>
-                              </NavigationMenu>
+                              {/* Menu */}
+                              <div className="flex items-center gap-3">
+                                   {menu.map((item) => (
+                                        <button key={item.title} className={""}>
+                                             <Link
+                                                  href={item.url}
+                                                  className={`px-2 py-1 text-md font-medium   transition
+                                             ${isActive(item.url)
+                                                            ? "bg-[#FE7743] text-white rounded-full"
+                                                            : "bg-gray-50 hover:bg-muted"
+                                                       }
+                                             `}
+                                             >
+                                                  {item.title}
+                                             </Link>
+                                        </button>
+                                   ))}
+                              </div>
                          </div>
 
-                         <div className="flex gap-2">
+                         {/* Search + Auth */}
+                         <div className="flex items-center gap-3">
+                             
+
                               {user?.id ? (
-                                   <div className="flex items-center gap-2">
-                                        <ProfileDropdown user={user} handleLogout={handleLogout} />
-                                        <Button variant="outline" onClick={handleLogout} size="sm">
+                                   <>
+                                        <Button
+                                             variant="outline"
+                                             className="rounded-full"
+                                             onClick={() => router.push("/dashboard")}
+                                        >
+                                             Dashboard
+                                        </Button>
+
+                                        <Button variant="outline" className="rounded-full" onClick={handleLogout}>
                                              Logout
                                         </Button>
-                                   </div>
+                                        <div className="rounded-full border border-gray-300 w-[35px] h-[35px] overflow-hidden">
+                                             <img
+                                                  src={user.image || "https://i.ibb.co.com/LhN7fmfM/5578a3db8b5f1101c971bdf120e63784.jpg"}
+                                                  alt="User avatar"
+                                                  className="rounded-full object-cover w-full h-full"
+                                                  onError={(e) => {
+                                                       e.currentTarget.src =
+                                                            "https://i.ibb.co.com/LhN7fmfM/5578a3db8b5f1101c971bdf120e63784.jpg"
+                                                  }}
+                                             />
+
+                                        </div>
+                                   </>
                               ) : (
                                    <>
-                                        <Button asChild variant="outline" size="sm">
-                                             <Link href={`${auth.login.url}?redirect=${pathname}`}>
-                                                  {auth.login.title}
-                                             </Link>
+                                        <Button asChild variant="outline" className="rounded-full">
+                                             <Link href={`/login?redirect=${pathname}`}>Login</Link>
                                         </Button>
-                                        <Button asChild size="sm">
-                                             <Link href={auth.signup.url}>{auth.signup.title}</Link>
+
+                                        <Button asChild variant={"outline"} className="rounded-full">
+                                             <Link href="/register">Register</Link>
                                         </Button>
                                    </>
                               )}
                          </div>
                     </nav>
 
-                    <div className="block lg:hidden">
-                         <div className="flex items-center justify-between">
-                              <Link href={logo.url} className="flex items-center gap-2">
-                                   <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
-                              </Link>
+                    {/* ================= MOBILE ================= */}
+                    <div className="flex items-center justify-between lg:hidden px-4">
 
-                              <Sheet>
-                                   <SheetTrigger asChild>
-                                        <Button variant="outline" size="icon">
-                                             <Menu className="size-4" />
-                                        </Button>
-                                   </SheetTrigger>
+                         {/* Logo */}
+                         <Link href="/" className="flex items-center gap-2">
+                              <img src="/logo/logo.png" className="h-8" />
+                              <span className="font-semibold">PLANORA</span>
+                         </Link>
 
-                                   <SheetContent className="overflow-y-auto">
-                                        <SheetHeader>
-                                             <SheetTitle>
-                                                  <Link href={logo.url} className="flex items-center gap-2">
-                                                       <img src={logo.src} className="max-h-8 dark:invert" alt={logo.alt} />
-                                                       Medi Store
+                         <Sheet>
+                              <SheetTrigger asChild>
+                                   <Button variant="outline" size="icon">
+                                        <Menu className="w-5 h-5" />
+                                   </Button>
+                              </SheetTrigger>
+
+                              <SheetContent side="right" className="w-[280px] px-3">
+                                   <SheetHeader>
+                                        <SheetTitle className="text-center text-xl font-bold">
+                                             PLANORA
+                                        </SheetTitle>
+                                   </SheetHeader>
+
+                                   <div className="flex flex-col gap-4 mt-6">
+
+                                       
+                                        {/* Menu */}
+                                        <div className="flex flex-col gap-2">
+                                             {menu.map((item) => (
+                                                  <Link key={item.title} href={item.url}>
+                                                       <Button
+                                                            variant={isActive(item.url) ? "orange" : "outline"}
+                                                            className="w-full justify-start"
+                                                       >
+                                                            {item.title}
+                                                       </Button>
                                                   </Link>
-                                             </SheetTitle>
-                                        </SheetHeader>
+                                             ))}
+                                        </div>
 
-                                        <div className="flex flex-col gap-6 p-4">
-                                             <Accordion type="single" collapsible className="flex flex-col gap-4">
-                                                  {computedMenu.map((item) => renderMobileMenuItem(item))}
-                                             </Accordion>
+                                        {/* Divider */}
+                                        <div className="border-t my-2" />
 
-                                             <div className="flex flex-col gap-3">
-                                                  {user?.id ? (
-                                                       <Button variant="outline" onClick={handleLogout} size="sm">
+                                        {/* Auth */}
+                                        <div className="flex flex-col gap-2">
+                                             {user?.id ? (
+                                                  <>
+                                                       <Button
+                                                            variant="violet"
+                                                            className="w-full rounded-full"
+
+                                                            onClick={() => router.push("/dashboard")}
+                                                       >
+                                                            Dashboard
+                                                       </Button>
+
+                                                       <Button
+                                                            className="w-full rounded-full"
+                                                            onClick={handleLogout}
+                                                       >
                                                             Logout
                                                        </Button>
-                                                  ) : (
-                                                       <>
-                                                            <Button asChild variant="outline" size="sm">
-                                                                 <Link href={auth.login.url}>{auth.login.title}</Link>
-                                                            </Button>
-                                                            <Button asChild size="sm">
-                                                                 <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                                                            </Button>
-                                                       </>
-                                                  )}
-                                             </div>
+                                                  </>
+                                             ) : (
+                                                  <>
+                                                       <Button asChild variant="outline" className="w-full rounded-full">
+                                                            <Link href={`/login?redirect=${pathname}`}>
+                                                                 Login
+                                                            </Link>
+                                                       </Button>
+
+                                                       <Button asChild className="w-full rounded-full">
+                                                            <Link href="/register">Register</Link>
+                                                       </Button>
+                                                  </>
+                                             )}
                                         </div>
-                                   </SheetContent>
-                              </Sheet>
-                         </div>
+                                   </div>
+                              </SheetContent>
+                         </Sheet>
                     </div>
                </div>
           </section>
      );
 };
-
-const renderMenuItem = (item: MenuItem) => (
-     <NavigationMenuItem key={item.title}>
-          <NavigationMenuLink
-               asChild
-               className="group inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
-          >
-               <Link href={item.url}>{item.title}</Link>
-          </NavigationMenuLink>
-     </NavigationMenuItem>
-);
-
-const renderMobileMenuItem = (item: MenuItem) => (
-     <Link key={item.title} href={item.url} className="text-md font-semibold">
-          {item.title}
-     </Link>
-);
 
 export { Navbar };

@@ -19,8 +19,10 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { createReviewAction } from "@/actions/review.action";
 import { useAuth } from "@/context/AuthProvider";
 import { Textarea } from "../ui/textarea";
+import Image from "next/image";
 
 export default function AllMedicinesClient({ initialMedicines, categories }: any) {
+     console.log(initialMedicines);
      const router = useRouter();
      const pathname = usePathname();
      const searchParams = useSearchParams();
@@ -63,8 +65,10 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
           }
      };
 
-     // Debounced auto-search and category URL update
      useEffect(() => {
+          // Only run if there's a search term or a category that's not "all"
+          if (!search.trim() && (!categoryFromUrl || categoryFromUrl === "all")) return;
+
           const timer = setTimeout(() => {
                const query = new URLSearchParams();
 
@@ -82,7 +86,6 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
 
           return () => clearTimeout(timer);
      }, [search, categoryFromUrl]);
-
      // Handle category button click
      const handleCategoryClick = (id: string) => {
           router.push(id === "all" ? "/medicines" : `/medicines?category=${id}`);
@@ -91,11 +94,11 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
      return (
           <div className="px-4">
                {pathname === "/" && (
-                    <div>
-                         <h2 className="text-3xl font-bold mb-2 text-center">
+                    <div className="py-10">
+                         <h2 className="text-3xl font-bold pb-4 text-center">
                               Wellness at Your Fingertips
                          </h2>
-                         <p className="text-gray-600 text-center mb-6">
+                         <p className="text-gray-600 text-center ">
                               Simple steps you can take today to improve your wellness.
                          </p>
                     </div>
@@ -129,8 +132,8 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                     <div className="flex flex-wrap gap-3 mb-4">
                          <button
                               className={`px-4 py-2 rounded-full font-medium transition ${categoryFromUrl === "all"
-                                        ? "bg-purple-500 text-white"
-                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                   ? "bg-purple-500 text-white"
+                                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                                    }`}
                               onClick={() => handleCategoryClick("all")}
                          >
@@ -140,8 +143,8 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                               <button
                                    key={cat.id}
                                    className={`px-4 py-2 rounded-full font-medium transition ${categoryFromUrl === cat.id
-                                             ? "bg-purple-500 text-white"
-                                             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                        ? "bg-purple-500 text-white"
+                                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                                         }`}
                                    onClick={() => handleCategoryClick(cat.id)}
                               >
@@ -151,27 +154,32 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                     </div>
                )}
 
-               
+
                {/* Medicine Cards */}
                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {initialMedicines.map((med: any) => {
+                    {(pathname === "/"
+                         ? initialMedicines.slice(0, 8) // Only 8 cards on home
+                         : initialMedicines
+                    ).map((med: any) => {
                          const itemInCart = cart.find((i: any) => i.medicineId === med.id);
-
                          return (
                               <Card
                                    key={med.id}
-                                   className="p-3 rounded-3xl border shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col gap-3"
+                                   className="p-3 rounded-3xl border-2 shadow  hover:shadow-md transition-all duration-300 flex flex-col gap-3"
                               >
                                    {/* Image */}
-                                   <div className="relative h-52 w-full overflow-hidden rounded-2xl group">
-                                        <img
+                                   <div className="relative h-52 w-full overflow-hidden rounded-2xl group border-2 border-gray-300">
+                                        <Image
                                              src={
                                                   med.image ||
                                                   "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg"
                                              }
-                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                             alt={med.name || "Medicine Image"}
+                                             className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                             fill
+                                             sizes="(max-width: 640px) 100vw, 33vw"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-black/20 to-black/20" />
                                         <span
                                              className="absolute top-3 left-3 bg-white/80 backdrop-blur px-3 py-1 text-xs rounded-full cursor-pointer hover:bg-white"
                                              onClick={() => handleCategoryClick(med.categoryId)}
@@ -185,6 +193,7 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                         <div className="absolute bottom-3 left-3 text-white font-bold text-lg">
                                              {med.price} tk
                                         </div>
+
                                    </div>
 
                                    {/* Content */}
@@ -193,69 +202,70 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                         <p className="text-sm text-muted-foreground line-clamp-2">
                                              {med.description}
                                         </p>
+
+                                        <span className="text-xs text-gray-500">
+                                             {med.stock > 0 ? `${med.stock} available` : "Out of stock"}
+                                        </span>
+
                                    </CardContent>
 
                                    {/* Footer */}
-                                   <CardFooter className="mt-auto pt-3">
-                                        <div className="w-full flex items-center justify-between gap-3">
-                                             <div className="flex flex-col">
-                                                  <span className="text-lg font-bold text-gray-900">
-                                                       {med.price} tk
-                                                  </span>
-                                                  <span className="text-xs text-gray-500">
-                                                       {med.stock > 0 ? `${med.stock} available` : "Out of stock"}
-                                                  </span>
-                                             </div>
+                                   <CardFooter className="mt-auto pt-3 px-0">
+                                        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
 
-                                             <div className="flex items-center gap-2">
-                                                  {/* Review */}
-                                                  <Dialog
-                                                       open={reviewOpen === med.id}
-                                                       onOpenChange={(o) => setReviewOpen(o ? med.id : null)}
-                                                  >
-                                                       <DialogTrigger asChild>
-                                                            <button className="h-10 w-10 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-100 transition">
-                                                                 <MessageSquareText className="w-4 h-4 text-gray-600" />
-                                                            </button>
-                                                       </DialogTrigger>
-                                                       <DialogContent>
-                                                            <DialogHeader>
-                                                                 <DialogTitle>Review for {med.name}</DialogTitle>
-                                                            </DialogHeader>
-
-                                                            <Label>Rating</Label>
-                                                            <div className="flex gap-1 mb-2">
-                                                                 {[1, 2, 3, 4, 5].map((star) => (
-                                                                      <button key={star} onClick={() => setRating(star)}>
-                                                                           <Star
-                                                                                className={
-                                                                                     star <= rating
-                                                                                          ? "fill-yellow-400 text-yellow-400"
-                                                                                          : "text-gray-300"
-                                                                                }
-                                                                           />
-                                                                      </button>
-                                                                 ))}
-                                                            </div>
-
-                                                            <Textarea
-                                                                 value={comment}
-                                                                 onChange={(e) => setComment(e.target.value)}
-                                                                 placeholder="Write your review..."
-                                                            />
-
-                                                            <Button
-                                                                 onClick={() => handleReviewSubmit(med.id)}
-                                                                 disabled={isSubmitting}
-                                                                 className="w-full mt-2"
+                                             {/* Left section: Review button */}
+                                             {
+                                                  user && (
+                                                       <div className="flex items-center gap-2">
+                                                            <Dialog
+                                                                 open={reviewOpen === med.id}
+                                                                 onOpenChange={(o) => setReviewOpen(o ? med.id : null)}
                                                             >
-                                                                 Submit Review
-                                                            </Button>
-                                                       </DialogContent>
-                                                  </Dialog>
+                                                                 <DialogTrigger asChild>
+                                                                      <button className="h-10 w-10 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100 transition">
+                                                                           <MessageSquareText className="w-5 h-5 text-gray-600" />
+                                                                      </button>
+                                                                 </DialogTrigger>
 
+                                                                 <DialogContent>
+                                                                      <DialogHeader>
+                                                                           <DialogTitle>Review for {med.name}</DialogTitle>
+                                                                      </DialogHeader>
+
+                                                                      <Label>Rating</Label>
+                                                                      <div className="flex gap-1 mb-3">
+                                                                           {[1, 2, 3, 4, 5].map((star) => (
+                                                                                <button key={star} onClick={() => setRating(star)}>
+                                                                                     <Star
+                                                                                          className={star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
+                                                                                     />
+                                                                                </button>
+                                                                           ))}
+                                                                      </div>
+
+                                                                      <Textarea
+                                                                           value={comment}
+                                                                           onChange={(e) => setComment(e.target.value)}
+                                                                           placeholder="Write your review..."
+                                                                      />
+
+                                                                      <Button
+                                                                           onClick={() => handleReviewSubmit(med.id)}
+                                                                           disabled={isSubmitting}
+                                                                           className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full"
+                                                                      >
+                                                                           Submit Review
+                                                                      </Button>
+                                                                 </DialogContent>
+                                                            </Dialog>
+                                                       </div>
+                                                  )
+                                             }
+
+                                             {/* Right section: Cart and View buttons */}
+                                             <div className="flex items-center gap-2">
                                                   {/* Add to Cart */}
-                                                  <button
+                                                  <Button
                                                        onClick={() => {
                                                             addToCart({
                                                                  medicineId: med.id,
@@ -269,38 +279,33 @@ export default function AllMedicinesClient({ initialMedicines, categories }: any
                                                        }}
                                                        disabled={(itemInCart?.quantity as number) >= med.stock}
                                                        className={`
-                        h-10 min-w-[40px] px-3 flex items-center justify-center gap-1
-                        rounded-full text-sm font-medium transition-all duration-200
-                        ${itemInCart
-                                                                 ? "bg-green-500 text-white hover:bg-green-600"
-                                                                 : "bg-gray-700 text-white hover:bg-black"
-                                                            }
-                        ${(itemInCart?.quantity as number) >= med.stock
-                                                                 ? "opacity-50 cursor-not-allowed"
-                                                                 : "hover:scale-105 active:scale-95"
-                                                            }
-                      `}
+          flex items-center gap-2 px-4 py-2 text-sm font-semibold transition
+          rounded-full
+          ${itemInCart ? "bg-green-500 text-white hover:bg-green-600" : "bg-gray-700 text-white hover:bg-black"}
+          ${(itemInCart?.quantity as number) >= med.stock ? "opacity-50 cursor-not-allowed" : "hover:scale-105 active:scale-95"}
+        `}
                                                   >
                                                        {itemInCart ? (
                                                             <>
-                                                                 <span className="text-xs">Added</span>
-                                                                 <span className="bg-white text-green-600 text-xs px-2 py-[2px] rounded-full font-semibold">
+                                                                 <span>Added</span>
+                                                                 <span className="bg-white text-green-600 text-xs px-2 py-0.5 rounded-full font-semibold">
                                                                       {itemInCart.quantity}
                                                                  </span>
                                                             </>
                                                        ) : (
                                                             "+"
                                                        )}
-                                                  </button>
+                                                  </Button>
 
                                                   {/* View */}
-                                                  <button
+                                                  <Button
                                                        onClick={() => router.push(`/medicines/${med.id}`)}
-                                                       className="h-10 px-4 rounded-full bg-gray-700 text-white text-sm font-medium hover:scale-105 active:scale-95 transition"
+                                                       className="px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition"
                                                   >
                                                        View
-                                                  </button>
+                                                  </Button>
                                              </div>
+
                                         </div>
                                    </CardFooter>
                               </Card>
