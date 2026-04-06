@@ -12,29 +12,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
 import { createCategoryAction } from "@/actions/category.action";
 import { useImageUpload } from "@/hooks/useImageUpload";
+import ImageUploader from "../shared/image/ImageUploader";
+import { useRouter } from "next/navigation";
 
-interface Category {
-     id: string;
-     name: string;
-}
-
-interface Props {
-     parentCategories: Category[];
-}
-
-export default function CreateCategory({ parentCategories }: Props) {
+export default function CreateCategory() {
      const [loading, setLoading] = useState(false);
-     const imageUploader = useImageUpload({ max: 1 });
+     const categoryImages = useImageUpload({ max: 10 });
+     const router = useRouter()
 
      const form = useForm({
           defaultValues: {
                name: "",
                description: "",
-               parentId: "",
           },
           onSubmit: async ({ value }) => {
                try {
@@ -43,15 +35,17 @@ export default function CreateCategory({ parentCategories }: Props) {
                     const payload = {
                          name: value.name,
                          description: value.description || undefined,
-                         parentId: value.parentId || undefined,
-                         image: imageUploader.images[0]?.img,
+                         image: categoryImages.images[0]?.img,
                     };
+
+                    console.log(payload);
 
                     await createCategoryAction(payload);
 
                     toast.success("Category created successfully");
                     form.reset();
-                    imageUploader.clear();
+                    router.push('/admin-dashboard/category')
+
                } catch (err: any) {
                     toast.error(err.message || "Failed to create category");
                } finally {
@@ -66,7 +60,7 @@ export default function CreateCategory({ parentCategories }: Props) {
                     <CardHeader>
                          <CardTitle>Create Category</CardTitle>
                          <CardDescription>
-                              Add a new medicine category for filtering products
+                              Add a new medicine category
                          </CardDescription>
                     </CardHeader>
 
@@ -104,6 +98,8 @@ export default function CreateCategory({ parentCategories }: Props) {
                                    )}
                               </form.Field>
 
+                             
+
                               {/* Description */}
                               <form.Field
                                    name="description"
@@ -120,58 +116,14 @@ export default function CreateCategory({ parentCategories }: Props) {
                                    )}
                               </form.Field>
 
-                              {/* Parent Category */}
-                              <form.Field name="parentId">
-                                   {(field) => (
-                                        <div className="space-y-2">
-                                             <Label>Parent Category</Label>
-                                             <Select
-                                                  value={field.state.value}
-                                                  onValueChange={field.handleChange}
-                                             >
-                                                  <SelectTrigger>
-                                                       <SelectValue placeholder="Select parent category" />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                       {parentCategories.map((cat) => (
-                                                            <SelectItem key={cat.id} value={cat.id}>
-                                                                 {cat.name}
-                                                            </SelectItem>
-                                                       ))}
-                                                  </SelectContent>
-                                             </Select>
-                                        </div>
-                                   )}
-                              </form.Field>
-
                               {/* Image Upload */}
-                              <div className="space-y-2">
-                                   <Label>Category Image</Label>
-                                   {imageUploader.images.length > 0 ? (
-                                        <div className="relative w-48 h-48 rounded-lg overflow-hidden border">
-                                             <img
-                                                  src={imageUploader.images[0].img}
-                                                  alt="Preview"
-                                                  className="object-contain w-full h-full"
-                                             />
-                                             <button
-                                                  type="button"
-                                                  onClick={() => imageUploader.remove(0)}
-                                                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                                             >
-                                                  X
-                                             </button>
-                                        </div>
-                                   ) : (
-                                        <input
-                                             type="file"
-                                             accept="image/*"
-                                             onChange={(e) =>
-                                                  imageUploader.upload(e.target.files ? e.target.files[0] : null)
-                                             }
-                                        />
-                                   )}
-                              </div>
+                              <ImageUploader
+                                   label="Category Images"
+                                   images={categoryImages.images}
+                                   onUpload={categoryImages.upload}
+                                   onDelete={categoryImages.remove}
+                                   multiple
+                              />
 
                               <Button type="submit" className="w-full" disabled={loading}>
                                    {loading ? "Creating..." : "Create Category"}

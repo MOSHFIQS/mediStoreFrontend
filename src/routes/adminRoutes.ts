@@ -23,11 +23,11 @@ export const adminRoutes: Route[] = [
                },
                {
                     title: "Create Category",
-                    url: "/admin-dashboard/create-category",
+                    url: "/admin-dashboard/category/create",
                },
                {
                     title: "All Category",
-                    url: "/admin-dashboard/all-category",
+                    url: "/admin-dashboard/category",
                },
                {
                     title: "All Reviews",

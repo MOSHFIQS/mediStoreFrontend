@@ -26,6 +26,7 @@ interface Props {
 }
 
 export default function AllCategories({ initialCategories }: Props) {
+     console.log(initialCategories);
      const [categories, setCategories] = useState<Category[]>(initialCategories);
      const [loading, setLoading] = useState(false); 
      console.log(categories);
@@ -34,7 +35,7 @@ export default function AllCategories({ initialCategories }: Props) {
           <div className="p-6 space-y-6">
                <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Categories</h1>
-                    <Link href="/admin-dashboard/create-category">
+                    <Link href="/admin-dashboard/category/create">
                          <Button>Create Category</Button>
                     </Link>
                </div>
