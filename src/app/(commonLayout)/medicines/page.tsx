@@ -11,7 +11,7 @@ export default async function AllMedicinesPage({
      const { category: categoryId, search } = await searchParams;
 
      const [medRes, catRes] = await Promise.all([
-          getAllMedicinesAction(categoryId ? { categoryId } : {}),
+          getAllMedicinesAction(categoryId || search ? { categoryId, search } : {}),
           getAllCategoriesAction(),
      ]);
 
