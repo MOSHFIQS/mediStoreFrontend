@@ -48,12 +48,13 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
                formData.append("file", file);
 
                const res = await uploadImagesAction(formData);
+               console.log(res);
                if (!res?.ok) throw new Error(res?.message);
 
                setImages((prev) =>
                     prev.map((img) =>
                          img.id === tempId
-                              ? { ...img, img: res.data?.url, imageUploading: false }
+                              ? { ...img, img: res.data?.data?.url, imageUploading: false }
                               : img
                     )
                );
@@ -71,7 +72,8 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
                     )
                );
 
-               await deleteImagesAction({ url: img.img });
+               const res = await deleteImagesAction({ url: img.img });
+               console.log(res);
 
                setImages((prev) => prev.filter((i) => i.id !== img.id));
           } catch (err: any) {

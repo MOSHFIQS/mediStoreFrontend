@@ -21,6 +21,7 @@ export async function createMedicineAction(data: {
      stock: number
      requiresPrescription: boolean
      image: string
+     images?: string[]
 }) {
      if (!data.image) throw new Error("Image is required")
      if (!data.name) throw new Error("Name is required")
@@ -45,6 +46,7 @@ export async function createMedicineAction(data: {
           stock: data.stock,
           requiresPrescription: data.requiresPrescription,
           image: data.image,
+          images:data.images
      })
 
      if (!res.ok) throw new Error(res.message || "Failed to create medicine")

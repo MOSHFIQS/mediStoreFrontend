@@ -10,12 +10,15 @@ export async function apiFetchServerMain(
      const cookieHeader = cookieStore.toString();
 
      try {
+          const isFormData = options?.body instanceof FormData;
+
           const res = await fetch(`${API_BASE}${endpoint}`, {
                method: options?.method || "GET",
                headers: {
-                    "Content-Type": "application/json",
-                    Cookie: cookieHeader, 
+                    Cookie: cookieHeader,
                     ...(options?.headers || {}),
+                    // Only set Content-Type if not FormData
+                    ...(isFormData ? {} : { "Content-Type": "application/json" }),
                },
                body: options?.body,
           });

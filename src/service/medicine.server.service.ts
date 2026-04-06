@@ -1,14 +1,5 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
-interface GetMedicinesParams {
-     page?: number
-     limit?: number
-     categoryId?: string
-     search?: string
-     sortBy?: string
-     order?: "asc" | "desc"
-}
-
 
 export const medicineServiceServer = {
 

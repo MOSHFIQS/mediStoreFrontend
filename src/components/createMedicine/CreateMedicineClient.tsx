@@ -19,8 +19,9 @@ import { Label } from "@/components/ui/label"
 import {
      Upload, Package, FlaskConical, Tag, Info, ImageIcon, X
 } from "lucide-react"
-import Image from "next/image"
 import { imageHostingService } from "@/service/image-hosting.service"
+import ImageUploader from "../shared/image/ImageUploader"
+import { useImageUpload } from "@/hooks/useImageUpload"
 
 const DOSAGE_FORMS = ["Tablet", "Capsule", "Syrup", "Injection", "Cream", "Ointment", "Drops", "Inhaler", "Patch", "Suppository"]
 const UNITS = ["piece", "strip", "bottle", "box", "tube", "vial", "sachet"]
@@ -28,8 +29,8 @@ const UNITS = ["piece", "strip", "bottle", "box", "tube", "vial", "sachet"]
 export default function CreateMedicineClient({ categories }: { categories: { id: string; name: string }[] }) {
 
      const [isPending, startTransition] = useTransition()
-     const [preview, setPreview] = useState<string | null>(null)
-     const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+     const medicineImages = useImageUpload({ max: 10 });
+     console.log(medicineImages.images);
 
      const form = useForm({
           defaultValues: {
@@ -50,10 +51,10 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
           },
 
           onSubmit: async ({ value }) => {
-               if (!uploadedImageUrl) {
-                    toast.error("Image is required")
-                    return
-               }
+               // if (medicineImages.images.length === 0) {
+               //      toast.error("Image is required")
+               //      return
+               // }
 
                startTransition(async () => {
                     try {
@@ -72,18 +73,19 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                               unit: value.unit || "piece",
                               sku: value.sku || undefined,
                               requiresPrescription: value.requiresPrescription,
-                              image: uploadedImageUrl,
+                              image: medicineImages.images[0]?.img,
+                              images: medicineImages.images
+                              .filter((img) => !img.imageUploading)
+                              .map((img) => img.img),
                          }
 
                          console.log(payload);
-                         // const res = await createMedicineAction(payload)
+                         const res = await createMedicineAction(payload)
 
 
-                         // toast.success("Medicine added successfully!")
+                         toast.success("Medicine added successfully!")
                          // form.reset()
-                         // setPreview(null)
-                         // setUploadedImageUrl(null)
-                     
+
                     } catch (err: any) {
                          toast.error(err.message || "Failed to add medicine")
                     }
@@ -91,29 +93,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
           },
      })
 
-     const handleImageChange = async (file: File | null) => {
-          if (!file) return
-
-          if (file.size > 5 * 1024 * 1024) {
-               toast.error("Image must be under 5MB")
-               return
-          }
-
-          setPreview(URL.createObjectURL(file))
-
-          try {
-               const uploadRes = await imageHostingService.uploadImage(file)
-               if (!uploadRes.ok || !uploadRes.url) throw new Error("Image upload failed")
-
-               setUploadedImageUrl(uploadRes.url)
-               toast.success("Image uploaded successfully")
-          } catch (err: any) {
-               toast.error(err.message || "Image upload failed")
-               setPreview(null)
-               setUploadedImageUrl(null)
-          }
-     }
-
+   
 
      return (
           <div className="p-4">
@@ -248,9 +228,9 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                                         {/* category (required) */}
                                         <form.Field
                                              name="categoryId"
-                                             validators={{
-                                                  onChange: ({ value }) => !value ? "Category is required" : undefined
-                                             }}
+                                             // validators={{
+                                             //      onChange: ({ value }) => !value ? "Category is required" : undefined
+                                             // }}
                                         >
                                              {(field) => (
                                                   <div className="space-y-1">
@@ -391,31 +371,13 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                               </div>
 
                               {/* Image */}
-                              <div>
-                                   <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                                        <ImageIcon className="w-3.5 h-3.5" /> Product Image
-                                   </h3>
-
-                                   {preview ? (
-                                        <div className="relative w-full h-52 rounded-xl overflow-hidden border-2 border-purple-200">
-                                             <Image src={preview} alt="preview" fill className="object-contain" />
-                                             <button
-                                                  type="button"
-                                                  onClick={() => {
-                                                       setPreview(null)
-                                                       setUploadedImageUrl(null)
-                                                  }}
-                                             >
-                                                  <X />
-                                             </button>
-                                        </div>
-                                   ) : (
-                                        <input
-                                             type="file"
-                                             onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
-                                        />
-                                   )}
-                              </div>
+                              <ImageUploader
+                                   label="Event Images"
+                                   images={medicineImages.images}
+                                   onUpload={medicineImages.upload}
+                                   onDelete={medicineImages.remove}
+                                   multiple
+                              />
 
                          </CardContent>
 
