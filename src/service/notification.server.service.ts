@@ -1,10 +1,10 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const notificationServiceServer = {
-     getAll: () => apiFetchServerMain("/notifications"),
-     getUnreadCount: () => apiFetchServerMain("/notifications/unread-count"),
+     getAll: () => apiFetchServerMain("/notification"),
+     getUnreadCount: () => apiFetchServerMain("/notification/unread-count"),
      markAsRead: (id: string) =>
-          apiFetchServerMain(`/notifications/${id}/read`, { method: "PATCH" }),
+          apiFetchServerMain(`/notification/${id}/read`, { method: "PATCH" }),
      markAllAsRead: () =>
-          apiFetchServerMain("/notifications/mark-all-read", { method: "PATCH" }),
+          apiFetchServerMain("/notification/mark-all-read", { method: "PATCH" }),
 };

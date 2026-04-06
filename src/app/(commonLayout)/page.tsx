@@ -1,11 +1,11 @@
 
 import { medicineServiceServer } from "@/service/medicine.server.service";
 import { categoryServiceServer } from "@/service/category.server.service";
-import AllMedicinesClient from "@/components/allMedicines/AllMedicinesClient";
 import { CarouselPlugin } from "@/components/banner/Banner";
 import Footer from "@/components/footer/Footer";
 import HealthTips from "@/components/healthTips/HealthTips";
 import FeaturedSection from "@/components/featuredSection/FeaturedSection";
+import AllMedicines from "@/components/medicine/AllMedicines";
 
 export default async function HomePage({
      searchParams,
@@ -30,7 +30,7 @@ export default async function HomePage({
           <>
                <CarouselPlugin />
                <FeaturedSection />
-               <AllMedicinesClient
+               <AllMedicines
                     initialMedicines={medRes.data.data.data}
                     categories={catRes.data.data}
                />

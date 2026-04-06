@@ -1,20 +1,20 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const addressServiceServer = {
-     getAll: () => apiFetchServerMain("/addresses"),
+     getAll: () => apiFetchServerMain("/address"),
 
      create: (payload: any) =>
-          apiFetchServerMain("/addresses", {
+          apiFetchServerMain("/address", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
      update: (id: string, payload: any) =>
-          apiFetchServerMain(`/addresses/${id}`, {
+          apiFetchServerMain(`/address/${id}`, {
                method: "PATCH",
                body: JSON.stringify(payload),
           }),
 
      delete: (id: string) =>
-          apiFetchServerMain(`/addresses/${id}`, { method: "DELETE" }),
+          apiFetchServerMain(`/address/${id}`, { method: "DELETE" }),
 };

@@ -4,114 +4,126 @@ import { orderServiceServer } from "@/service/order.server.service";
 import { paymentServiceServer } from "@/service/payment.server.service";
 import { revalidatePath } from "next/cache";
 
-// Create a single medicine order
+// ── Single medicine "Buy Now" ──────────────────────────────
 export async function createOrderAction({
      medicineId,
      quantity,
-     address,
+     addressId,
+     addressSnapshot,
+     notes,
 }: {
      medicineId: string;
      quantity: number;
-     address: string;
+     addressId?: string;
+     addressSnapshot?: { line1: string; city?: string; district?: string };
+     notes?: string;
 }) {
      try {
-          if (!address) return { ok: false, message: "Address is required" };
-          if (!medicineId) return { ok: false, message: "Medicine ID is required" };
-          if (!quantity || quantity <= 0) return { ok: false, message: "Quantity must be greater than 0" };
+          if (!medicineId) throw new Error("Medicine ID is required");
+          if (!quantity || quantity <= 0) throw new Error("Quantity must be greater than 0");
+          if (!addressId && !addressSnapshot?.line1) throw new Error("Delivery address is required");
 
           const res = await orderServiceServer.create({
-               address,
                items: [{ medicineId, quantity }],
+               ...(addressId ? { addressId } : { addressSnapshot }),
+               notes,
           });
 
-          if (!res?.ok) {
-               return { ok: false, message: res?.message || "Failed to create order" };
-          }
+          if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-          return { ok: true, message: res?.message || "Order created successfully", data: res?.data?.data };
+          return { ok: true, message: "Order created successfully", data: res.data.data };
      } catch (err: any) {
-          return { ok: false, message: err?.message || "Something went wrong while creating order" };
+          return { ok: false, message: err.message || "Something went wrong" };
      }
 }
 
-// Create order from cart
+// ── Cart order ─────────────────────────────────────────────
 export async function createCartOrderAction({
      items,
-     address,
+     addressId,
+     addressSnapshot,
      couponCode,
+     notes,
+     shippingFee,
 }: {
      items: { medicineId: string; quantity: number }[];
-     address: string;
+     addressId?: string;
+     addressSnapshot?: { line1: string; city?: string; district?: string };
      couponCode?: string;
+     notes?: string;
+     shippingFee?: number;
 }) {
      try {
-          if (!address) return { ok: false, message: "Address is required" };
-          if (!items?.length) return { ok: false, message: "Cart is empty" };
+          if (!items?.length) throw new Error("Cart is empty");
+          if (!addressId && !addressSnapshot?.line1) throw new Error("Delivery address is required");
 
-          const res = await orderServiceServer.create({ address, items, couponCode });
+          const res = await orderServiceServer.create({
+               items,
+               ...(addressId ? { addressId } : { addressSnapshot }),
+               couponCode,
+               notes,
+               shippingFee,
+          });
 
-          if (!res?.ok) {
-               return { ok: false, message: res?.message || "Failed to create cart order" };
-          }
+          if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-          return { ok: true, message: res?.message || "Cart order created successfully", data: res?.data?.data };
+          return { ok: true, message: "Order created successfully", data: res.data.data };
      } catch (err: any) {
-          return { ok: false, message: err?.message || "Something went wrong while creating cart order" };
+          return { ok: false, message: err.message || "Something went wrong" };
      }
 }
 
-// Initiate payment for order
+// ── Initiate SSLCommerz payment ────────────────────────────
 export async function initiatePaymentForOrderAction(orderId: string) {
      try {
-          if (!orderId) return { ok: false, message: "Order ID is required" };
+          if (!orderId) throw new Error("Order ID is required");
 
           const res = await paymentServiceServer.initiate(orderId);
 
-          if (!res?.ok) {
-               return { ok: false, message: res?.message || "Payment initiation failed" };
-          }
+          if (!res?.ok) throw new Error(res?.message || "Failed to initiate payment");
 
-          return { ok: true, message: res?.message || "Payment initiated successfully", data: res?.data?.data };
+          // res.data.data = { gatewayUrl, tranId }
+          return { ok: true, message: "Payment initiated", data: res.data.data };
      } catch (err: any) {
-          return { ok: false, message: err?.message || "Something went wrong while initiating payment" };
+          return { ok: false, message: err.message || "Something went wrong" };
      }
 }
 
-// Update order status
+// ── Update order status (seller) ───────────────────────────
 export async function updateOrderStatusAction(orderId: string, status: string) {
      try {
-          if (!orderId) return { ok: false, message: "Order ID is required" };
-          if (!status) return { ok: false, message: "Status is required" };
+          if (!orderId) throw new Error("Order ID is required");
+          if (!status) throw new Error("Status is required");
+
+          const allowed = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
+          if (!allowed.includes(status)) throw new Error(`Invalid status: ${status}`);
 
           const res = await orderServiceServer.updateStatus(orderId, status);
 
-          if (!res?.ok) {
-               return { ok: false, message: res?.message || "Failed to update order status" };
-          }
+          if (!res?.ok) throw new Error(res?.message || "Failed to update status");
 
+          revalidatePath("/seller-dashboard/orders");
           revalidatePath("/my-orders");
 
-          return { ok: true, message: res?.message || "Order status updated successfully" };
+          return { ok: true, message: `Order marked as ${status}` };
      } catch (err: any) {
-          return { ok: false, message: err?.message || "Something went wrong while updating order status" };
+          return { ok: false, message: err.message || "Something went wrong" };
      }
 }
 
-// Cancel order
+// ── Cancel order (customer) ────────────────────────────────
 export async function cancelOrderAction(orderId: string) {
      try {
-          if (!orderId) return { ok: false, message: "Order ID is required" };
+          if (!orderId) throw new Error("Order ID is required");
 
           const res = await orderServiceServer.cancel(orderId);
 
-          if (!res?.ok) {
-               return { ok: false, message: res?.message || "Failed to cancel order" };
-          }
+          if (!res?.ok) throw new Error(res?.message || "Failed to cancel order");
 
           revalidatePath("/my-orders");
 
-          return { ok: true, message: res?.message || "Order cancelled successfully", data: res?.data };
+          return { ok: true, message: "Order cancelled successfully", data: res.data.data };
      } catch (err: any) {
-          return { ok: false, message: err?.message || "Something went wrong while cancelling order" };
+          return { ok: false, message: err.message || "Something went wrong" };
      }
 }

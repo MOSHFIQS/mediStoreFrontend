@@ -3,6 +3,17 @@
 import { addressServiceServer } from "@/service/address.server.service";
 import { revalidatePath } from "next/cache";
 
+
+export async function getAddressesAction() {
+     try {
+          const res = await addressServiceServer.getAll();
+          if (!res?.ok) throw new Error(res?.message || "Failed to fetch addresses");
+          return { ok: true, data: res.data , message: res?.message || "Addresses fetched successfully" };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong", data: [] };
+     }
+}
+
 // Create address
 export async function createAddressAction(payload: any) {
      try {
@@ -17,7 +28,7 @@ export async function createAddressAction(payload: any) {
           return {
                ok: true,
                message: res?.message || "Address created successfully",
-               data: res?.data?.data,
+               data: res?.data,
           };
      } catch (err: any) {
           return {

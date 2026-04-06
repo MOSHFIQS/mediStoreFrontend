@@ -24,7 +24,7 @@ import Image from "next/image";
 
 const RATING_LABELS = ["", "Poor", "Fair", "Good", "Very good", "Excellent"];
 
-export default function AllMedicinesClient({ initialMedicines, categories }: any) {
+export default function AllMedicines({ initialMedicines, categories }: any) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

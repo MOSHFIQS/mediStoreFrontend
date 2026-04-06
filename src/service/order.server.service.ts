@@ -1,7 +1,14 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const orderServiceServer = {
-     create: (payload: any) =>
+     create: (payload: {
+          items: { medicineId: string; quantity: number }[];
+          addressId?: string;
+          addressSnapshot?: object;
+          couponCode?: string;
+          notes?: string;
+          shippingFee?: number;
+     }) =>
           apiFetchServerMain("/order", {
                method: "POST",
                body: JSON.stringify(payload),
