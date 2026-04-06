@@ -16,7 +16,7 @@ import {
      ShoppingCart, Zap, Star, BadgeCheck, Package,
      FlaskConical, Building2, Pill, Layers, Tag,
      AlertTriangle, ChevronLeft, Plus, Minus,
-     MapPin, PlusCircle
+     MapPin, PlusCircle, FileText, CheckCircle
 } from "lucide-react";
 import Image from "next/image";
 
@@ -64,6 +64,14 @@ interface Address {
      isDefault: boolean;
 }
 
+interface Prescription {
+     id: string;
+     status: "PENDING" | "APPROVED" | "REJECTED";
+     images: string[];
+     notes?: string;
+     createdAt: string;
+}
+
 interface NewAddressForm {
      label: string;
      line1: string;
@@ -73,7 +81,15 @@ interface NewAddressForm {
      postalCode: string;
 }
 
-export default function MedicineDetails({ medicine, addresses }: { medicine: Medicine; addresses: Address[] }) {
+export default function MedicineDetails({
+     medicine,
+     addresses,
+     prescriptions = [],
+}: {
+     medicine: Medicine;
+     addresses: Address[];
+     prescriptions: Prescription[];
+}) {
      const router = useRouter();
      const queryClient = useQueryClient();
      const { user } = useAuth();
@@ -84,19 +100,21 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
 
      // ── Address ───────────────────────────────────────────
      const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
-     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-          defaultAddr?.id ?? null
-     );
+     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(defaultAddr?.id ?? null);
      const [useNewAddress, setUseNewAddress] = useState(addresses.length === 0);
      const [newAddress, setNewAddress] = useState<NewAddressForm>({
-          label: "",
-          line1: "",
-          line2: "",
-          city: "",
-          district: "",
-          postalCode: "",
+          label: "", line1: "", line2: "", city: "", district: "", postalCode: "",
      });
      const [saveNewAddress, setSaveNewAddress] = useState(false);
+
+     // ── Prescription ──────────────────────────────────────
+     const approvedPrescriptions = prescriptions.filter((p) => p.status === "APPROVED");
+     const hasPending = prescriptions.some((p) => p.status === "PENDING");
+     const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(
+          approvedPrescriptions[0]?.id ?? null
+     );
+
+     console.log(selectedPrescriptionId);
 
      const unitPrice = medicine.discountPrice ?? medicine.price;
      const discount = medicine.discountPrice
@@ -110,9 +128,8 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
           ...(medicine.images?.filter((img) => img !== medicine.image) ?? []),
      ];
 
-     const changeQty = (delta: number) => {
+     const changeQty = (delta: number) =>
           setQuantity((q) => Math.min(medicine.stock, Math.max(1, q + delta)));
-     };
 
      // ── Add to cart ────────────────────────────────────────
      const handleAddToCart = () => {
@@ -128,35 +145,24 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
           toast.success(`${medicine.name} added to cart`);
      };
 
-     // ── Buy now (order + SSLCommerz) ───────────────────────
+     // ── Buy now ────────────────────────────────────────────
      const handleBuyNow = async () => {
           if (!user) { router.push("/login"); return; }
-          if (user.role !== "CUSTOMER") {
-               toast.error("Only customers can place orders");
-               return;
-          }
-          if (medicine.requiresPrescription) {
-               toast.error("This medicine requires a prescription. Please upload one first.");
-               router.push("/dashboard/prescriptions");
+          if (user.role !== "CUSTOMER") { toast.error("Only customers can place orders"); return; }
+
+          if (medicine.requiresPrescription && !selectedPrescriptionId) {
+               toast.error("Please select an approved prescription to proceed");
                return;
           }
 
           const isUsingNew = useNewAddress || addresses.length === 0;
-
-          if (isUsingNew && !newAddress.line1.trim()) {
-               toast.error("Please enter a delivery address");
-               return;
-          }
-          if (!isUsingNew && !selectedAddressId) {
-               toast.error("Please select a delivery address");
-               return;
-          }
+          if (isUsingNew && !newAddress.line1.trim()) { toast.error("Please enter a delivery address"); return; }
+          if (!isUsingNew && !selectedAddressId) { toast.error("Please select a delivery address"); return; }
 
           setIsOrdering(true);
           const toastId = toast.loading("Placing order...");
 
           try {
-               // Optionally save new address first
                if (isUsingNew && saveNewAddress && newAddress.line1.trim()) {
                     await createAddressAction({
                          label: newAddress.label || undefined,
@@ -169,32 +175,30 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                     });
                }
 
-               // Step 1 — create order
                const order = await createOrderAction({
                     medicineId: medicine.id,
                     quantity,
                     ...(isUsingNew
-                         ? {
-                              addressSnapshot: {
-                                   line1: newAddress.line1,
-                                   city: newAddress.city || undefined,
-                                   district: newAddress.district || undefined,
-                              },
-                         }
+                         ? { addressSnapshot: { line1: newAddress.line1, city: newAddress.city || undefined, district: newAddress.district || undefined } }
                          : { addressId: selectedAddressId! }
                     ),
+                    ...(medicine.requiresPrescription && selectedPrescriptionId
+                         ? { prescriptionId: selectedPrescriptionId }
+                         : {}
+                    ),
                });
+
+               console.log(order);
+
 
                if (!order.ok) throw new Error(order.message);
 
                toast.loading("Redirecting to payment...", { id: toastId });
 
-               // Step 2 — initiate SSLCommerz
                const payment = await initiatePaymentForOrderAction(order.data.id);
-
+               console.log(payment);
                if (!payment.ok) throw new Error(payment.message);
 
-               // Step 3 — redirect
                toast.success("Redirecting to SSLCommerz...", { id: toastId });
                window.location.href = payment.data.gatewayUrl;
           } catch (err: any) {
@@ -203,15 +207,15 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
           }
      };
 
-     // ── Average rating ─────────────────────────────────────
      const avgRating = medicine.reviews.length
           ? medicine.reviews.reduce((s, r) => s + r.rating, 0) / medicine.reviews.length
           : null;
 
-     // ── Address valid check (for disabling Buy Now) ────────
-     const isAddressValid = useNewAddress || addresses.length === 0
+     const isAddressValid = (useNewAddress || addresses.length === 0)
           ? newAddress.line1.trim().length > 0
           : !!selectedAddressId;
+
+     const isPrescriptionValid = !medicine.requiresPrescription || !!selectedPrescriptionId;
 
      return (
           <div className="max-w-6xl mx-auto px-4 py-6 space-y-10">
@@ -224,7 +228,7 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                     <ChevronLeft className="w-4 h-4" /> Back
                </button>
 
-               {/* ── Top section ─────────────────────────────────── */}
+               {/* ── Top section ── */}
                <div className="grid md:grid-cols-2 gap-8">
 
                     {/* Images */}
@@ -248,8 +252,6 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                    </span>
                               )}
                          </div>
-
-                         {/* Thumbnail strip */}
                          {allImages.length > 1 && (
                               <div className="flex gap-2 overflow-x-auto pb-1">
                                    {allImages.map((img, i) => (
@@ -257,7 +259,7 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                              key={i}
                                              onClick={() => setActiveImage(img)}
                                              className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 transition
-                    ${activeImage === img ? "border-purple-500" : "border-transparent hover:border-gray-300"}`}
+                                             ${activeImage === img ? "border-purple-500" : "border-transparent hover:border-gray-300"}`}
                                         >
                                              <Image src={img} alt={`thumb-${i}`} fill className="object-cover" />
                                         </button>
@@ -268,18 +270,14 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
 
                     {/* Info */}
                     <div className="space-y-4">
-                         {/* Name + badges */}
                          <div>
                               <div className="flex flex-wrap gap-2 mb-2">
                                    <Badge variant="secondary">{medicine.category.name}</Badge>
-                                   {medicine.dosageForm && (
-                                        <Badge variant="outline">{medicine.dosageForm}</Badge>
-                                   )}
-                                   {outOfStock ? (
-                                        <Badge variant="destructive">Out of Stock</Badge>
-                                   ) : (
-                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">In Stock</Badge>
-                                   )}
+                                   {medicine.dosageForm && <Badge variant="outline">{medicine.dosageForm}</Badge>}
+                                   {outOfStock
+                                        ? <Badge variant="destructive">Out of Stock</Badge>
+                                        : <Badge className="bg-green-100 text-green-700 hover:bg-green-100">In Stock</Badge>
+                                   }
                               </div>
                               <h1 className="text-2xl font-bold leading-tight">{medicine.name}</h1>
                               {medicine.genericName && (
@@ -287,15 +285,11 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                               )}
                          </div>
 
-                         {/* Rating */}
                          {avgRating !== null && (
                               <div className="flex items-center gap-2">
                                    <div className="flex gap-0.5">
                                         {[1, 2, 3, 4, 5].map((s) => (
-                                             <Star
-                                                  key={s}
-                                                  className={`w-4 h-4 ${s <= Math.round(avgRating) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`}
-                                             />
+                                             <Star key={s} className={`w-4 h-4 ${s <= Math.round(avgRating) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
                                         ))}
                                    </div>
                                    <span className="text-sm text-muted-foreground">
@@ -304,12 +298,9 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                               </div>
                          )}
 
-                         {/* Price */}
                          <div className="flex items-baseline gap-3">
                               <span className="text-3xl font-bold text-gray-900">৳{unitPrice}</span>
-                              {medicine.discountPrice && (
-                                   <span className="text-lg text-gray-400 line-through">৳{medicine.price}</span>
-                              )}
+                              {medicine.discountPrice && <span className="text-lg text-gray-400 line-through">৳{medicine.price}</span>}
                               <span className="text-sm text-muted-foreground">/ {medicine.unit || "piece"}</span>
                          </div>
 
@@ -317,7 +308,6 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
 
                          <Separator />
 
-                         {/* Specs grid */}
                          <div className="grid grid-cols-2 gap-3 text-sm">
                               {medicine.brand && (
                                    <div className="flex items-center gap-2 text-muted-foreground">
@@ -357,43 +347,115 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
 
                          <Separator />
 
-                         {/* Prescription warning */}
-                         {medicine.requiresPrescription && (
-                              <div className="flex items-start gap-2 bg-orange-50 border border-orange-200 rounded-lg px-3 py-2.5">
-                                   <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
-                                   <p className="text-sm text-orange-700">
-                                        This medicine requires a valid prescription.{" "}
-                                        <button
-                                             onClick={() => router.push("/dashboard/prescriptions")}
-                                             className="underline font-medium hover:text-orange-900"
-                                        >
-                                             Upload prescription
-                                        </button>
+                         {/* ── Prescription selector ── */}
+                         {medicine.requiresPrescription && user?.role === "CUSTOMER" && !outOfStock && (
+                              <div className="space-y-2">
+                                   <p className="text-sm font-medium flex items-center gap-1.5">
+                                        <FileText className="w-3.5 h-3.5 text-orange-500" />
+                                        Select Prescription
+                                        <span className="text-red-500 text-xs">*required</span>
                                    </p>
+
+                                   {approvedPrescriptions.length === 0 ? (
+                                        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-3">
+                                             <div className="flex items-start gap-2">
+                                                  <AlertTriangle className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                                                  <div>
+                                                       {hasPending ? (
+                                                            <>
+                                                                 <p className="text-sm font-semibold text-orange-700">Prescription under review</p>
+                                                                 <p className="text-xs text-orange-600 mt-0.5">
+                                                                      Your prescription is pending approval. You can order once it's approved by our pharmacist.
+                                                                 </p>
+                                                            </>
+                                                       ) : (
+                                                            <>
+                                                                 <p className="text-sm font-semibold text-orange-700">No approved prescription found</p>
+                                                                 <p className="text-xs text-orange-600 mt-0.5">
+                                                                      This medicine requires a valid prescription. Upload one and wait for pharmacist approval.
+                                                                 </p>
+                                                            </>
+                                                       )}
+                                                  </div>
+                                             </div>
+                                             <Button
+                                                  size="sm"
+                                                  variant="outline"
+                                                  className="w-full border-orange-300 text-orange-700 hover:bg-orange-100 rounded-lg"
+                                                  onClick={() => router.push("/dashboard/prescriptions")}
+                                             >
+                                                  {hasPending ? "View Prescription Status →" : "Upload a Prescription →"}
+                                             </Button>
+                                        </div>
+                                   ) : (
+                                        <div className="space-y-2">
+                                             {approvedPrescriptions.map((p) => (
+                                                  <div
+                                                       key={p.id}
+                                                       onClick={() => setSelectedPrescriptionId(p.id)}
+                                                       className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition
+                                                       ${selectedPrescriptionId === p.id
+                                                                 ? "border-emerald-400 bg-emerald-50"
+                                                                 : "border-gray-200 hover:border-gray-300"
+                                                            }`}
+                                                  >
+                                                       <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 transition
+                                                            ${selectedPrescriptionId === p.id
+                                                                 ? "border-emerald-500 bg-emerald-500"
+                                                                 : "border-gray-300"
+                                                            }`}
+                                                       />
+                                                       {p.images?.[0] && (
+                                                            <div className="relative w-10 h-10 rounded-lg overflow-hidden border flex-shrink-0">
+                                                                 <Image src={p.images[0]} alt="rx" fill className="object-cover" />
+                                                            </div>
+                                                       )}
+                                                       <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-2">
+                                                                 <span className="text-xs font-mono text-gray-500">
+                                                                      #{p.id.slice(0, 8).toUpperCase()}
+                                                                 </span>
+                                                                 <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                                                                      <CheckCircle className="w-3 h-3" /> Approved
+                                                                 </span>
+                                                            </div>
+                                                            <p className="text-xs text-gray-400 mt-0.5">
+                                                                 {new Date(p.createdAt).toLocaleDateString("en-GB", {
+                                                                      day: "numeric", month: "short", year: "numeric",
+                                                                 })}
+                                                                 {p.images?.length > 1 && ` · ${p.images.length} images`}
+                                                            </p>
+                                                       </div>
+                                                  </div>
+                                             ))}
+
+                                             <button
+                                                  onClick={() => router.push("/dashboard/prescriptions")}
+                                                  className="flex items-center gap-2 w-full p-2.5 rounded-xl border-2 border-dashed border-gray-200 text-xs text-muted-foreground hover:border-emerald-300 hover:text-emerald-600 transition"
+                                             >
+                                                  <PlusCircle className="w-3.5 h-3.5" />
+                                                  Upload a new prescription
+                                             </button>
+                                        </div>
+                                   )}
                               </div>
                          )}
 
-                         {/* Quantity + address */}
-                         {!outOfStock && user?.role === "CUSTOMER" && (
+                         {/* Quantity + address — only shown when Rx is satisfied or not required */}
+                         {!outOfStock && user?.role === "CUSTOMER" && isPrescriptionValid && (
                               <div className="space-y-4">
 
                                    {/* Quantity picker */}
                                    <div className="flex items-center gap-3">
                                         <span className="text-sm font-medium w-20">Quantity</span>
                                         <div className="flex items-center border rounded-full overflow-hidden">
-                                             <button
-                                                  onClick={() => changeQty(-1)}
-                                                  disabled={quantity <= 1}
-                                                  className="px-3 py-2 hover:bg-gray-100 disabled:opacity-40 transition"
-                                             >
+                                             <button onClick={() => changeQty(-1)} disabled={quantity <= 1}
+                                                  className="px-3 py-2 hover:bg-gray-100 disabled:opacity-40 transition">
                                                   <Minus className="w-3.5 h-3.5" />
                                              </button>
                                              <span className="px-4 py-2 font-semibold text-sm min-w-[2.5rem] text-center">{quantity}</span>
-                                             <button
-                                                  onClick={() => changeQty(1)}
-                                                  disabled={quantity >= medicine.stock}
-                                                  className="px-3 py-2 hover:bg-gray-100 disabled:opacity-40 transition"
-                                             >
+                                             <button onClick={() => changeQty(1)} disabled={quantity >= medicine.stock}
+                                                  className="px-3 py-2 hover:bg-gray-100 disabled:opacity-40 transition">
                                                   <Plus className="w-3.5 h-3.5" />
                                              </button>
                                         </div>
@@ -402,13 +464,12 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                         </span>
                                    </div>
 
-                                   {/* ── Delivery Address ── */}
+                                   {/* Delivery Address */}
                                    <div className="space-y-2">
                                         <p className="text-sm font-medium flex items-center gap-1.5">
                                              <MapPin className="w-3.5 h-3.5 text-purple-500" /> Delivery Address
                                         </p>
 
-                                        {/* Saved addresses */}
                                         {addresses.length > 0 && (
                                              <div className="space-y-2">
                                                   {addresses.map((addr) => (
@@ -421,9 +482,8 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                                                       : "border-gray-200 hover:border-gray-300"
                                                                  }`}
                                                        >
-                                                            {/* Radio dot */}
                                                             <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition
-                                                            ${selectedAddressId === addr.id && !useNewAddress
+                                                                 ${selectedAddressId === addr.id && !useNewAddress
                                                                       ? "border-purple-500 bg-purple-500"
                                                                       : "border-gray-300"
                                                                  }`}
@@ -431,9 +491,7 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                                             <div className="flex-1 min-w-0">
                                                                  <div className="flex items-center gap-2 flex-wrap">
                                                                       {addr.label && (
-                                                                           <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded">
-                                                                                {addr.label}
-                                                                           </span>
+                                                                           <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded">{addr.label}</span>
                                                                       )}
                                                                       {addr.isDefault && (
                                                                            <span className="text-xs text-purple-600 font-medium flex items-center gap-1">
@@ -452,12 +510,8 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                                        </div>
                                                   ))}
 
-                                                  {/* Toggle new address */}
                                                   <button
-                                                       onClick={() => {
-                                                            setUseNewAddress(!useNewAddress);
-                                                            setSelectedAddressId(null);
-                                                       }}
+                                                       onClick={() => { setUseNewAddress(!useNewAddress); setSelectedAddressId(null); }}
                                                        className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition
                                                        ${useNewAddress
                                                                  ? "border-purple-400 bg-purple-50 text-purple-700"
@@ -470,48 +524,26 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                              </div>
                                         )}
 
-                                        {/* New address fields */}
                                         {(useNewAddress || addresses.length === 0) && (
                                              <div className="space-y-2 border p-3 rounded-xl">
-                                                  <Input
-                                                       placeholder="Label (Home, Office)"
-                                                       value={newAddress.label}
-                                                       onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
-                                                  />
-                                                  <Input
-                                                       placeholder="Address Line 1 *"
-                                                       value={newAddress.line1}
-                                                       onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })}
-                                                  />
-                                                  <Input
-                                                       placeholder="Address Line 2"
-                                                       value={newAddress.line2}
-                                                       onChange={(e) => setNewAddress({ ...newAddress, line2: e.target.value })}
-                                                  />
+                                                  <Input placeholder="Label (Home, Office)" value={newAddress.label}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })} />
+                                                  <Input placeholder="Address Line 1 *" value={newAddress.line1}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })} />
+                                                  <Input placeholder="Address Line 2" value={newAddress.line2}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line2: e.target.value })} />
                                                   <div className="grid grid-cols-2 gap-2">
-                                                       <Input
-                                                            placeholder="City"
-                                                            value={newAddress.city}
-                                                            onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                                                       />
-                                                       <Input
-                                                            placeholder="District"
-                                                            value={newAddress.district}
-                                                            onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
-                                                       />
+                                                       <Input placeholder="City" value={newAddress.city}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} />
+                                                       <Input placeholder="District" value={newAddress.district}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })} />
                                                   </div>
-                                                  <Input
-                                                       placeholder="Postal Code"
-                                                       value={newAddress.postalCode}
-                                                       onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
-                                                  />
+                                                  <Input placeholder="Postal Code" value={newAddress.postalCode}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })} />
                                                   <label className="flex items-center gap-2 text-sm cursor-pointer select-none pt-1">
-                                                       <input
-                                                            type="checkbox"
-                                                            checked={saveNewAddress}
+                                                       <input type="checkbox" checked={saveNewAddress}
                                                             onChange={(e) => setSaveNewAddress(e.target.checked)}
-                                                            className="w-4 h-4 rounded accent-purple-600"
-                                                       />
+                                                            className="w-4 h-4 rounded accent-purple-600" />
                                                        Save this address for future orders
                                                   </label>
                                              </div>
@@ -524,18 +556,13 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                          <div className="flex gap-3 pt-1">
                               {user?.role === "CUSTOMER" && !outOfStock && (
                                    <>
-                                        <Button
-                                             variant="outline"
-                                             className="flex-1 rounded-full gap-2"
-                                             onClick={handleAddToCart}
-                                        >
+                                        <Button variant="outline" className="flex-1 rounded-full gap-2" onClick={handleAddToCart}>
                                              <ShoppingCart className="w-4 h-4" /> Add to Cart
                                         </Button>
-
                                         <Button
                                              className="flex-1 rounded-full gap-2 bg-purple-600 hover:bg-purple-700"
                                              onClick={handleBuyNow}
-                                             disabled={isOrdering || !isAddressValid}
+                                             disabled={isOrdering || !isAddressValid || !isPrescriptionValid}
                                         >
                                              {isOrdering ? (
                                                   <>
@@ -543,28 +570,21 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                                        Processing...
                                                   </>
                                              ) : (
-                                                  <>
-                                                       <Zap className="w-4 h-4" /> Buy Now
-                                                  </>
+                                                  <><Zap className="w-4 h-4" /> Buy Now</>
                                              )}
                                         </Button>
                                    </>
                               )}
-
                               {!user && (
                                    <Button className="w-full rounded-full" onClick={() => router.push("/login")}>
                                         Log in to Order
                                    </Button>
                               )}
-
                               {outOfStock && (
-                                   <Button disabled className="w-full rounded-full opacity-60">
-                                        Out of Stock
-                                   </Button>
+                                   <Button disabled className="w-full rounded-full opacity-60">Out of Stock</Button>
                               )}
                          </div>
 
-                         {/* Seller info */}
                          <p className="text-xs text-muted-foreground">
                               Sold by <span className="font-medium text-foreground">{medicine.seller.name}</span>
                               {medicine.seller.phone && ` · ${medicine.seller.phone}`}
@@ -572,7 +592,7 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                     </div>
                </div>
 
-               {/* ── Reviews section ──────────────────────────────── */}
+               {/* ── Reviews ── */}
                <div className="space-y-4">
                     <h2 className="text-xl font-bold">
                          Customer Reviews
@@ -582,7 +602,6 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                               </span>
                          )}
                     </h2>
-
                     {medicine.reviews.length === 0 ? (
                          <div className="text-center py-12 text-muted-foreground border rounded-xl">
                               <Star className="w-10 h-10 mx-auto opacity-20 mb-2" />
@@ -600,9 +619,7 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                                   <div>
                                                        <p className="text-sm font-medium leading-none flex items-center gap-1">
                                                             {review.user.name}
-                                                            {review.isVerifiedPurchase && (
-                                                                 <BadgeCheck className="w-3.5 h-3.5 text-green-500" />
-                                                            )}
+                                                            {review.isVerifiedPurchase && <BadgeCheck className="w-3.5 h-3.5 text-green-500" />}
                                                        </p>
                                                        <p className="text-xs text-muted-foreground mt-0.5">
                                                             {new Date(review.createdAt).toLocaleDateString("en-GB", {
@@ -613,20 +630,12 @@ export default function MedicineDetails({ medicine, addresses }: { medicine: Med
                                              </div>
                                              <div className="flex gap-0.5">
                                                   {[1, 2, 3, 4, 5].map((s) => (
-                                                       <Star
-                                                            key={s}
-                                                            className={`w-3.5 h-3.5 ${s <= review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`}
-                                                       />
+                                                       <Star key={s} className={`w-3.5 h-3.5 ${s <= review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} />
                                                   ))}
                                              </div>
                                         </div>
-
-                                        {review.title && (
-                                             <p className="font-semibold text-sm">{review.title}</p>
-                                        )}
-                                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                                             "{review.comment}"
-                                        </p>
+                                        {review.title && <p className="font-semibold text-sm">{review.title}</p>}
+                                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">"{review.comment}"</p>
                                    </div>
                               ))}
                          </div>

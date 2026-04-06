@@ -8,6 +8,7 @@ export const orderServiceServer = {
           couponCode?: string;
           notes?: string;
           shippingFee?: number;
+          prescriptionId?: string;
      }) =>
           apiFetchServerMain("/order", {
                method: "POST",

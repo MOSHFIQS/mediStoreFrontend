@@ -26,7 +26,7 @@ export default function MyOrdersClient({ orders }: { orders: any[] }) {
           setLoadingId(orderId);
           try {
                const payment = await initiatePaymentForOrderAction(orderId);
-               window.location.href = payment.gatewayUrl;
+               window.location.href = payment.data.gatewayUrl;
           } catch (err: any) {
                toast.error(err.message || "Payment initiation failed");
                setLoadingId(null);
@@ -47,14 +47,14 @@ export default function MyOrdersClient({ orders }: { orders: any[] }) {
           }
      };
 
-     if (!orders.length) {
+     if (!orders?.length) {
           return <p className="p-6 text-center text-muted-foreground">No orders yet.</p>;
      }
 
      return (
           <div className="max-w-3xl mx-auto p-4 space-y-4">
                <h1 className="text-2xl font-bold">My Orders</h1>
-               {orders.map((order) => (
+               {orders?.map((order) => (
                     <Card key={order.id}>
                          <CardHeader className="flex flex-row items-center justify-between">
                               <CardTitle className="text-sm font-mono text-muted-foreground">

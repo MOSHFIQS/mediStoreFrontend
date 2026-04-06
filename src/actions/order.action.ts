@@ -11,12 +11,14 @@ export async function createOrderAction({
      addressId,
      addressSnapshot,
      notes,
+     prescriptionId,
 }: {
      medicineId: string;
      quantity: number;
      addressId?: string;
      addressSnapshot?: { line1: string; city?: string; district?: string };
      notes?: string;
+     prescriptionId?: string;
 }) {
      try {
           if (!medicineId) throw new Error("Medicine ID is required");
@@ -27,11 +29,12 @@ export async function createOrderAction({
                items: [{ medicineId, quantity }],
                ...(addressId ? { addressId } : { addressSnapshot }),
                notes,
+               prescriptionId
           });
 
           if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-          return { ok: true, message: "Order created successfully", data: res.data.data };
+          return { ok: true, message: "Order created successfully", data: res.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
      }
@@ -48,7 +51,7 @@ export async function createCartOrderAction({
 }: {
      items: { medicineId: string; quantity: number }[];
      addressId?: string;
-     addressSnapshot?: { line1: string; city?: string; district?: string, label?: string ,line2?: string ,postalCode?: string };
+     addressSnapshot?: { line1: string; city?: string; district?: string, label?: string, line2?: string, postalCode?: string };
      couponCode?: string;
      notes?: string;
      shippingFee?: number;
@@ -83,7 +86,7 @@ export async function initiatePaymentForOrderAction(orderId: string) {
           if (!res?.ok) throw new Error(res?.message || "Failed to initiate payment");
 
           // res.data.data = { gatewayUrl, tranId }
-          return { ok: true, message: "Payment initiated", data: res.data.data };
+          return { ok: true, message: "Payment initiated", data: res.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
      }
@@ -125,5 +128,52 @@ export async function cancelOrderAction(orderId: string) {
           return { ok: true, message: "Order cancelled successfully", data: res.data.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
+     }
+}
+
+
+
+// Get orders of the logged-in seller
+export async function getSellerOrdersAction() {
+     try {
+          const res = await orderServiceServer.getSellerOrders?.();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch seller orders", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Seller orders fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching seller orders", data: [] };
+     }
+}
+
+// Get orders of the logged-in user
+export async function getMyOrdersAction() {
+     try {
+          const res = await orderServiceServer.getMyOrders?.();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch your orders", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Your orders fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching your orders", data: [] };
+     }
+}
+
+// Get order by ID
+export async function getOrderByIdAction(id: string) {
+     try {
+          const res = await orderServiceServer.getById?.(id);
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch order", data: null };
+          }
+
+          return { ok: true, message: res?.message || "Order fetched successfully", data: res?.data || null };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching order", data: null };
      }
 }
