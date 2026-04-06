@@ -23,32 +23,32 @@ export const medicineServiceServer = {
                });
           }
 
-          const endpoint = `/medicines${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+          const endpoint = `/medicine${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
           return apiFetchServerMain(endpoint);
      },
 
 
      getById: (id: string) =>
-          apiFetchServerMain(`/medicines/${id}`),
+          apiFetchServerMain(`/medicine/${id}`),
 
      create: (payload: any) =>
-          apiFetchServerMain("/medicines/seller", {
+          apiFetchServerMain("/medicine/seller", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
      update: (id: string, payload: any) =>
-          apiFetchServerMain(`/medicines/seller/${id}`, {
+          apiFetchServerMain(`/medicine/seller/${id}`, {
                method: "PUT",
                body: JSON.stringify(payload),
           }),
 
      getSellerMedicines: () =>
-          apiFetchServerMain("/medicines/seller"),
+          apiFetchServerMain("/medicine/seller"),
 
      delete: (id: string) =>
-          apiFetchServerMain(`/medicines/seller/${id}`, {
+          apiFetchServerMain(`/medicine/seller/${id}`, {
                method: "DELETE",
           }),
 

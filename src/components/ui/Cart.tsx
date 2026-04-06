@@ -1,26 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-     Card,
-     CardHeader,
-     CardTitle,
-     CardContent,
-     CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CartItem, getCart, saveCart, clearCart } from "@/lib/cart";
 import { toast } from "sonner";
-import { createCartOrderAction } from "@/actions/order.action";
+import { createCartOrderAction, initiatePaymentForOrderAction } from "@/actions/order.action";
+import { validateCouponAction } from "@/actions/coupon.action";
 import EmptyPage from "../emptyPage/EmptyPage";
 import { useAuth } from "@/context/AuthProvider";
+import { useState } from "react";
+import Image from "next/image";
+import { Tag, X } from "lucide-react";
 
 export default function Cart() {
      const queryClient = useQueryClient();
-     const {user} = useAuth()
+     const { user } = useAuth();
+     const [couponCode, setCouponCode] = useState("");
+     const [couponDiscount, setCouponDiscount] = useState(0);
+     const [couponApplied, setCouponApplied] = useState(false);
+     const [couponLoading, setCouponLoading] = useState(false);
+     const [isPlacing, setIsPlacing] = useState(false);
 
      const { data: cart = [] } = useQuery<CartItem[]>({
           queryKey: ["cart"],
@@ -32,156 +35,215 @@ export default function Cart() {
           queryClient.invalidateQueries({ queryKey: ["cart"] });
      };
 
-     const increment = (id: string, stock: number) => {
-          const newCart = cart.map((item) =>
-               item.medicineId === id
-                    ? { ...item, quantity: Math.min(stock, item.quantity + 1) }
-                    : item
-          );
-          updateCart(newCart);
+     const increment = (id: string) => {
+          updateCart(cart.map((item) =>
+               item.medicineId === id ? { ...item, quantity: item.quantity + 1 } : item
+          ));
      };
 
      const decrement = (id: string) => {
-          const newCart = cart.map((item) =>
+          updateCart(cart.map((item) =>
                item.medicineId === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
-          );
-          updateCart(newCart);
+          ));
      };
 
      const handleRemove = (id: string) => {
-          const newCart = cart.filter((item) => item.medicineId !== id);
-          updateCart(newCart);
+          updateCart(cart.filter((item) => item.medicineId !== id));
+     };
+
+     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+     const total = Math.max(0, subtotal - couponDiscount);
+
+     const handleApplyCoupon = async () => {
+          if (!couponCode.trim()) return;
+          setCouponLoading(true);
+          try {
+               const result = await validateCouponAction(couponCode.trim(), subtotal);
+               setCouponDiscount(result.discount);
+               setCouponApplied(true);
+               toast.success(`Coupon applied! You save ৳${result.discount.toFixed(2)}`);
+          } catch (err: any) {
+               toast.error(err.message || "Invalid coupon");
+               setCouponDiscount(0);
+               setCouponApplied(false);
+          } finally {
+               setCouponLoading(false);
+          }
+     };
+
+     const removeCoupon = () => {
+          setCouponCode("");
+          setCouponDiscount(0);
+          setCouponApplied(false);
      };
 
      const form = useForm({
           defaultValues: { address: "" },
           onSubmit: async ({ value }) => {
-               if (!user) {
-                    toast.error("Not Log In")
-                    return
-               }
-               if (user.role !== "CUSTOMER") {
-                    toast.error("Only Customer Can Buy Medicine");
-                    return;
-               }
-               if (cart.length === 0) return toast.error("Cart is empty!");
+               if (!user) return toast.error("Please log in first");
+               if (user.role !== "CUSTOMER") return toast.error("Only customers can place orders");
+               if (!cart.length) return toast.error("Cart is empty");
+               if (!value.address.trim()) return toast.error("Address is required");
 
+               setIsPlacing(true);
                try {
-                    await createCartOrderAction({
+                    // Step 1: Create order
+                    const order = await createCartOrderAction({
                          address: value.address,
                          items: cart.map((item) => ({ medicineId: item.medicineId, quantity: item.quantity })),
+                         couponCode: couponApplied ? couponCode : undefined,
                     });
 
-                    toast.success("Order placed successfully!");
+                    toast.loading("Redirecting to payment...");
+
+                    // Step 2: Initiate SSLCommerz payment
+                    const payment = await initiatePaymentForOrderAction(order.id);
+
+                    // Step 3: Clear cart and redirect
                     clearCart();
                     queryClient.invalidateQueries({ queryKey: ["cart"] });
-                    form.reset();
+
+                    // Redirect to SSLCommerz gateway
+                    window.location.href = payment.gatewayUrl;
                } catch (err: any) {
                     toast.error(err.message || "Order failed");
+                    setIsPlacing(false);
                }
           },
      });
 
-     const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
      return (
-          <div className="p-4 space-y-6">
+          <div className="p-4 space-y-6 max-w-3xl mx-auto">
                <h2 className="text-2xl font-bold">My Cart</h2>
 
                {cart.length === 0 ? (
                     <EmptyPage />
                ) : (
                     <>
+                         {/* Cart Items */}
                          {cart.map((item) => (
                               <Card key={item.medicineId}>
-                                   <CardHeader>
-                                        <CardTitle>{item.name}</CardTitle>
-                                   </CardHeader>
-                                   <CardContent className="flex gap-4 items-center">
-                                        <img
-                                             src={item.image}
-                                             alt={item.name}
-                                             className="w-20 h-20 object-contain rounded-md"
-                                        />
+                                   <CardContent className="flex gap-4 items-center p-4">
+                                        <div className="relative w-20 h-20 flex-shrink-0">
+                                             <Image
+                                                  src={item.image || "/placeholder.png"}
+                                                  alt={item.name}
+                                                  fill
+                                                  className="object-contain rounded-md"
+                                             />
+                                        </div>
                                         <div className="flex-1">
-                                             <p>Price: {item.price} tk</p>
+                                             <p className="font-semibold">{item.name}</p>
+                                             <p className="text-sm text-muted-foreground">৳{item.price} each</p>
                                              <div className="flex items-center gap-2 mt-2">
-                                                  <Button size="sm" onClick={() => decrement(item.medicineId)}>
-                                                       -
-                                                  </Button>
-                                                  <span>{item.quantity}</span>
-                                                  <Button
-                                                       size="sm"
-                                                       onClick={() => increment(item.medicineId, 100)} // replace 100 with stock if available
-                                                       disabled={item.quantity >= 100}
-                                                  >
-                                                       +
-                                                  </Button>
+                                                  <Button size="sm" variant="outline" onClick={() => decrement(item.medicineId)}>−</Button>
+                                                  <span className="w-8 text-center font-medium">{item.quantity}</span>
+                                                  <Button size="sm" variant="outline" onClick={() => increment(item.medicineId)}>+</Button>
                                              </div>
                                         </div>
-                                        <Button
-                                             size="sm"
-                                             variant="destructive"
-                                             onClick={() => handleRemove(item.medicineId)}
-                                        >
-                                             Remove
-                                        </Button>
+                                        <div className="text-right">
+                                             <p className="font-semibold">৳{(item.price * item.quantity).toFixed(2)}</p>
+                                             <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="text-red-500 hover:text-red-700 mt-1"
+                                                  onClick={() => handleRemove(item.medicineId)}
+                                             >
+                                                  <X className="w-4 h-4" />
+                                             </Button>
+                                        </div>
                                    </CardContent>
                               </Card>
                          ))}
 
+                         {/* Coupon */}
                          <Card>
-                              <CardHeader>
-                                   <CardTitle>Delivery Address</CardTitle>
-                              </CardHeader>
+                              <CardHeader><CardTitle className="text-base flex items-center gap-2"><Tag className="w-4 h-4" />Apply Coupon</CardTitle></CardHeader>
                               <CardContent>
+                                   {couponApplied ? (
+                                        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                                             <span className="text-green-700 font-medium">
+                                                  "{couponCode}" applied — you save ৳{couponDiscount.toFixed(2)}
+                                             </span>
+                                             <Button size="sm" variant="ghost" onClick={removeCoupon}>
+                                                  <X className="w-4 h-4" />
+                                             </Button>
+                                        </div>
+                                   ) : (
+                                        <div className="flex gap-2">
+                                             <Input
+                                                  placeholder="Enter coupon code"
+                                                  value={couponCode}
+                                                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                                  className="flex-1"
+                                             />
+                                             <Button onClick={handleApplyCoupon} disabled={couponLoading || !couponCode.trim()}>
+                                                  {couponLoading ? "Checking..." : "Apply"}
+                                             </Button>
+                                        </div>
+                                   )}
+                              </CardContent>
+                         </Card>
+
+                         {/* Address + Summary */}
+                         <Card>
+                              <CardHeader><CardTitle>Order Summary</CardTitle></CardHeader>
+                              <CardContent className="space-y-4">
+                                   {/* Price breakdown */}
+                                   <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                             <span className="text-muted-foreground">Subtotal</span>
+                                             <span>৳{subtotal.toFixed(2)}</span>
+                                        </div>
+                                        {couponDiscount > 0 && (
+                                             <div className="flex justify-between text-green-600">
+                                                  <span>Coupon discount</span>
+                                                  <span>− ৳{couponDiscount.toFixed(2)}</span>
+                                             </div>
+                                        )}
+                                        <div className="flex justify-between font-bold text-base border-t pt-2">
+                                             <span>Total</span>
+                                             <span>৳{total.toFixed(2)}</span>
+                                        </div>
+                                   </div>
+
+                                   {/* Address */}
                                    <form
                                         id="cart-form"
-                                        onSubmit={(e) => {
-                                             e.preventDefault();
-                                             form.handleSubmit();
-                                        }}
+                                        onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}
                                    >
                                         <FieldGroup>
-                                             <form.Field
-                                                  name="address"
-                                                  children={(field) => {
+                                             <form.Field name="address">
+                                                  {(field) => {
                                                        const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                                                        return (
                                                             <Field data-invalid={isInvalid}>
-                                                                 <FieldLabel htmlFor={field.name}>Address</FieldLabel>
+                                                                 <FieldLabel htmlFor={field.name}>Delivery Address</FieldLabel>
                                                                  <Input
                                                                       id={field.name}
                                                                       value={field.state.value}
                                                                       onChange={(e) => field.handleChange(e.target.value)}
-                                                                      placeholder="Example: House 12, Road 3, Gulshan, Dhaka 1212, Bangladesh"
+                                                                      placeholder="House 12, Road 3, Gulshan, Dhaka 1212"
                                                                       required
                                                                  />
                                                                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                                             </Field>
                                                        );
                                                   }}
-                                             />
+                                             </form.Field>
                                         </FieldGroup>
                                    </form>
                               </CardContent>
-                              <CardFooter className="flex justify-between items-center">
-                                   <p className="font-bold">Total: {totalPrice} tk</p>
-                                   <div className="flex gap-2">
-                                        <Button
-                                             type="button"
-                                             variant="outline"
-                                             onClick={() => {
-                                                  clearCart();
-                                                  queryClient.invalidateQueries({ queryKey: ["cart"] });
-                                             }}
-                                        >
-                                             Clear Cart
-                                        </Button>
-                                        <Button form="cart-form" type="submit">
-                                             Place Order
-                                        </Button>
-                                   </div>
+                              <CardFooter className="flex justify-between items-center gap-3">
+                                   <Button
+                                        variant="outline"
+                                        onClick={() => { clearCart(); queryClient.invalidateQueries({ queryKey: ["cart"] }); }}
+                                   >
+                                        Clear Cart
+                                   </Button>
+                                   <Button form="cart-form" type="submit" disabled={isPlacing} className="flex-1">
+                                        {isPlacing ? "Processing..." : `Pay ৳${total.toFixed(2)} via SSLCommerz`}
+                                   </Button>
                               </CardFooter>
                          </Card>
                     </>

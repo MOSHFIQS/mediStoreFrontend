@@ -7,21 +7,18 @@ export const orderServiceServer = {
                body: JSON.stringify(payload),
           }),
 
+     getMyOrders: () => apiFetchServerMain("/orders"),
+
+     getById: (id: string) => apiFetchServerMain(`/orders/${id}`),
+
+     cancel: (id: string) =>
+          apiFetchServerMain(`/orders/${id}`, { method: "PATCH" }),
+
      updateStatus: (id: string, status: string) =>
           apiFetchServerMain(`/orders/seller/${id}`, {
                method: "PATCH",
                body: JSON.stringify({ status }),
           }),
 
-     getMyOrders: () =>
-          apiFetchServerMain("/orders"),
-
-     cancel: (id: string) =>
-          apiFetchServerMain(`/orders/${id}`, {
-               method: "PATCH",
-          }),
-
-          getSellerOrders: () =>
-                    apiFetchServerMain("/orders/seller/my-orders"),
-
-}
+     getSellerOrders: () => apiFetchServerMain("/orders/seller/my-orders"),
+};

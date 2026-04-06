@@ -27,17 +27,5 @@ export const authService = {
                body: JSON.stringify(payload),
           }),
 
-     getMe: () => apiFetchClient("/user/me"),
-
-     updateMe: (payload: UpdateProfilePayload) =>
-          apiFetchClient("/users/me", {
-               method: "PATCH",
-               body: JSON.stringify(payload),
-          }),
-
-
-     logout: () =>
-          apiFetchClient("/auth/logout", {
-               method: "POST",
-          }),
+   
 }

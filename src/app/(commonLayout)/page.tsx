@@ -20,6 +20,9 @@ export default async function HomePage({
           categoryServiceServer.getAll(),
      ]);
 
+     console.log(medRes);
+     console.log(catRes);
+
      if (!medRes.ok) return <p className="p-4">Failed to load medicines</p>;
      if (!catRes.ok) return <p className="p-4">Failed to load categories</p>;
 
@@ -28,7 +31,7 @@ export default async function HomePage({
                <CarouselPlugin />
                <FeaturedSection />
                <AllMedicinesClient
-                    initialMedicines={medRes.data.data}
+                    initialMedicines={medRes.data.data.data}
                     categories={catRes.data.data}
                />
                <HealthTips />

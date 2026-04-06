@@ -30,9 +30,6 @@ const formSchema = z.object({
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
      const { setCookie} = useAuth() 
      const router = useRouter()
-     // const searchParams = useSearchParams();
-     // const redirect = searchParams.get("redirect") || "/";
-     // console.log(redirect);
 
 
      const form = useForm({

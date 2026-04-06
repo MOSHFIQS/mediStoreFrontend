@@ -57,7 +57,7 @@ const Navbar = () => {
      }
 
      return (
-          <section className="py-6  sticky top-0 z-50 ">
+          <section className="py-6  sticky top-0 z-50 bg-white">
                <div>
                  
                     <nav className="hidden items-center justify-between lg:flex px-4">
@@ -138,7 +138,7 @@ const Navbar = () => {
 
                          {/* Logo */}
                          <Link href="/" className="flex items-center gap-2">
-                              <img src="/logo/logo.png" className="h-8" />
+                              <img src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg" className="h-8" />
                               <span className="font-semibold">PLANORA</span>
                          </Link>
 

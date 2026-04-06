@@ -1,8 +1,8 @@
 import CreateMedicineClient from "@/components/createMedicine/CreateMedicineClient"
-import { categoryService } from "@/service/category.service"
+import { categoryServiceServer } from "@/service/category.server.service"
 
 export default async function Page() {
-     const res = await categoryService.getAll()
+     const res = await categoryServiceServer.getAll()
      const categories = res.ok ? res?.data?.data : []
 
      return <CreateMedicineClient categories={categories} />
