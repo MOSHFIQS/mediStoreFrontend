@@ -4,30 +4,53 @@ import { imageHostingService } from "@/service/image-hosting.service"
 import { medicineServiceServer } from "@/service/medicine.server.service"
 import { revalidatePath } from "next/cache"
 
-export async function createMedicineAction(formData: FormData) {
-     const name = formData.get("name") as string
-     const description = formData.get("description") as string
-     const categoryId = formData.get("categoryId") as string
-     const price = Number(formData.get("price"))
-     const stock = Number(formData.get("stock"))
-     const file = formData.get("photo") as File
-
-     if (!file) throw new Error("Image required")
-
-     // upload image
-     const uploadRes = await imageHostingService.uploadImage(file)
-     if (!uploadRes.ok || !uploadRes.url) throw new Error("Image upload failed")
+// services/medicineServiceServer.ts
+export async function createMedicineAction(data: {
+     name: string
+     genericName?: string
+     brand?: string
+     manufacturer?: string
+     sku?: string
+     description: string
+     categoryId: string
+     dosageForm?: string
+     strength?: string
+     unit?: string
+     price: number
+     discountPrice?: number
+     stock: number
+     requiresPrescription: boolean
+     image: string
+}) {
+     if (!data.image) throw new Error("Image is required")
+     if (!data.name) throw new Error("Name is required")
+     if (!data.description) throw new Error("Description is required")
+     if (!data.categoryId) throw new Error("Category is required")
+     if (!data.price) throw new Error("Price is required")
+     if (!data.stock && data.stock !== 0) throw new Error("Stock is required")
 
      const res = await medicineServiceServer.create({
-          name,
-          description,
-          categoryId,
-          price,
-          stock,
-          image: uploadRes.url,
+          name: data.name,
+          genericName: data.genericName,
+          brand: data.brand,
+          manufacturer: data.manufacturer,
+          sku: data.sku,
+          description: data.description,
+          categoryId: data.categoryId,
+          dosageForm: data.dosageForm,
+          strength: data.strength,
+          unit: data.unit || "piece",
+          price: data.price,
+          discountPrice: data.discountPrice,
+          stock: data.stock,
+          requiresPrescription: data.requiresPrescription,
+          image: data.image,
      })
 
-     if (!res.ok) throw new Error(res.message)
+     if (!res.ok) throw new Error(res.message || "Failed to create medicine")
+          
+
+     revalidatePath("/seller-dashboard/medicines")
      return true
 }
 

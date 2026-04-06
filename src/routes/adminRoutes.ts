@@ -18,6 +18,10 @@ export const adminRoutes: Route[] = [
                     url: "/admin-dashboard/all-users",
                },
                {
+                    title: "Coupons",
+                    url: "/admin-dashboard/coupons",
+               },
+               {
                     title: "Create Category",
                     url: "/admin-dashboard/create-category",
                },
