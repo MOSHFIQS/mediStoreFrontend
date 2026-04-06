@@ -22,7 +22,7 @@ export default async function AllMedicinesPage({
 
      return (
           <AllMedicinesClient
-               initialMedicines={medRes.data.data}
+               initialMedicines={medRes.data?.data?.data}
                categories={catRes.data.data}
           />
      );

@@ -38,6 +38,7 @@ const Navbar = () => {
           { title: "Home", url: "/" },
           { title: "All Medicines", url: "/medicines" },
           { title: "My Cart", url: "/cart" },
+          { title: "My Orders", url: "/my-orders" },
      ];
 
 

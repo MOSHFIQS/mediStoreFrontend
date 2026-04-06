@@ -14,7 +14,6 @@ interface OrderItem {
      price: number;
      medicine: { name: string };
 }
-
 interface Order {
      id: string;
      address: string;
@@ -33,9 +32,9 @@ export default function MyOrdersClient({ initialOrders }: { initialOrders: Order
                try {
                     await cancelOrderAction(orderId);
                     toast.success("Order cancelled");
-                    router.refresh(); 
+                    router.refresh();
                } catch (err: any) {
-                    toast.error(err.message );
+                    toast.error(err.message);
                }
           });
      };

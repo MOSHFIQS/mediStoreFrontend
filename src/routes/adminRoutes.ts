@@ -31,7 +31,7 @@ export const adminRoutes: Route[] = [
                },
                {
                     title: "All Reviews",
-                    url: "/admin-dashboard/all-reviews",
+                    url: "/admin-dashboard/reviews",
                },
                {
                     title: "Home",

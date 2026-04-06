@@ -19,6 +19,7 @@ export default function NotificationBell() {
 
      const load = async () => {
           const res = await getNotificationsAction();
+          console.log(res);
           if (res.ok) setNotifications(res.data);
      };
 

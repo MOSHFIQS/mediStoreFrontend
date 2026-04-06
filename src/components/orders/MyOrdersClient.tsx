@@ -18,6 +18,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function MyOrdersClient({ orders }: { orders: any[] }) {
+     console.log(orders);
      const router = useRouter();
      const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -35,7 +36,8 @@ export default function MyOrdersClient({ orders }: { orders: any[] }) {
      const handleCancel = async (orderId: string) => {
           setLoadingId(orderId);
           try {
-               await cancelOrderAction(orderId);
+               const res =  await cancelOrderAction(orderId);
+               console.log(res);
                toast.success("Order cancelled");
                router.refresh();
           } catch (err: any) {
@@ -100,7 +102,7 @@ export default function MyOrdersClient({ orders }: { orders: any[] }) {
                                         </Button>
                                    )}
                                    {/* Cancel if cancellable */}
-                                   {["PLACED", "CONFIRMED"].includes(order.status) && (
+                                   {order.status === "PLACED" && order.payment?.status !== "SUCCESS" && (
                                         <Button
                                              size="sm"
                                              variant="destructive"

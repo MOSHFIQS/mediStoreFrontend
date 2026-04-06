@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 import Image from "next/image";
 import { Tag, X } from "lucide-react";
+import { AppImage } from "../shared/image/AppImage";
 
 export default function Cart() {
      const queryClient = useQueryClient();
@@ -40,6 +41,7 @@ export default function Cart() {
                item.medicineId === id ? { ...item, quantity: item.quantity + 1 } : item
           ));
      };
+
 
      const decrement = (id: string) => {
           updateCart(cart.map((item) =>
@@ -94,6 +96,8 @@ export default function Cart() {
                          couponCode: couponApplied ? couponCode : undefined,
                     });
 
+                    console.log(order);
+
                     toast.loading("Redirecting to payment...");
 
                     // Step 2: Initiate SSLCommerz payment
@@ -122,32 +126,33 @@ export default function Cart() {
                     <>
                          {/* Cart Items */}
                          {cart.map((item) => (
-                              <Card key={item.medicineId}>
+                              <Card key={item?.medicineId}>
                                    <CardContent className="flex gap-4 items-center p-4">
-                                        <div className="relative w-20 h-20 flex-shrink-0">
-                                             <Image
-                                                  src={item.image || "/placeholder.png"}
-                                                  alt={item.name}
-                                                  fill
-                                                  className="object-contain rounded-md"
+                                        <div className=" w-20 h-20  border rounded-md overflow-hidden">
+                                             <AppImage
+                                                  src={item?.image}
+                                                  alt={item?.name}
+                                                  width={100}
+                                                  height={100}
+                                                  className="object-cover w-full h-full rounded-md"
                                              />
                                         </div>
                                         <div className="flex-1">
-                                             <p className="font-semibold">{item.name}</p>
-                                             <p className="text-sm text-muted-foreground">৳{item.price} each</p>
+                                             <p className="font-semibold">{item?.name}</p>
+                                             <p className="text-sm text-muted-foreground">৳{item?.price} each</p>
                                              <div className="flex items-center gap-2 mt-2">
-                                                  <Button size="sm" variant="outline" onClick={() => decrement(item.medicineId)}>−</Button>
-                                                  <span className="w-8 text-center font-medium">{item.quantity}</span>
-                                                  <Button size="sm" variant="outline" onClick={() => increment(item.medicineId)}>+</Button>
+                                                  <Button size="sm" variant="outline" onClick={() => decrement(item?.medicineId)}>−</Button>
+                                                  <span className="w-8 text-center font-medium">{item?.quantity}</span>
+                                                  <Button size="sm" variant="outline" onClick={() => increment(item?.medicineId)}>+</Button>
                                              </div>
                                         </div>
                                         <div className="text-right">
-                                             <p className="font-semibold">৳{(item.price * item.quantity).toFixed(2)}</p>
+                                             <p className="font-semibold">৳{(item?.price * item?.quantity).toFixed(2)}</p>
                                              <Button
                                                   size="sm"
                                                   variant="ghost"
                                                   className="text-red-500 hover:text-red-700 mt-1"
-                                                  onClick={() => handleRemove(item.medicineId)}
+                                                  onClick={() => handleRemove(item?.medicineId)}
                                              >
                                                   <X className="w-4 h-4" />
                                              </Button>
@@ -163,7 +168,7 @@ export default function Cart() {
                                    {couponApplied ? (
                                         <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
                                              <span className="text-green-700 font-medium">
-                                                  "{couponCode}" applied — you save ৳{couponDiscount.toFixed(2)}
+                                                  "{couponCode}" applied — you save ৳{couponDiscount?.toFixed(2)}
                                              </span>
                                              <Button size="sm" variant="ghost" onClick={removeCoupon}>
                                                   <X className="w-4 h-4" />
