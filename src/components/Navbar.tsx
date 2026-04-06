@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
+import NotificationBell from "./notifications/NotificationBell";
 
 const Navbar = () => {
      const { user, logout, loading } = useAuth();
@@ -39,7 +40,7 @@ const Navbar = () => {
           { title: "My Cart", url: "/cart" },
      ];
 
-  
+
 
      const isActive = (url: string) => {
           if (url === "/") {
@@ -59,7 +60,7 @@ const Navbar = () => {
      return (
           <section className="py-6  sticky top-0 z-50 bg-white">
                <div>
-                 
+
                     <nav className="hidden items-center justify-between lg:flex px-4">
 
                          <div className="flex items-center justify-center gap-10">
@@ -91,10 +92,11 @@ const Navbar = () => {
 
                          {/* Search + Auth */}
                          <div className="flex items-center gap-3">
-                             
+
 
                               {user?.id ? (
                                    <>
+                                        <NotificationBell />
                                         <Button
                                              variant="outline"
                                              className="rounded-full"
@@ -158,7 +160,7 @@ const Navbar = () => {
 
                                    <div className="flex flex-col gap-4 mt-6">
 
-                                       
+
                                         {/* Menu */}
                                         <div className="flex flex-col gap-2">
                                              {menu.map((item) => (
@@ -180,6 +182,7 @@ const Navbar = () => {
                                         <div className="flex flex-col gap-2">
                                              {user?.id ? (
                                                   <>
+                                                       <NotificationBell />
                                                        <Button
                                                             variant="violet"
                                                             className="w-full rounded-full"
