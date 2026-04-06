@@ -2,6 +2,7 @@ import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const categoryServiceServer = {
      getAll: () => apiFetchServerMain("/category"),
+     getById: (id: string) => apiFetchServerMain(`/category/${id}`),
 
      create: (data: { name: string; description?: string; image?: string }) =>
           apiFetchServerMain("/category", {
@@ -18,7 +19,7 @@ export const categoryServiceServer = {
                method: "PUT",
                body: JSON.stringify(payload),
           }),
-          
+
      delete: (id: string) =>
           apiFetchServerMain(`/category/${id}`, {
                method: "DELETE",

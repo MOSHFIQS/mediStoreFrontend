@@ -13,41 +13,53 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { createCategoryAction } from "@/actions/category.action";
-import { useImageUpload } from "@/hooks/useImageUpload";
-import ImageUploader from "../shared/image/ImageUploader";
 import { useRouter } from "next/navigation";
+import { updateCategoryAction } from "@/actions/category.action";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import ImageUploader from "@/components/shared/image/ImageUploader";
 
-export default function CreateCategory() {
+export default function UpdateCategory({ category }: { category: any }) {
+     console.log(category);
      const [loading, setLoading] = useState(false);
-     const categoryImages = useImageUpload({ max: 10 });
-     const router = useRouter()
+     const categoryImages = useImageUpload({
+          max: 1,
+          defaultImages: category?.image ? [category.image] : [],
+     });
+
+
+
+     const router = useRouter();
 
      const form = useForm({
           defaultValues: {
-               name: "",
-               description: "",
+               name: category.name,
+               description: category.description,
           },
-          onSubmit: async ({ value }) => {
-               try {
-                    setLoading(true);
 
+          onSubmit: async ({ value }) => {
+               setLoading(true);
+               try {
                     const payload = {
-                         name: value.name,
-                         description: value.description || undefined,
-                         image: categoryImages.images[0]?.img,
-                    };
+                         ...value,
+                         image: categoryImages.images[0]?.img
+                    }
 
                     console.log(payload);
 
-                    await createCategoryAction(payload);
 
-                    toast.success("Category created successfully");
+
+                    const res = await updateCategoryAction(category.id, payload);
+                    console.log(res);
+
+                    if (!res.ok) {
+                         throw new Error(res.message);
+                    }
+                    router.push("/admin-dashboard/category");
+                    toast.success(res.message);
                     form.reset();
-                    router.push('/admin-dashboard/category')
-
                } catch (err: any) {
-                    toast.error(err.message || "Failed to create category");
+                    // console.log(err);
+                    toast.error(err.message);
                } finally {
                     setLoading(false);
                }
@@ -55,11 +67,12 @@ export default function CreateCategory() {
      });
 
      return (
-           <Card className="pt-0">
+          <div >
+               <Card className="pt-0">
                     <CardHeader className="px-6 py-4 border-b bg-gradient-to-r from-orange-50 to-white rounded-md">
-                         <CardTitle className="text-xl font-semibold text-gray-800">Create Category</CardTitle>
+                         <CardTitle className="text-xl font-semibold text-gray-800">Update Category</CardTitle>
                          <CardDescription>
-                              Add a Category
+                              Update a Category
                          </CardDescription>
                     </CardHeader>
 
@@ -132,11 +145,12 @@ export default function CreateCategory() {
                               />
 
                               <Button type="submit" className="w-full" disabled={loading}>
-                                   {loading ? "Creating..." : "Create Category"}
+                                   {loading ? "Updating..." : "Update Category"}
                               </Button>
 
                          </form>
                     </CardContent>
                </Card>
+          </div>
      );
 }
