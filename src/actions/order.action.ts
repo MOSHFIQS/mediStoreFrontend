@@ -10,15 +10,13 @@ export async function createOrderAction({
      quantity,
      addressId,
      addressSnapshot,
-     notes,
-     prescriptionId,
+     notes
 }: {
      medicineId: string;
      quantity: number;
      addressId?: string;
      addressSnapshot?: { line1: string; city?: string; district?: string };
      notes?: string;
-     prescriptionId?: string;
 }) {
      try {
           if (!medicineId) throw new Error("Medicine ID is required");
@@ -28,8 +26,7 @@ export async function createOrderAction({
           const res = await orderServiceServer.create({
                items: [{ medicineId, quantity }],
                ...(addressId ? { addressId } : { addressSnapshot }),
-               notes,
-               prescriptionId
+               notes
           });
 
           if (!res?.ok) throw new Error(res?.message || "Failed to create order");

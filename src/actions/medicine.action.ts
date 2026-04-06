@@ -19,7 +19,6 @@ export async function createMedicineAction(data: {
      price: number;
      discountPrice?: number;
      stock: number;
-     requiresPrescription: boolean;
      image: string;
      images?: string[];
 }) {
@@ -46,7 +45,6 @@ export async function createMedicineAction(data: {
                price: data.price,
                discountPrice: data.discountPrice,
                stock: data.stock,
-               requiresPrescription: data.requiresPrescription,
                image: data.image,
                images: data.images,
           });

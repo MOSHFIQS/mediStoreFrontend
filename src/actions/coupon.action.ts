@@ -86,7 +86,7 @@ export async function validateCouponAction(code: string, orderAmount: number) {
           return {
                ok: true,
                message: res?.message || "Coupon applied successfully",
-               data: res?.data?.data, // { coupon, discount }
+               data: res?.data, // { coupon, discount }
           };
      } catch (err: any) {
           return {

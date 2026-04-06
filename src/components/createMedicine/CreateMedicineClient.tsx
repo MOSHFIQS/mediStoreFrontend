@@ -47,7 +47,6 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                price: "",
                discountPrice: "",
                stock: "",
-               requiresPrescription: false,
           },
 
           onSubmit: async ({ value }) => {
@@ -72,7 +71,6 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                               strength: value.strength || undefined,
                               unit: value.unit || "piece",
                               sku: value.sku || undefined,
-                              requiresPrescription: value.requiresPrescription,
                               image: medicineImages.images[0]?.img,
                               images: medicineImages.images
                               .filter((img) => !img.imageUploading)
@@ -353,20 +351,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
 
                                    </div>
 
-                                   {/* toggle */}
-                                   <form.Field name="requiresPrescription">
-                                        {(field) => (
-                                             <label className="mt-4 flex items-center gap-3 cursor-pointer w-fit">
-                                                  <div
-                                                       onClick={() => field.handleChange(!field.state.value)}
-                                                       className={`relative w-11 h-6 rounded-full ${field.state.value ? "bg-purple-500" : "bg-gray-200"}`}
-                                                  >
-                                                       <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full ${field.state.value ? "translate-x-5" : ""}`} />
-                                                  </div>
-                                                  <p className="text-sm">Requires Prescription</p>
-                                             </label>
-                                        )}
-                                   </form.Field>
+                                  
 
                               </div>
 
