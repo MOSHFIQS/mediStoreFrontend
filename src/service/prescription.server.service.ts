@@ -1,17 +1,17 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const prescriptionServiceServer = {
-     getMy: () => apiFetchServerMain("/prescriptions/my"),
-     getAll: () => apiFetchServerMain("/prescriptions"),
+     getMy: () => apiFetchServerMain("/prescription/my"),
+     getAll: () => apiFetchServerMain("/prescription"),
 
      upload: (payload: { images: string[]; notes?: string }) =>
-          apiFetchServerMain("/prescriptions", {
+          apiFetchServerMain("/prescription", {
                method: "POST",
                body: JSON.stringify(payload),
           }),
 
      review: (id: string, payload: { status: "APPROVED" | "REJECTED"; items?: any[] }) =>
-          apiFetchServerMain(`/prescriptions/${id}/review`, {
+          apiFetchServerMain(`/prescription/${id}/review`, {
                method: "PATCH",
                body: JSON.stringify(payload),
           }),

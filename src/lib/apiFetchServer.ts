@@ -42,7 +42,7 @@ export async function apiFetchServerMain(
           return {
                ok: true,
                status: res.status,
-               data,
+               data: data.data || null,
                message: data?.message || "",
           };
      } catch (err: any) {

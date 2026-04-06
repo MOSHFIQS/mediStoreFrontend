@@ -54,7 +54,7 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
                setImages((prev) =>
                     prev.map((img) =>
                          img.id === tempId
-                              ? { ...img, img: res.data?.data?.url, imageUploading: false }
+                              ? { ...img, img: res.data?.url, imageUploading: false }
                               : img
                     )
                );

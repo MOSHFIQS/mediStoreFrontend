@@ -1,6 +1,7 @@
-import { medicineServiceServer } from "@/service/medicine.server.service";
-import { categoryServiceServer } from "@/service/category.server.service";
+
 import AllMedicines from "@/components/medicine/AllMedicines";
+import { getAllMedicinesAction } from "@/actions/medicine.action";
+import { getAllCategoriesAction } from "@/actions/category.action";
 
 export default async function AllMedicinesPage({
      searchParams,
@@ -10,20 +11,20 @@ export default async function AllMedicinesPage({
      const { category: categoryId, search } = await searchParams;
 
      const [medRes, catRes] = await Promise.all([
-          
-          medicineServiceServer.getAll(
-               categoryId ? { categoryId, search } : { search }
-          ),
-          categoryServiceServer.getAll(),
+          getAllMedicinesAction(categoryId ? { categoryId } : {}),
+          getAllCategoriesAction(),
      ]);
+
+     console.log(medRes);
+     console.log(catRes);
 
      if (!medRes.ok) return <p className="p-4">Failed to load medicines</p>;
      if (!catRes.ok) return <p className="p-4">Failed to load categories</p>;
 
      return (
           <AllMedicines
-               initialMedicines={medRes.data?.data?.data}
-               categories={catRes.data.data}
+               initialMedicines={medRes.data?.data}
+               categories={catRes.data}
           />
      );
 }

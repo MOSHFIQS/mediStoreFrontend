@@ -5,21 +5,9 @@ import { prescriptionServiceServer } from "@/service/prescription.server.service
 import { revalidatePath } from "next/cache";
 
 // Upload prescription
-export async function uploadPrescriptionAction(formData: FormData) {
+export async function uploadPrescriptionAction(payload: { images: string[]; notes?: string }) {
      try {
-          const files = formData.getAll("images") as File[];
-          const notes = formData.get("notes") as string;
-
-          if (!files.length) return { ok: false, message: "At least one prescription image is required" };
-
-          // Upload all images
-          const uploadResults = await Promise.all(files.map((f) => imageHostingService.uploadImage(f)));
-          const failed = uploadResults.find((r) => !r.ok);
-          if (failed) return { ok: false, message: "One or more image uploads failed" };
-
-          const imageUrls = uploadResults.map((r) => r.url as string);
-
-          const res = await prescriptionServiceServer.upload({ images: imageUrls, notes });
+          const res = await prescriptionServiceServer.upload(payload);
 
           if (!res?.ok) return { ok: false, message: res?.message || "Failed to upload prescription" };
 
@@ -49,5 +37,37 @@ export async function reviewPrescriptionAction(
           return { ok: true, message: res?.message || "Prescription reviewed successfully", data: res?.data };
      } catch (err: any) {
           return { ok: false, message: err?.message || "Something went wrong while reviewing prescription" };
+     }
+}
+
+
+
+// Get prescriptions of the logged-in user
+export async function getMyPrescriptionsAction() {
+     try {
+          const res = await prescriptionServiceServer.getMy();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch your prescriptions", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Your prescriptions fetched successfully", data: res?.data|| [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching your prescriptions", data: [] };
+     }
+}
+
+// Get all prescriptions (admin)
+export async function getAllPrescriptionsAction() {
+     try {
+          const res = await prescriptionServiceServer.getAll();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch prescriptions", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Prescriptions fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching prescriptions", data: [] };
      }
 }

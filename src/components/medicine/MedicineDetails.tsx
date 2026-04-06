@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { createOrderAction, initiatePaymentForOrderAction } from "@/actions/order.action";
-import { addToCart, getCart } from "@/lib/cart";
+import { createAddressAction } from "@/actions/address.action";
+import { addToCart } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import {
      ShoppingCart, Zap, Star, BadgeCheck, Package,
      FlaskConical, Building2, Pill, Layers, Tag,
-     AlertTriangle, ChevronLeft, Plus, Minus
+     AlertTriangle, ChevronLeft, Plus, Minus,
+     MapPin, PlusCircle
 } from "lucide-react";
 import Image from "next/image";
 
@@ -51,15 +53,50 @@ interface Medicine {
      reviews: Review[];
 }
 
-export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
+interface Address {
+     id: string;
+     label?: string;
+     line1: string;
+     line2?: string;
+     city: string;
+     district: string;
+     postalCode?: string;
+     isDefault: boolean;
+}
+
+interface NewAddressForm {
+     label: string;
+     line1: string;
+     line2: string;
+     city: string;
+     district: string;
+     postalCode: string;
+}
+
+export default function MedicineDetails({ medicine, addresses }: { medicine: Medicine; addresses: Address[] }) {
      const router = useRouter();
      const queryClient = useQueryClient();
      const { user } = useAuth();
 
      const [quantity, setQuantity] = useState(1);
-     const [address, setAddress] = useState("");
      const [activeImage, setActiveImage] = useState(medicine.image || "");
      const [isOrdering, setIsOrdering] = useState(false);
+
+     // ── Address ───────────────────────────────────────────
+     const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
+     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+          defaultAddr?.id ?? null
+     );
+     const [useNewAddress, setUseNewAddress] = useState(addresses.length === 0);
+     const [newAddress, setNewAddress] = useState<NewAddressForm>({
+          label: "",
+          line1: "",
+          line2: "",
+          city: "",
+          district: "",
+          postalCode: "",
+     });
+     const [saveNewAddress, setSaveNewAddress] = useState(false);
 
      const unitPrice = medicine.discountPrice ?? medicine.price;
      const discount = medicine.discountPrice
@@ -98,34 +135,70 @@ export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
                toast.error("Only customers can place orders");
                return;
           }
-          if (!address.trim()) {
-               toast.error("Please enter a delivery address");
-               return;
-          }
           if (medicine.requiresPrescription) {
                toast.error("This medicine requires a prescription. Please upload one first.");
                router.push("/dashboard/prescriptions");
                return;
           }
 
+          const isUsingNew = useNewAddress || addresses.length === 0;
+
+          if (isUsingNew && !newAddress.line1.trim()) {
+               toast.error("Please enter a delivery address");
+               return;
+          }
+          if (!isUsingNew && !selectedAddressId) {
+               toast.error("Please select a delivery address");
+               return;
+          }
+
           setIsOrdering(true);
+          const toastId = toast.loading("Placing order...");
+
           try {
+               // Optionally save new address first
+               if (isUsingNew && saveNewAddress && newAddress.line1.trim()) {
+                    await createAddressAction({
+                         label: newAddress.label || undefined,
+                         line1: newAddress.line1,
+                         line2: newAddress.line2 || undefined,
+                         city: newAddress.city,
+                         district: newAddress.district,
+                         postalCode: newAddress.postalCode || undefined,
+                         isDefault: addresses.length === 0,
+                    });
+               }
+
                // Step 1 — create order
                const order = await createOrderAction({
                     medicineId: medicine.id,
                     quantity,
-                    address,
+                    ...(isUsingNew
+                         ? {
+                              addressSnapshot: {
+                                   line1: newAddress.line1,
+                                   city: newAddress.city || undefined,
+                                   district: newAddress.district || undefined,
+                              },
+                         }
+                         : { addressId: selectedAddressId! }
+                    ),
                });
 
-               toast.loading("Redirecting to payment...");
+               if (!order.ok) throw new Error(order.message);
+
+               toast.loading("Redirecting to payment...", { id: toastId });
 
                // Step 2 — initiate SSLCommerz
-               const payment = await initiatePaymentForOrderAction(order.data?.id ?? order.data.id);
+               const payment = await initiatePaymentForOrderAction(order.data.id);
+
+               if (!payment.ok) throw new Error(payment.message);
 
                // Step 3 — redirect
+               toast.success("Redirecting to SSLCommerz...", { id: toastId });
                window.location.href = payment.data.gatewayUrl;
           } catch (err: any) {
-               toast.error(err.message || "Order failed");
+               toast.error(err.message || "Order failed", { id: toastId });
                setIsOrdering(false);
           }
      };
@@ -134,6 +207,11 @@ export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
      const avgRating = medicine.reviews.length
           ? medicine.reviews.reduce((s, r) => s + r.rating, 0) / medicine.reviews.length
           : null;
+
+     // ── Address valid check (for disabling Buy Now) ────────
+     const isAddressValid = useNewAddress || addresses.length === 0
+          ? newAddress.line1.trim().length > 0
+          : !!selectedAddressId;
 
      return (
           <div className="max-w-6xl mx-auto px-4 py-6 space-y-10">
@@ -297,7 +375,8 @@ export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
 
                          {/* Quantity + address */}
                          {!outOfStock && user?.role === "CUSTOMER" && (
-                              <div className="space-y-3">
+                              <div className="space-y-4">
+
                                    {/* Quantity picker */}
                                    <div className="flex items-center gap-3">
                                         <span className="text-sm font-medium w-20">Quantity</span>
@@ -323,14 +402,120 @@ export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
                                         </span>
                                    </div>
 
-                                   {/* Address */}
-                                   <div className="space-y-1">
-                                        <label className="text-sm font-medium">Delivery Address</label>
-                                        <Input
-                                             value={address}
-                                             onChange={(e) => setAddress(e.target.value)}
-                                             placeholder="House 12, Road 3, Gulshan, Dhaka 1212"
-                                        />
+                                   {/* ── Delivery Address ── */}
+                                   <div className="space-y-2">
+                                        <p className="text-sm font-medium flex items-center gap-1.5">
+                                             <MapPin className="w-3.5 h-3.5 text-purple-500" /> Delivery Address
+                                        </p>
+
+                                        {/* Saved addresses */}
+                                        {addresses.length > 0 && (
+                                             <div className="space-y-2">
+                                                  {addresses.map((addr) => (
+                                                       <div
+                                                            key={addr.id}
+                                                            onClick={() => { setSelectedAddressId(addr.id); setUseNewAddress(false); }}
+                                                            className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition
+                                                            ${selectedAddressId === addr.id && !useNewAddress
+                                                                      ? "border-purple-400 bg-purple-50"
+                                                                      : "border-gray-200 hover:border-gray-300"
+                                                                 }`}
+                                                       >
+                                                            {/* Radio dot */}
+                                                            <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition
+                                                            ${selectedAddressId === addr.id && !useNewAddress
+                                                                      ? "border-purple-500 bg-purple-500"
+                                                                      : "border-gray-300"
+                                                                 }`}
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                 <div className="flex items-center gap-2 flex-wrap">
+                                                                      {addr.label && (
+                                                                           <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded">
+                                                                                {addr.label}
+                                                                           </span>
+                                                                      )}
+                                                                      {addr.isDefault && (
+                                                                           <span className="text-xs text-purple-600 font-medium flex items-center gap-1">
+                                                                                <Star className="w-3 h-3 fill-purple-500 text-purple-500" /> Default
+                                                                           </span>
+                                                                      )}
+                                                                 </div>
+                                                                 <p className="text-sm mt-0.5">
+                                                                      {addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}
+                                                                 </p>
+                                                                 <p className="text-xs text-muted-foreground">
+                                                                      {addr.city}, {addr.district}
+                                                                      {addr.postalCode ? ` - ${addr.postalCode}` : ""}
+                                                                 </p>
+                                                            </div>
+                                                       </div>
+                                                  ))}
+
+                                                  {/* Toggle new address */}
+                                                  <button
+                                                       onClick={() => {
+                                                            setUseNewAddress(!useNewAddress);
+                                                            setSelectedAddressId(null);
+                                                       }}
+                                                       className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition
+                                                       ${useNewAddress
+                                                                 ? "border-purple-400 bg-purple-50 text-purple-700"
+                                                                 : "border-dashed border-gray-300 text-muted-foreground hover:border-purple-300"
+                                                            }`}
+                                                  >
+                                                       <PlusCircle className="w-4 h-4 flex-shrink-0" />
+                                                       Use a different address
+                                                  </button>
+                                             </div>
+                                        )}
+
+                                        {/* New address fields */}
+                                        {(useNewAddress || addresses.length === 0) && (
+                                             <div className="space-y-2 border p-3 rounded-xl">
+                                                  <Input
+                                                       placeholder="Label (Home, Office)"
+                                                       value={newAddress.label}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="Address Line 1 *"
+                                                       value={newAddress.line1}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="Address Line 2"
+                                                       value={newAddress.line2}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line2: e.target.value })}
+                                                  />
+                                                  <div className="grid grid-cols-2 gap-2">
+                                                       <Input
+                                                            placeholder="City"
+                                                            value={newAddress.city}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                       />
+                                                       <Input
+                                                            placeholder="District"
+                                                            value={newAddress.district}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+                                                       />
+                                                  </div>
+                                                  <Input
+                                                       placeholder="Postal Code"
+                                                       value={newAddress.postalCode}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
+                                                  />
+                                                  <label className="flex items-center gap-2 text-sm cursor-pointer select-none pt-1">
+                                                       <input
+                                                            type="checkbox"
+                                                            checked={saveNewAddress}
+                                                            onChange={(e) => setSaveNewAddress(e.target.checked)}
+                                                            className="w-4 h-4 rounded accent-purple-600"
+                                                       />
+                                                       Save this address for future orders
+                                                  </label>
+                                             </div>
+                                        )}
                                    </div>
                               </div>
                          )}
@@ -350,7 +535,7 @@ export default function MedicineDetails({ medicine }: { medicine: Medicine }) {
                                         <Button
                                              className="flex-1 rounded-full gap-2 bg-purple-600 hover:bg-purple-700"
                                              onClick={handleBuyNow}
-                                             disabled={isOrdering || !address.trim()}
+                                             disabled={isOrdering || !isAddressValid}
                                         >
                                              {isOrdering ? (
                                                   <>

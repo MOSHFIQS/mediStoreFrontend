@@ -16,7 +16,7 @@ const CartPage = async () => {
      }
      return (
           <div>
-               <Cart addresses={res.data.data} />
+               <Cart addresses={res.data} />
           </div>
      );
 };

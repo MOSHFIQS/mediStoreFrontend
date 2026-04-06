@@ -21,7 +21,7 @@ import {
      AlertCircle, Star, PlusCircle
 } from "lucide-react";
 
-interface Address {
+export interface Address {
      id: string;
      label?: string;
      line1: string;
@@ -30,6 +30,15 @@ interface Address {
      district: string;
      postalCode?: string;
      isDefault: boolean;
+}
+
+interface NewAddressForm {
+     label: string;
+     line1: string;
+     line2: string;
+     city: string;
+     district: string;
+     postalCode: string;
 }
 
 export default function Cart({ addresses }: { addresses: Address[] }) {
@@ -47,13 +56,19 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
      const [couponLoading, setCouponLoading] = useState(false);
 
      // ── Address ───────────────────────────────────────────
-     // Pre-select default address from prop
      const defaultAddr = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null;
      const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
           defaultAddr?.id ?? null
      );
      const [useNewAddress, setUseNewAddress] = useState(addresses.length === 0);
-     const [newAddress, setNewAddress] = useState("");
+     const [newAddress, setNewAddress] = useState<NewAddressForm>({
+          label: "",
+          line1: "",
+          line2: "",
+          city: "",
+          district: "",
+          postalCode: "",
+     });
      const [saveNewAddress, setSaveNewAddress] = useState(false);
 
      // ── Misc ──────────────────────────────────────────────
@@ -118,9 +133,9 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
           if (user.role !== "CUSTOMER") { toast.error("Only customers can place orders"); return; }
           if (!cart.length) { toast.error("Cart is empty"); return; }
 
-          // Validate address
           const isUsingNew = useNewAddress || addresses.length === 0;
-          if (isUsingNew && !newAddress.trim()) {
+
+          if (isUsingNew && !newAddress.line1.trim()) {
                toast.error("Please enter a delivery address");
                return;
           }
@@ -134,11 +149,14 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
 
           try {
                // Optionally save new address first
-               if (isUsingNew && saveNewAddress && newAddress.trim()) {
+               if (isUsingNew && saveNewAddress && newAddress.line1.trim()) {
                     await createAddressAction({
-                         line1: newAddress,
-                         city: "",
-                         district: "",
+                         label: newAddress.label || undefined,
+                         line1: newAddress.line1,
+                         line2: newAddress.line2 || undefined,
+                         city: newAddress.city,
+                         district: newAddress.district,
+                         postalCode: newAddress.postalCode || undefined,
                          isDefault: addresses.length === 0,
                     });
                }
@@ -147,7 +165,16 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                const order = await createCartOrderAction({
                     items: cart.map((i) => ({ medicineId: i.medicineId, quantity: i.quantity })),
                     ...(isUsingNew
-                         ? { addressSnapshot: { line1: newAddress } }
+                         ? {
+                              addressSnapshot: {
+                                   label: newAddress.label || undefined,
+                                   line1: newAddress.line1,
+                                   line2: newAddress.line2 || undefined,
+                                   city: newAddress.city,
+                                   district: newAddress.district,
+                                   postalCode: newAddress.postalCode || undefined,
+                              },
+                         }
                          : { addressId: selectedAddressId! }
                     ),
                     couponCode: couponApplied ? couponCode : undefined,
@@ -301,7 +328,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
 
                                    <CardContent className="space-y-4">
 
-                                        {/* Saved addresses from prop */}
+                                        {/* Saved addresses */}
                                         {addresses.length > 0 && (
                                              <div className="space-y-2">
                                                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -350,7 +377,10 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
 
                                                   {/* Toggle new address */}
                                                   <button
-                                                       onClick={() => { setUseNewAddress(!useNewAddress); setSelectedAddressId(null); }}
+                                                       onClick={() => {
+                                                            setUseNewAddress(!useNewAddress);
+                                                            setSelectedAddressId(null);
+                                                       }}
                                                        className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition
                         ${useNewAddress
                                                                  ? "border-purple-400 bg-purple-50 text-purple-700"
@@ -365,17 +395,38 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
 
                                         {/* New address fields */}
                                         {(useNewAddress || addresses.length === 0) && (
-                                             <div className="space-y-3">
-                                                  <div className="space-y-1">
-                                                       <label className="text-sm font-medium">
-                                                            Delivery Address <span className="text-red-400">*</span>
-                                                       </label>
-                                                       <Input
-                                                            value={newAddress}
-                                                            onChange={(e) => setNewAddress(e.target.value)}
-                                                            placeholder="House 12, Road 3, Gulshan, Dhaka 1212"
-                                                       />
-                                                  </div>
+                                             <div className="space-y-3 border p-3 rounded">
+                                                  <Input
+                                                       placeholder="Label (Home, Office)"
+                                                       value={newAddress.label}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="Address Line 1 *"
+                                                       value={newAddress.line1}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="Address Line 2"
+                                                       value={newAddress.line2}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, line2: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="City"
+                                                       value={newAddress.city}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="District"
+                                                       value={newAddress.district}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+                                                  />
+                                                  <Input
+                                                       placeholder="Postal Code"
+                                                       value={newAddress.postalCode}
+                                                       onChange={(e) => setNewAddress({ ...newAddress, postalCode: e.target.value })}
+                                                  />
+
                                                   <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
                                                        <input
                                                             type="checkbox"

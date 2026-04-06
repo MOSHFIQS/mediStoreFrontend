@@ -6,18 +6,20 @@ import Footer from "@/components/footer/Footer";
 import HealthTips from "@/components/healthTips/HealthTips";
 import FeaturedSection from "@/components/featuredSection/FeaturedSection";
 import AllMedicines from "@/components/medicine/AllMedicines";
+import { getAllMedicinesAction } from "@/actions/medicine.action";
+import { getAllCategoriesAction } from "@/actions/category.action";
 
 export default async function HomePage({
      searchParams,
 }: {
      searchParams: Promise<{ category?: string }>;
 }) {
-     const params = await searchParams; 
+     const params = await searchParams;
      const categoryId = params.category;
 
      const [medRes, catRes] = await Promise.all([
-          medicineServiceServer.getAll(categoryId ? { categoryId } : {}),
-          categoryServiceServer.getAll(),
+          getAllMedicinesAction(categoryId ? { categoryId } : {}),
+          getAllCategoriesAction(),
      ]);
 
      console.log(medRes);
@@ -31,8 +33,8 @@ export default async function HomePage({
                <CarouselPlugin />
                <FeaturedSection />
                <AllMedicines
-                    initialMedicines={medRes.data.data.data}
-                    categories={catRes.data.data}
+                    initialMedicines={medRes.data.data}
+                    categories={[]}
                />
                <HealthTips />
                <Footer />

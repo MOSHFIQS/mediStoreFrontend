@@ -48,7 +48,7 @@ export async function createCartOrderAction({
 }: {
      items: { medicineId: string; quantity: number }[];
      addressId?: string;
-     addressSnapshot?: { line1: string; city?: string; district?: string };
+     addressSnapshot?: { line1: string; city?: string; district?: string, label?: string ,line2?: string ,postalCode?: string };
      couponCode?: string;
      notes?: string;
      shippingFee?: number;

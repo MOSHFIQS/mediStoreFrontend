@@ -100,3 +100,36 @@ export async function deleteMedicineAction(id: string) {
           return { ok: false, message: err?.message || "Something went wrong while deleting medicine" };
      }
 }
+
+
+// Get all medicines (optionally filtered by category or search)
+export async function getAllMedicinesAction(params?: { categoryId?: string; search?: string }) {
+     try {
+          const res = await medicineServiceServer.getAll(params);
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch medicines", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Medicines fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching medicines", data: [] };
+     }
+}
+
+// Get a medicine by ID
+export async function getMedicineByIdAction(id: string) {
+     try {
+          if (!id) return { ok: false, message: "Medicine ID is required", data: null };
+
+          const res = await medicineServiceServer.getById(id);
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch medicine", data: null };
+          }
+
+          return { ok: true, message: res?.message || "Medicine fetched successfully", data: res?.data };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching medicine", data: null };
+     }
+}
