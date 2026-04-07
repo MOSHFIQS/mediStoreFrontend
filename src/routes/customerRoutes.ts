@@ -40,11 +40,11 @@ export const customerRoutes: Route[] = [
                     url: "/dashboard/orders",
                     icon: ClipboardList,
                },
-               // {
-               //      title: "My Carts",
-               //      url: "/dashboard/my-cart",
-               //      icon: ShoppingCart,
-               // },
+               {
+                    title: "My Carts",
+                    url: "/dashboard/my-cart",
+                    icon: ShoppingCart,
+               },
           ],
      },
 
