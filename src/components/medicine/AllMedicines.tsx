@@ -10,6 +10,7 @@ import { ShoppingCart } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
+import { Input } from "../ui/input";
 
 export default function AllMedicines({ initialMedicines, categories }: any) {
   const router = useRouter();
@@ -63,11 +64,11 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
       {/* ── Search + reset ── */}
       {pathname === "/medicines" && (
         <div className="mb-4 flex flex-wrap gap-3 items-center">
-          <input
+          <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search medicines..."
-            className="border rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300 w-64"
+            className="border rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300 w-64 bg-white"
           />
           {(search || categoryFromUrl !== "all") && (
             <Button
@@ -99,7 +100,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
               key={cat.id}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${categoryFromUrl === cat.id
                 ? "bg-purple-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               onClick={() => handleCategoryClick(cat.id)}
             >

@@ -12,7 +12,7 @@ import {
      SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { authService } from "@/service/auth.service"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/AuthProvider"
 import { useImageUpload } from "@/hooks/useImageUpload"
 import ImageUploader from "@/components/shared/image/ImageUploader"
@@ -49,6 +49,8 @@ const ROLES = [
 export function SignupForm() {
      const { setCookie } = useAuth()
      const router = useRouter()
+     const searchParams = useSearchParams()
+     const redirect = searchParams.get("redirect") || "/"
      const profileImage = useImageUpload({ max: 1 })
 
      const form = useForm({
@@ -75,7 +77,7 @@ export function SignupForm() {
 
                     setCookie(result.data.data.user, result.data.data.token)
                     toast.success("Account created! Welcome to MediStore 🎉", { id: toastId })
-                    router.push("/")
+                    router.push(redirect)
                } catch (err: any) {
                     toast.error(err.message || "Something went wrong", { id: toastId })
                }

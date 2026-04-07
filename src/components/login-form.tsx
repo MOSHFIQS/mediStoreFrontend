@@ -148,7 +148,7 @@ export function LoginForm() {
                          <p className="text-center text-sm text-muted-foreground">
                               Don't have an account?{" "}
                               <Link
-                                   href="/register"
+                                   href={`/register${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`}
                                    className="font-semibold text-purple-600 hover:text-purple-700 hover:underline"
                               >
                                    Create one free

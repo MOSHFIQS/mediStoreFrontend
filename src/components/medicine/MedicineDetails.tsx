@@ -19,6 +19,7 @@ import {
      MapPin, PlusCircle, FileText, CheckCircle
 } from "lucide-react";
 import Image from "next/image";
+import { Card } from "../ui/card";
 
 interface Review {
      id: string;
@@ -352,7 +353,7 @@ export default function MedicineDetails({
                                         {addresses.length > 0 && (
                                              <div className="space-y-2">
                                                   {addresses.map((addr) => (
-                                                       <div
+                                                       <Card
                                                             key={addr.id}
                                                             onClick={() => { setSelectedAddressId(addr.id); setUseNewAddress(false); }}
                                                             className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition
@@ -386,7 +387,7 @@ export default function MedicineDetails({
                                                                       {addr.postalCode ? ` - ${addr.postalCode}` : ""}
                                                                  </p>
                                                             </div>
-                                                       </div>
+                                                       </Card>
                                                   ))}
 
                                                   <button
@@ -482,12 +483,12 @@ export default function MedicineDetails({
                          )}
                     </h2>
                     {medicine.reviews.length === 0 ? (
-                         <div className="text-center py-12 text-muted-foreground border rounded-xl">
+                         <Card className="text-center py-12 text-muted-foreground border rounded-xl">
                               <Star className="w-10 h-10 mx-auto opacity-20 mb-2" />
                               <p>No reviews yet for this medicine.</p>
-                         </div>
+                         </Card>
                     ) : (
-                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                         <Card className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
                               {medicine.reviews.map((review) => (
                                    <div key={review.id} className="border rounded-xl p-4 space-y-2 hover:shadow-sm transition">
                                         <div className="flex items-center justify-between">
@@ -517,7 +518,7 @@ export default function MedicineDetails({
                                         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">"{review.comment}"</p>
                                    </div>
                               ))}
-                         </div>
+                         </Card>
                     )}
                </div>
           </div>

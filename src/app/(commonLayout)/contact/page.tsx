@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const contactInfo = [
      {
@@ -65,9 +66,9 @@ const ContactFormPage = () => {
      };
 
      return (
-          <div className="min-h-screen bg-white">
+          <div className="min-h-screen pb-10">
                {/* Hero */}
-               <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-20 px-6">
+               <section className=" py-20 px-6">
                     <div className="max-w-4xl mx-auto text-center">
                          <Badge
                               variant="secondary"
@@ -118,7 +119,7 @@ const ContactFormPage = () => {
                               </p>
                          </div>
 
-                         <Card className="border border-gray-100 shadow-none max-w-3xl mx-auto">
+                         <Card className="border border-gray-100 shadow-none max-w-3xl mx-auto bg-emerald-600">
                               <CardContent className="p-8">
                                    <form
                                         className="grid grid-cols-1 md:grid-cols-2 gap-5"
@@ -129,12 +130,12 @@ const ContactFormPage = () => {
                                              <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
                                                   Full Name
                                              </label>
-                                             <input
+                                             <Input
                                                   type="text"
                                                   name="name"
                                                   placeholder="e.g. Rahim Hossain"
                                                   required
-                                                  className="p-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
+                                                  className="p-3 border bg-white border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
                                              />
                                         </div>
 
@@ -143,12 +144,12 @@ const ContactFormPage = () => {
                                              <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
                                                   Email Address
                                              </label>
-                                             <input
+                                             <Input
                                                   type="email"
                                                   name="email"
                                                   placeholder="e.g. rahim@email.com"
                                                   required
-                                                  className="p-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
+                                                  className="p-3 border bg-white border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
                                              />
                                         </div>
 
@@ -157,11 +158,11 @@ const ContactFormPage = () => {
                                              <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
                                                   Phone Number
                                              </label>
-                                             <input
+                                             <Input
                                                   type="text"
                                                   name="phone"
                                                   placeholder="e.g. +880 17XXXXXXXX"
-                                                  className="p-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
+                                                  className="p-3 border bg-white border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
                                              />
                                         </div>
 
@@ -170,11 +171,11 @@ const ContactFormPage = () => {
                                              <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
                                                   Subject
                                              </label>
-                                             <input
+                                             <Input
                                                   type="text"
                                                   name="subject"
                                                   placeholder="e.g. Order issue, Prescription query"
-                                                  className="p-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
+                                                  className="p-3 border bg-white border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all"
                                              />
                                         </div>
 
@@ -188,7 +189,7 @@ const ContactFormPage = () => {
                                                   placeholder="Tell us how we can help you..."
                                                   rows={5}
                                                   required
-                                                  className="p-3 border border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all resize-none"
+                                                  className="p-3 border bg-white border-gray-200 rounded-lg text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400 transition-all resize-none"
                                              />
                                         </div>
 
@@ -196,7 +197,7 @@ const ContactFormPage = () => {
                                         <div className="col-span-1 md:col-span-2">
                                              <button
                                                   type="submit"
-                                                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-sm uppercase tracking-wide"
+                                                  className="w-full bg-orange-500 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-sm uppercase tracking-wide"
                                              >
                                                   Send Message
                                              </button>

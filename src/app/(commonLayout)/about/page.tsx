@@ -91,9 +91,9 @@ const team = [
 export default function AboutPage() {
      const router = useRouter()
      return (
-          <div className="min-h-screen bg-white">
+          <div className="min-h-screen pb-10">
                {/* Hero */}
-               <section className="bg-gradient-to-br from-emerald-50 via-white to-teal-50 py-20 px-6">
+               <section className=" py-20 px-6">
                     <div className="max-w-4xl mx-auto text-center">
                          <Badge
                               variant="secondary"

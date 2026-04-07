@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, Activity, Shield, Sun } from "lucide-react";
+import { Card } from "../ui/card";
 
 export default function FeaturedSection() {
      const features = [
@@ -41,7 +42,7 @@ export default function FeaturedSection() {
 
                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                     {features.map((feature, i) => (
-                         <div
+                         <Card
                               key={i}
                               className="flex flex-col items-center p-6 rounded-xl shadow border hover:scale-101 transform transition duration-300"
                          >
@@ -50,7 +51,7 @@ export default function FeaturedSection() {
                               </div>
                               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                               <p className="text-gray-600">{feature.description}</p>
-                         </div>
+                         </Card>
                     ))}
                </div>
           </section>
