@@ -6,7 +6,7 @@ export default async function UpdateCategoryPage({ params }: { params: Promise<{
      const { id } = await params
      const catRes = await getCategoryByIdAction(id)
 
-     const category = catRes.ok ? catRes?.data?.data : null
+     const category = catRes.ok ? catRes?.data : null
      console.log(category);
 
      if (!category) return <p className="p-6">Category not found</p>

@@ -1,8 +1,8 @@
+import { getAllReviewsAction } from "@/actions/review.action";
 import AllReviews from "@/components/review/AllReviews";
-import { reviewServiceServer } from "@/service/review.server.service";
 
 export default async function ReviewsPage() {
-     const res = await reviewServiceServer.getAll();
+     const res = await getAllReviewsAction();
 
      if (!res.ok) {
           return (
@@ -12,5 +12,5 @@ export default async function ReviewsPage() {
           );
      }
 
-     return <AllReviews initialReviews={res?.data?.data ?? []} />;
+     return <AllReviews initialReviews={res?.data ?? []} />;
 }

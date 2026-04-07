@@ -39,11 +39,12 @@ const Navbar = () => {
           { title: "All Medicines", url: "/medicines" },
           { title: "About Us", url: "/about" },
           { title: "Contact Us", url: "/contact" },
+          { title: "My Cart", url: "/cart" },
 
           // show only when logged in
           ...(user?.id
                ? [
-                    { title: "My Cart", url: "/cart" },
+
                     { title: "My Orders", url: "/orders" },
                ]
                : []),
@@ -79,26 +80,26 @@ const Navbar = () => {
                               </Link>
                          </div>
 
-                         
 
-                          {/* Menu */}
-                              <div className="flex items-center gap-3">
-                                   {menu.map((item) => (
-                                        <button key={item.title} className={""}>
-                                             <Link
-                                                  href={item.url}
-                                                  className={`px-2 py-1 text-md font-medium   transition
+
+                         {/* Menu */}
+                         <div className="flex items-center gap-3">
+                              {menu.map((item) => (
+                                   <button key={item.title} className={""}>
+                                        <Link
+                                             href={item.url}
+                                             className={`px-2 py-1 text-md font-medium   transition
                                              ${isActive(item.url)
-                                                            ? "bg-[#FE7743] text-white rounded-full"
-                                                            : "bg-gray-50 hover:bg-muted"
-                                                       }
+                                                       ? "bg-[#FE7743] text-white rounded-full"
+                                                       : "bg-gray-50 hover:bg-muted"
+                                                  }
                                              `}
-                                             >
-                                                  {item.title}
-                                             </Link>
-                                        </button>
-                                   ))}
-                              </div>
+                                        >
+                                             {item.title}
+                                        </Link>
+                                   </button>
+                              ))}
+                         </div>
 
                          {/* Search + Auth */}
                          <div className="flex items-center gap-3">

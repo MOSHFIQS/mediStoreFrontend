@@ -455,7 +455,7 @@ export default function MedicineDetails({
                                    </>
                               )}
                               {!user && (
-                                   <Button className="w-full rounded-full" onClick={() => router.push("/login")}>
+                                   <Button className="w-full rounded-full" onClick={() => router.push(`/login?redirect=/medicines/${medicine.id}`)}>
                                         Log in to Order
                                    </Button>
                               )}

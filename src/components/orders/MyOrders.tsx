@@ -9,17 +9,25 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
      AlertDialog, AlertDialogContent, AlertDialogDescription,
      AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
      AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
+     Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog";
+import {
      ShoppingBag, CreditCard, XCircle,
      Clock, CheckCircle2, Truck, PackageCheck,
-     PackageX, Loader2, BadgeCheck, Hourglass
+     PackageX, Loader2, BadgeCheck, Hourglass,
+     MessageSquareText, Star,
 } from "lucide-react";
 import { cancelOrderAction, initiatePaymentForOrderAction } from "@/actions/order.action";
+import { createReviewAction } from "@/actions/review.action";
 import { cn } from "@/lib/utils";
 
 // ── Status config ──────────────────────────────────────────
@@ -72,6 +80,8 @@ const PAYMENT_CONFIG: Record<string, {
      INITIATED: { icon: <Loader2 className="w-3 h-3" />, className: "bg-blue-50 text-blue-600 border border-blue-200" },
 };
 
+const RATING_LABELS = ["", "Poor", "Fair", "Good", "Very good", "Excellent"];
+
 function StatusBadge({ status }: { status: string }) {
      const cfg = STATUS_CONFIG[status];
      if (!cfg) return <span className="text-xs text-muted-foreground">{status}</span>;
@@ -91,6 +101,153 @@ function PaymentBadge({ status }: { status: string }) {
      );
 }
 
+// ── Per-order review dialog ────────────────────────────────
+function ReviewDialog({ order }: { order: any }) {
+     const [open, setOpen] = useState(false);
+
+     // Each order may have multiple items — track which medicine is being reviewed
+     const [selectedMedicineId, setSelectedMedicineId] = useState<string>(
+          order.items?.[0]?.medicineId ?? ""
+     );
+     const [rating, setRating] = useState(5);
+     const [reviewTitle, setReviewTitle] = useState("");
+     const [comment, setComment] = useState("");
+     const [isSubmitting, setIsSubmitting] = useState(false);
+
+     const handleClose = (isOpen: boolean) => {
+          setOpen(isOpen);
+          if (!isOpen) {
+               setRating(5);
+               setReviewTitle("");
+               setComment("");
+               setSelectedMedicineId(order.items?.[0]?.medicineId ?? "");
+          }
+     };
+
+     const handleSubmit = async () => {
+          if (!comment.trim()) { toast.error("Please write a comment"); return; }
+          if (!selectedMedicineId) { toast.error("Please select a medicine to review"); return; }
+
+          setIsSubmitting(true);
+          try {
+               await createReviewAction({
+                    medicineId: selectedMedicineId,
+                    rating,
+                    title: reviewTitle,
+                    comment,
+               });
+               toast.success("Review submitted!");
+               setOpen(false);
+          } catch (err: any) {
+               toast.error(err.message || "Failed to submit review");
+          } finally {
+               setIsSubmitting(false);
+          }
+     };
+
+     return (
+          <Dialog open={open} onOpenChange={handleClose}>
+               <DialogTrigger asChild>
+                    <Button
+                         size="sm"
+                         variant="outline"
+                         className="gap-1.5 rounded-full text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700"
+                    >
+                         <MessageSquareText className="w-3.5 h-3.5" />
+                         Review
+                    </Button>
+               </DialogTrigger>
+
+               <DialogContent className="max-w-md">
+                    <DialogHeader>
+                         <DialogTitle>Review Order #{order.id.slice(0, 8).toUpperCase()}</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 pt-1">
+                         {/* Medicine selector (if order has multiple items) */}
+                         {order.items?.length > 1 && (
+                              <div className="space-y-1">
+                                   <Label>Select medicine to review</Label>
+                                   <select
+                                        value={selectedMedicineId}
+                                        onChange={(e) => setSelectedMedicineId(e.target.value)}
+                                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300"
+                                   >
+                                        {order.items.map((item: any) => (
+                                             <option key={item.medicineId} value={item.medicineId}>
+                                                  {item.medicineName}
+                                             </option>
+                                        ))}
+                                   </select>
+                              </div>
+                         )}
+
+                         {/* Stars */}
+                         <div className="space-y-1">
+                              <Label>Rating</Label>
+                              <div className="flex items-center gap-1">
+                                   {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                             key={star}
+                                             type="button"
+                                             onClick={() => setRating(star)}
+                                             className="transition hover:scale-110"
+                                        >
+                                             <Star
+                                                  className={`w-7 h-7 transition-colors ${star <= rating
+                                                       ? "fill-yellow-400 text-yellow-400"
+                                                       : "text-gray-200 hover:text-yellow-200"
+                                                       }`}
+                                             />
+                                        </button>
+                                   ))}
+                                   <span className="ml-2 text-sm text-muted-foreground">
+                                        {RATING_LABELS[rating]}
+                                   </span>
+                              </div>
+                         </div>
+
+                         {/* Title */}
+                         <div className="space-y-1">
+                              <Label>
+                                   Title{" "}
+                                   <span className="text-muted-foreground font-normal">(optional)</span>
+                              </Label>
+                              <Input
+                                   value={reviewTitle}
+                                   onChange={(e) => setReviewTitle(e.target.value)}
+                                   placeholder="Summarise your experience..."
+                                   maxLength={80}
+                              />
+                         </div>
+
+                         {/* Comment */}
+                         <div className="space-y-1">
+                              <Label>
+                                   Comment <span className="text-red-400">*</span>
+                              </Label>
+                              <Textarea
+                                   value={comment}
+                                   onChange={(e) => setComment(e.target.value)}
+                                   placeholder="Share details about your experience..."
+                                   rows={3}
+                              />
+                         </div>
+
+                         <Button
+                              onClick={handleSubmit}
+                              disabled={isSubmitting || !comment.trim()}
+                              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full"
+                         >
+                              {isSubmitting ? "Submitting..." : "Submit Review"}
+                         </Button>
+                    </div>
+               </DialogContent>
+          </Dialog>
+     );
+}
+
+// ── Main component ─────────────────────────────────────────
 export default function MyOrders({ orders }: { orders: any[] }) {
      const router = useRouter();
      const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -245,6 +402,11 @@ export default function MyOrders({ orders }: { orders: any[] }) {
                                                   <TableCell className="text-right">
                                                        <div className="flex items-center justify-end gap-2">
 
+                                                            {/* Review — only when payment is SUCCESS */}
+                                                            {order.payment?.status === "SUCCESS" && (
+                                                                 <ReviewDialog order={order} />
+                                                            )}
+
                                                             {/* Pay Now */}
                                                             {order.payment?.status === "PENDING" && order.status !== "CANCELLED" && (
                                                                  <Button
@@ -323,9 +485,12 @@ export default function MyOrders({ orders }: { orders: any[] }) {
                                                             )}
 
                                                             {/* Nothing to do */}
-                                                            {order.status !== "PLACED" && order.payment?.status !== "PENDING" && (
-                                                                 <span className="text-xs text-muted-foreground">—</span>
-                                                            )}
+                                                            {order.payment?.status !== "SUCCESS" &&
+                                                                 order.status !== "PLACED" &&
+                                                                 order.payment?.status !== "PENDING" && (
+                                                                      <span className="text-xs text-muted-foreground">—</span>
+                                                                 )}
+
                                                        </div>
                                                   </TableCell>
 

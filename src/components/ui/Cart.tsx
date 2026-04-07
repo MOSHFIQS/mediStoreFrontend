@@ -18,8 +18,9 @@ import { AppImage } from "../shared/image/AppImage";
 import {
      Tag, X, Plus, Minus, ShoppingBag, MapPin,
      CreditCard, Trash2, CheckCircle2, Package,
-     AlertCircle, Star, PlusCircle
+     AlertCircle, Star, PlusCircle, LogIn,
 } from "lucide-react";
+import { Roles } from "@/constants/roles";
 
 export interface Address {
      id: string;
@@ -45,6 +46,9 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
      const queryClient = useQueryClient();
      const { user } = useAuth();
      const router = useRouter();
+
+
+     const isCustomer = user?.role === Roles.customer;
 
      // ── Step ──────────────────────────────────────────────
      const [step, setStep] = useState<"cart" | "checkout">("cart");
@@ -127,9 +131,22 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
           setCouponApplied(false);
      };
 
+     // ── Proceed to checkout (with login gate) ─────────────
+     const handleProceedToCheckout = () => {
+          if (!user) {
+               router.push("/login?redirect=/cart");
+               return;
+          }
+          if (user.role !== "CUSTOMER") {
+               toast.error("Only customers can place orders");
+               return;
+          }
+          setStep("checkout");
+     };
+
      // ── Place order ───────────────────────────────────────
      const handlePlaceOrder = async () => {
-          if (!user) { toast.error("Please log in first"); router.push("/login"); return; }
+          if (!user) { router.push("/login?redirect=/cart"); return; }
           if (user.role !== "CUSTOMER") { toast.error("Only customers can place orders"); return; }
           if (!cart.length) { toast.error("Cart is empty"); return; }
 
@@ -192,9 +209,9 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                if (!payment.ok) throw new Error(payment.message);
 
                // Step 3 — clear cart + redirect
-               clearCart();
                queryClient.invalidateQueries({ queryKey: ["cart"] });
                toast.success("Redirecting to SSLCommerz...", { id: toastId });
+               clearCart();
 
                window.location.href = payment.data.gatewayUrl;
           } catch (err: any) {
@@ -237,9 +254,19 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                     </button>
                     <span className="text-muted-foreground">→</span>
                     <button
-                         onClick={() => cart.length && setStep("checkout")}
+                         onClick={() => {
+                              if (isCustomer && cart.length) {
+                                   setStep("checkout");
+                              }
+                         }}
+                         disabled={!isCustomer || !cart.length}
                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition font-medium
-            ${step === "checkout" ? "bg-purple-100 text-purple-700" : "text-muted-foreground hover:text-foreground"}`}
+    ${step === "checkout"
+                                   ? "bg-purple-100 text-purple-700"
+                                   : "text-muted-foreground hover:text-foreground"
+                              }
+    ${!isCustomer || !cart.length ? "opacity-50 cursor-not-allowed" : ""}
+  `}
                     >
                          <CreditCard className="w-3.5 h-3.5" /> Checkout
                     </button>
@@ -309,12 +336,50 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                         </div>
                                    )}
 
-                                   <Button
-                                        className="w-full rounded-full bg-purple-600 hover:bg-purple-700 h-11"
-                                        onClick={() => setStep("checkout")}
-                                   >
-                                        Proceed to Checkout →
-                                   </Button>
+                                   {/* Login gate banner — only when NOT logged in */}
+                                   {!user && (
+                                        <div className="flex items-center justify-between gap-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                                             <div className="flex items-center gap-2 text-sm text-amber-800">
+                                                  <LogIn className="w-4 h-4 flex-shrink-0" />
+                                                  <span>Please log in to proceed with your purchase.</span>
+                                             </div>
+                                             <Button
+                                                  size="sm"
+                                                  className="rounded-full bg-amber-500 hover:bg-amber-600 text-white flex-shrink-0"
+                                                  onClick={() => router.push("/login?redirect=/cart")}
+                                             >
+                                                  Log in to buy
+                                             </Button>
+                                        </div>
+                                   )}
+
+                                   {/* Not a customer (but logged in) */}
+                                   {user && !isCustomer && (
+                                        <p className="text-sm text-red-600">
+                                             Only customers can proceed to checkout.
+                                        </p>
+                                   )}
+
+                                   {/* Checkout button — ONLY for customers */}
+                                   {isCustomer && (
+                                        <Button
+                                             className="w-full rounded-full bg-purple-600 hover:bg-purple-700 h-11"
+                                             onClick={handleProceedToCheckout}
+                                        >
+                                             Proceed to Checkout →
+                                        </Button>
+                                   )}
+
+                                   {/* Login button (fallback for non-logged users) */}
+                                   {!user && (
+                                        <Button
+                                             className="w-full rounded-full h-11 bg-purple-600 hover:bg-purple-700"
+                                             onClick={() => router.push("/login?redirect=/cart")}
+                                        >
+                                             <LogIn className="w-4 h-4 mr-2" />
+                                             Log in to Checkout
+                                        </Button>
+                                   )}
                               </>
 
                          ) : (
@@ -344,7 +409,6 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                                                       : "border-gray-200 hover:border-gray-300"
                                                                  }`}
                                                        >
-                                                            {/* Radio dot */}
                                                             <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition
                           ${selectedAddressId === addr.id && !useNewAddress
                                                                       ? "border-purple-500 bg-purple-500"

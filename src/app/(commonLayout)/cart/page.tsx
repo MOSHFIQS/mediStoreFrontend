@@ -1,22 +1,29 @@
-import { getAddressesAction } from '@/actions/address.action';
-import Cart from '@/components/ui/Cart';
-import React from 'react';
+import { getAddressesAction } from "@/actions/address.action";
+import Cart from "@/components/ui/Cart";
+import { sessionService } from "@/service/token.service";
+import { Roles } from "@/constants/roles";
+import React from "react";
 
 const CartPage = async () => {
-     const res = await getAddressesAction();
+     const user = await sessionService.getUserFromToken();
 
-     console.log(res);
+     const isCustomer = user?.role === Roles.customer;
 
-     if (!res?.ok) {
+     const res = isCustomer
+          ? await getAddressesAction()
+          : null;
+
+     if (isCustomer && !res?.ok) {
           return (
                <p className="p-6 text-red-600">
                     Failed to load addresses
                </p>
           );
      }
+
      return (
           <div>
-               <Cart addresses={res.data} />
+               <Cart addresses={res?.data ?? []} />
           </div>
      );
 };

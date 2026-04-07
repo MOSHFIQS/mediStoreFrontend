@@ -24,6 +24,7 @@ import {
      DialogFooter,
      DialogTrigger,
 } from "@/components/ui/dialog";
+import { Pencil, Trash2 } from "lucide-react";
 
 export interface Category {
      id: string;
@@ -122,7 +123,9 @@ export default function AllCategories({ initialCategories }: Props) {
                                                        </TableCell>
                                                        <TableCell className="flex gap-2">
                                                             <Link href={`/admin-dashboard/category/update/${cat.id}`}>
-                                                                 <Button size="sm">Update</Button>
+                                                                 <Button size="sm" variant="outline">
+                                                                      <Pencil className="h-4 w-4" />
+                                                                 </Button>
                                                             </Link>
 
                                                             <Button
@@ -130,7 +133,7 @@ export default function AllCategories({ initialCategories }: Props) {
                                                                  variant="destructive"
                                                                  onClick={() => openDeleteDialog(cat)}
                                                             >
-                                                                 Delete
+                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>
                                                        </TableCell>
                                                   </TableRow>

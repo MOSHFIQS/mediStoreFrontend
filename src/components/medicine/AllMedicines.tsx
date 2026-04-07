@@ -3,26 +3,13 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
 import { addToCart, getCart } from "@/lib/cart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { MessageSquareText, Star, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { createReviewAction } from "@/actions/review.action";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
-
-const RATING_LABELS = ["", "Poor", "Fair", "Good", "Very good", "Excellent"];
 
 export default function AllMedicines({ initialMedicines, categories }: any) {
   const router = useRouter();
@@ -30,13 +17,6 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { user } = useAuth();
-
-  // ── Review state ──────────────────────────────────────
-  const [reviewOpen, setReviewOpen] = useState<string | null>(null);
-  const [rating, setRating] = useState(5);
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [comment, setComment] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ── Search state ──────────────────────────────────────
   const [search, setSearch] = useState("");
@@ -47,36 +27,6 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
     queryKey: ["cart"],
     queryFn: () => Promise.resolve(getCart()),
   });
-
-  // ── Reset review state when dialog closes ─────────────
-  const handleDialogChange = (open: boolean, medId: string) => {
-    setReviewOpen(open ? medId : null);
-    if (!open) {
-      setRating(5);
-      setReviewTitle("");
-      setComment("");
-    }
-  };
-
-  // ── Submit review ─────────────────────────────────────
-  const handleReviewSubmit = async (medicineId: string) => {
-    if (!user) { router.push("/login"); return; }
-    if (!comment.trim()) { toast.error("Please write a comment"); return; }
-
-    setIsSubmitting(true);
-    try {
-      await createReviewAction({ medicineId, rating, title: reviewTitle, comment });
-      toast.success("Review submitted!");
-      setReviewOpen(null);
-      setRating(5);
-      setReviewTitle("");
-      setComment("");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to submit review");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   // ── Debounced search → URL ────────────────────────────
   useEffect(() => {
@@ -235,144 +185,51 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
 
               {/* ── Footer ── */}
               <CardFooter className="mt-auto pt-2 px-0">
-                <div className="w-full flex items-center justify-between gap-2">
+                <div className="w-full flex items-center justify-end gap-2">
+                  <Button
+                    onClick={() => {
+                      
 
-                  {/* Review button — customers only */}
-                  {user?.role === "CUSTOMER" && (
-                    <Dialog
-                      open={reviewOpen === med.id}
-                      onOpenChange={(o) => handleDialogChange(o, med.id)}
-                    >
-                      <DialogTrigger asChild>
-                        <button
-                          className="h-9 w-9 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 transition"
-                          title="Write a review"
-                        >
-                          <MessageSquareText className="w-4 h-4 text-gray-500" />
-                        </button>
-                      </DialogTrigger>
-
-                      <DialogContent className="max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>Review — {med.name}</DialogTitle>
-                        </DialogHeader>
-
-                        <div className="space-y-4 pt-1">
-                          {/* Stars */}
-                          <div className="space-y-1">
-                            <Label>Rating</Label>
-                            <div className="flex items-center gap-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <button
-                                  key={star}
-                                  type="button"
-                                  onClick={() => setRating(star)}
-                                  className="transition hover:scale-110"
-                                >
-                                  <Star
-                                    className={`w-7 h-7 transition-colors ${star <= rating
-                                      ? "fill-yellow-400 text-yellow-400"
-                                      : "text-gray-200 hover:text-yellow-200"
-                                      }`}
-                                  />
-                                </button>
-                              ))}
-                              <span className="ml-2 text-sm text-muted-foreground">
-                                {RATING_LABELS[rating]}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Title */}
-                          <div className="space-y-1">
-                            <Label>Title <span className="text-muted-foreground font-normal">(optional)</span></Label>
-                            <Input
-                              value={reviewTitle}
-                              onChange={(e) => setReviewTitle(e.target.value)}
-                              placeholder="Summarise your experience..."
-                              maxLength={80}
-                            />
-                          </div>
-
-                          {/* Comment */}
-                          <div className="space-y-1">
-                            <Label>Comment <span className="text-red-400">*</span></Label>
-                            <Textarea
-                              value={comment}
-                              onChange={(e) => setComment(e.target.value)}
-                              placeholder="Share details about your experience..."
-                              rows={3}
-                            />
-                          </div>
-
-                          <Button
-                            onClick={() => handleReviewSubmit(med.id)}
-                            disabled={isSubmitting || !comment.trim()}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full"
-                          >
-                            {isSubmitting ? "Submitting..." : "Submit Review"}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-
-                  {/* Cart + View */}
-                  <div className="flex items-center gap-2 ml-auto">
-                    <Button
-                      onClick={() => {
-                        if (!user?.id) {
-                          toast.error("Please login first");
-                          router.push(`/login?redirect=/medicines/${med.id}`);
-                          return;
-                        }
-
-                        addToCart({
-                          medicineId: med.id,
-                          quantity: 1,
-                          price: med.discountPrice ?? med.price,
-                          image: med.image,
-                          name: med.name,
-                        });
-                        queryClient.invalidateQueries({ queryKey: ["cart"] });
-                        toast.success(`${med.name} added to cart`);
-                      }}
-                      disabled={outOfStock || cartFull}
-                      className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full transition
-                        ${itemInCart
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "bg-gray-800 hover:bg-black text-white"
-                        }
-                        ${outOfStock || cartFull ? "opacity-50 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
-                    >
-                      {itemInCart ? (
-                        <>
-                          <ShoppingCart className="w-3.5 h-3.5" />
-                          <span className="bg-white text-green-600 text-xs px-1.5 py-0.5 rounded-full font-bold">
-                            {itemInCart.quantity}
-                          </span>
-                        </>
-                      ) : (
+                      addToCart({
+                        medicineId: med.id,
+                        quantity: 1,
+                        price: med.discountPrice ?? med.price,
+                        image: med.image,
+                        name: med.name,
+                      });
+                      queryClient.invalidateQueries({ queryKey: ["cart"] });
+                      toast.success(`${med.name} added to cart`);
+                    }}
+                    disabled={outOfStock || cartFull}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full transition
+                      ${itemInCart
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "bg-gray-800 hover:bg-black text-white"
+                      }
+                      ${outOfStock || cartFull ? "opacity-50 cursor-not-allowed" : "hover:scale-105 active:scale-95"}`}
+                  >
+                    {itemInCart ? (
+                      <>
                         <ShoppingCart className="w-3.5 h-3.5" />
-                      )}
-                    </Button>
+                        <span className="bg-white text-green-600 text-xs px-1.5 py-0.5 rounded-full font-bold">
+                          {itemInCart.quantity}
+                        </span>
+                      </>
+                    ) : (
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                    )}
+                  </Button>
 
-                    <Button
-                      onClick={() => {
-                        if (!user?.id) {
-                          toast.error("Please login first");
-                          router.push(`/login?redirect=/medicines/${med.id}`);
-                          return;
-                        }
-                        router.push(`/medicines/${med.id}`);
-                      }}
-                      variant="outline"
-                      className="px-4 py-2 rounded-full text-sm"
-                    >
-                      View
-                    </Button>
-                  </div>
-
+                  <Button
+                    onClick={() => {
+                     
+                      router.push(`/medicines/${med.id}`);
+                    }}
+                    variant="outline"
+                    className="px-4 py-2 rounded-full text-sm"
+                  >
+                    View
+                  </Button>
                 </div>
               </CardFooter>
             </Card>
