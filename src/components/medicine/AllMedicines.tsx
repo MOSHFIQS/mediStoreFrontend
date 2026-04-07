@@ -136,11 +136,10 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
       {pathname === "/medicines" && (
         <div className="flex flex-wrap gap-2 mb-6">
           <button
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
-              categoryFromUrl === "all"
-                ? "bg-purple-500 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${categoryFromUrl === "all"
+              ? "bg-purple-500 text-white"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
             onClick={() => handleCategoryClick("all")}
           >
             All
@@ -148,11 +147,10 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
           {categories.map((cat: any) => (
             <button
               key={cat.id}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
-                categoryFromUrl === cat.id
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${categoryFromUrl === cat.id
+                ? "bg-purple-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               onClick={() => handleCategoryClick(cat.id)}
             >
               {cat.name}
@@ -272,11 +270,10 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
                                   className="transition hover:scale-110"
                                 >
                                   <Star
-                                    className={`w-7 h-7 transition-colors ${
-                                      star <= rating
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-200 hover:text-yellow-200"
-                                    }`}
+                                    className={`w-7 h-7 transition-colors ${star <= rating
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-200 hover:text-yellow-200"
+                                      }`}
                                   />
                                 </button>
                               ))}
@@ -324,6 +321,12 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
                   <div className="flex items-center gap-2 ml-auto">
                     <Button
                       onClick={() => {
+                        if (!user?.id) {
+                          toast.error("Please login first");
+                          router.push(`/login?redirect=/medicines/${med.id}`);
+                          return;
+                        }
+
                         addToCart({
                           medicineId: med.id,
                           quantity: 1,
@@ -355,7 +358,14 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
                     </Button>
 
                     <Button
-                      onClick={() => router.push(`/medicines/${med.id}`)}
+                      onClick={() => {
+                        if (!user?.id) {
+                          toast.error("Please login first");
+                          router.push(`/login?redirect=/medicines/${med.id}`);
+                          return;
+                        }
+                        router.push(`/medicines/${med.id}`);
+                      }}
                       variant="outline"
                       className="px-4 py-2 rounded-full text-sm"
                     >

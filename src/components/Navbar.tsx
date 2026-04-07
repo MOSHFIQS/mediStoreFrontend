@@ -37,10 +37,15 @@ const Navbar = () => {
      const menu = [
           { title: "Home", url: "/" },
           { title: "All Medicines", url: "/medicines" },
-          { title: "My Cart", url: "/cart" },
-          { title: "My Orders", url: "/my-orders" },
-     ];
 
+          // show only when logged in
+          ...(user?.id
+               ? [
+                    { title: "My Cart", url: "/cart" },
+                    { title: "My Orders", url: "/my-orders" },
+               ]
+               : []),
+     ];
 
 
      const isActive = (url: string) => {

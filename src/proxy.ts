@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
      const pathname = request.nextUrl.pathname;
      const data = await sessionService.getUserFromToken()
 
-     console.log("data",data);
+     console.log("data", data);
 
 
      const role = data?.role
@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
      const isCustomer = role === Roles.customer
 
 
- 
+
      if (isAdmin && (pathname.startsWith("/dashboard") || pathname.startsWith("/seller-dashboard"))) {
           return NextResponse.redirect(new URL("/admin-dashboard", request.url))
      }
@@ -34,6 +34,16 @@ export async function proxy(request: NextRequest) {
           return NextResponse.redirect(new URL("/dashboard", request.url))
      }
 
+     const isProtectedUserRoute =
+          pathname.startsWith("/cart") ||
+          pathname.startsWith("/my-orders");
+
+     if (!data?.id && isProtectedUserRoute) {
+          return NextResponse.redirect(
+               new URL(`/login?redirect=${pathname}`, request.url)
+          );
+     }
+
 
      return NextResponse.next()
 }
@@ -43,5 +53,9 @@ export const config = {
           "/dashboard/:path*",
           "/admin-dashboard/:path*",
           "/seller-dashboard/:path*",
+
+          // 👇 add these
+          "/cart",
+          "/my-orders",
      ],
-}
+};
