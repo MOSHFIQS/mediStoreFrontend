@@ -222,7 +222,7 @@ export default function UpdateMedicineClient({
                                                   <div className="space-y-1">
                                                        <Label>Category *</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue placeholder="Select category" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -243,7 +243,7 @@ export default function UpdateMedicineClient({
                                                   <div className="space-y-1">
                                                        <Label>Dosage Form</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue placeholder="e.g. Tablet" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -273,7 +273,7 @@ export default function UpdateMedicineClient({
                                                   <div className="space-y-1">
                                                        <Label>Unit</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue />
                                                             </SelectTrigger>
                                                             <SelectContent>

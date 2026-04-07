@@ -54,7 +54,7 @@ export default async  function DashboardLayout({ admin, customer, seller }: { ad
      return (
           <SidebarProvider>
                <AppSidebar user={userInfo} />
-               <SidebarInset>
+               <SidebarInset className="bg-[#f8f8f6]">
                     <header className="flex h-16 shrink-0 items-center gap-2 border-b">
                          <div className="flex items-center gap-2 px-3">
                               <SidebarTrigger />
@@ -62,7 +62,7 @@ export default async  function DashboardLayout({ admin, customer, seller }: { ad
 
                          </div>
                     </header>
-                    <div className="flex flex-1 flex-col gap-4 p-4">
+                    <div className="flex flex-1 flex-col gap-4 xl:pr-2 bg-[#f8f8f6]">
                          {content}
                     </div>
                </SidebarInset>

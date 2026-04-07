@@ -45,8 +45,8 @@ export function AppSidebar({ user, ...props }: { user: { role: string } & React.
      }
 
      return (
-          <Sidebar {...props} >
-               <SidebarContent className="bg-orange-100 rounded-lg flex flex-col justify-between px-2 py-3 overflow-y-auto 
+          <Sidebar {...props} variant="floating" >
+               <SidebarContent className="bg-[#EBD6FB] rounded-lg flex flex-col justify-between px-2 py-3 overflow-y-auto 
   [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
                     {/* TOP */}
@@ -112,7 +112,7 @@ export function AppSidebar({ user, ...props }: { user: { role: string } & React.
                     {/* FOOTER */}
 
                </SidebarContent>
-               <SidebarFooter className="pt-4 border-t bg-[#eef0ff]">
+               <SidebarFooter className="pt-4  bg-[#EBD6FB] rounded-lg mt-2">
                     <NavUser />
                </SidebarFooter>
 

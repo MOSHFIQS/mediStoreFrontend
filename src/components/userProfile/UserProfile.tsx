@@ -125,7 +125,7 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
           <div className="max-w-3xl mx-auto w-full px-4 py-8 space-y-6">
 
                {/* ── Hero card ── */}
-               <Card className="overflow-hidden">
+               <Card className="overflow-hidden pt-0">
                     {/* Purple banner */}
                     <div className="h-24 bg-gradient-to-r from-purple-500 to-violet-600" />
 

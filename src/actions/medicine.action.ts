@@ -53,7 +53,7 @@ export async function createMedicineAction(data: {
                return { ok: false, message: res?.message || "Failed to create medicine" };
           }
 
-          revalidatePath("/seller-dashboard/medicines");
+          revalidatePath("/seller-dashboard/medicine");
 
           return {
                ok: true,

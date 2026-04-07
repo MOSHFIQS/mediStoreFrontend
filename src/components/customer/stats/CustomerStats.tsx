@@ -71,7 +71,7 @@ export default function CustomerStats({ stats }: Props) {
      const { orders, spending, payments,  reviews, addresses, notifications, topOrderedMedicines, recentOrders } = stats;
 
      return (
-          <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
+          <div className="p-6 space-y-8  min-h-screen">
 
                {/* Header */}
                <div>

@@ -44,7 +44,7 @@ export default function SellersMedicines({ medicines }: any) {
                               {medicines.length} product{medicines.length !== 1 ? "s" : ""} in your inventory
                          </p>
                     </div>
-                    <Button onClick={() => router.push("/seller-dashboard/create-medicine")} className="gap-2">
+                    <Button onClick={() => router.push("/seller-dashboard/medicine/create")} className="gap-2">
                          <Plus className="w-4 h-4" />
                          Add Medicine
                     </Button>

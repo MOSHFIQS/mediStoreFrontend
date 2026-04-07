@@ -4,6 +4,8 @@ import AllReviews from "@/components/review/AllReviews";
 export default async function ReviewsPage() {
      const res = await getAllReviewsAction();
 
+     console.log(res);
+
      if (!res.ok) {
           return (
                <div className="flex items-center justify-center min-h-[40vh]">

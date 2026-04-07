@@ -22,6 +22,7 @@ import {
 import { imageHostingService } from "@/service/image-hosting.service"
 import ImageUploader from "../shared/image/ImageUploader"
 import { useImageUpload } from "@/hooks/useImageUpload"
+import { useRouter } from "next/navigation"
 
 const DOSAGE_FORMS = ["Tablet", "Capsule", "Syrup", "Injection", "Cream", "Ointment", "Drops", "Inhaler", "Patch", "Suppository"]
 const UNITS = ["piece", "strip", "bottle", "box", "tube", "vial", "sachet"]
@@ -30,6 +31,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
 
      const [isPending, startTransition] = useTransition()
      const medicineImages = useImageUpload({ max: 10 });
+     const router = useRouter()
      console.log(medicineImages.images);
 
      const form = useForm({
@@ -73,16 +75,25 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                               sku: value.sku || undefined,
                               image: medicineImages.images[0]?.img,
                               images: medicineImages.images
-                              .filter((img) => !img.imageUploading)
-                              .map((img) => img.img),
+                                   .filter((img) => !img.imageUploading)
+                                   .map((img) => img.img),
                          }
 
                          console.log(payload);
                          const res = await createMedicineAction(payload)
+                         console.log(res);
+
+                         if (!res.ok) {
+                              toast.error(res.message); // just call, don't return
+                              return; // exit early
+                         }
+
 
 
                          toast.success("Medicine added successfully!")
-                         // form.reset()
+                         form.reset()
+                         router.push("/seller-dashboard/medicine")
+
 
                     } catch (err: any) {
                          toast.error(err.message || "Failed to add medicine")
@@ -91,7 +102,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
           },
      })
 
-   
+
 
      return (
           <div className="p-4">
@@ -226,15 +237,15 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                                         {/* category (required) */}
                                         <form.Field
                                              name="categoryId"
-                                             // validators={{
-                                             //      onChange: ({ value }) => !value ? "Category is required" : undefined
-                                             // }}
+                                        // validators={{
+                                        //      onChange: ({ value }) => !value ? "Category is required" : undefined
+                                        // }}
                                         >
                                              {(field) => (
                                                   <div className="space-y-1">
                                                        <Label>Category *</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue placeholder="Select category" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -255,7 +266,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                                                   <div className="space-y-1">
                                                        <Label>Dosage Form</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue placeholder="e.g. Tablet" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -282,7 +293,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                                                   <div className="space-y-1">
                                                        <Label>Unit</Label>
                                                        <Select value={field.state.value} onValueChange={field.handleChange}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="w-full">
                                                                  <SelectValue />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -351,7 +362,7 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
 
                                    </div>
 
-                                  
+
 
                               </div>
 

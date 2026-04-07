@@ -9,7 +9,6 @@ import {
      TableHeader,
      TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "../loading/Loading";
@@ -22,14 +21,14 @@ import {
      DialogHeader,
      DialogTitle,
      DialogFooter,
-     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Tag, FolderOpen } from "lucide-react";
 
 export interface Category {
      id: string;
      name: string;
      image?: string;
+     description?: string;
      createdAt: string;
 }
 
@@ -50,7 +49,6 @@ export default function AllCategories({ initialCategories }: Props) {
 
      const handleDelete = async () => {
           if (!selectedCategory) return;
-
           try {
                setActionLoading(selectedCategory.id);
                await deleteCategoryAction(selectedCategory.id);
@@ -65,115 +63,166 @@ export default function AllCategories({ initialCategories }: Props) {
      };
 
      return (
-          <div className="p-6 space-y-6">
-               <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Categories</h1>
+          <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
+               {/* Page Header */}
+               <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                         <div className="h-10 w-10 rounded-xl bg-orange-100 flex items-center justify-center">
+                              <Tag className="h-5 w-5 text-orange-600" />
+                         </div>
+                         <div>
+                              <h1 className="text-xl font-semibold text-gray-900">Categories</h1>
+                              <p className="text-sm text-gray-500">{initialCategories.length} total categories</p>
+                         </div>
+                    </div>
                     <Link href="/admin-dashboard/category/create">
-                         <Button>Create Category</Button>
+                         <Button className="bg-orange-500 hover:bg-orange-600 text-white gap-2 rounded-lg px-4 shadow-sm">
+                              <Plus className="h-4 w-4" />
+                              New Category
+                         </Button>
                     </Link>
                </div>
 
-               <Card>
-                    <CardHeader>
-                         <CardTitle>All Categories</CardTitle>
-                    </CardHeader>
+               {/* Table Card */}
+               <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                         <h2 className="text-sm font-semibold text-gray-700">All Categories</h2>
+                         <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-3 py-1">
+                              {initialCategories.length} entries
+                         </span>
+                    </div>
 
-                    <CardContent>
-                         {loading ? (
+                    {loading ? (
+                         <div className="flex items-center justify-center py-20">
                               <Loading />
-                         ) : (
-                              <Table>
-                                   <TableHeader>
-                                        <TableRow>
-                                             <TableHead>#</TableHead>
-                                             <TableHead>Image</TableHead>
-                                             <TableHead>Name</TableHead>
-                                             <TableHead>Created At</TableHead>
-                                             <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                   </TableHeader>
+                         </div>
+                    ) : (
+                         <Table>
+                              <TableHeader>
+                                   <TableRow className="bg-gray-50/70 hover:bg-gray-50/70">
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide w-12 pl-5">#</TableHead>
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide w-20">Image</TableHead>
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</TableHead>
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</TableHead>
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Created</TableHead>
+                                        <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-right pr-5">Actions</TableHead>
+                                   </TableRow>
+                              </TableHeader>
 
-                                   <TableBody>
-                                        {initialCategories.length === 0 ? (
-                                             <TableRow>
-                                                  <TableCell colSpan={5} className="text-center">
-                                                       No categories found
+                              <TableBody>
+                                   {initialCategories.length === 0 ? (
+                                        <TableRow>
+                                             <TableCell colSpan={6}>
+                                                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+                                                       <FolderOpen className="h-10 w-10 text-gray-300" />
+                                                       <p className="text-sm font-medium">No categories yet</p>
+                                                       <p className="text-xs">Create your first category to get started</p>
+                                                  </div>
+                                             </TableCell>
+                                        </TableRow>
+                                   ) : (
+                                        initialCategories.map((cat, index) => (
+                                             <TableRow
+                                                  key={cat.id}
+                                                  className="hover:bg-orange-50/30 transition-colors border-gray-50"
+                                             >
+                                                  <TableCell className="pl-5 text-sm text-gray-400 font-mono">{String(index + 1).padStart(2, "0")}</TableCell>
+                                                  <TableCell>
+                                                       {cat.image ? (
+                                                            <AppImage
+                                                                 src={cat.image}
+                                                                 alt={cat.name}
+                                                                 className="h-11 w-11 rounded-xl object-cover border border-gray-100"
+                                                            />
+                                                       ) : (
+                                                            <div className="h-11 w-11 flex items-center justify-center bg-gray-100 rounded-xl border border-gray-100 text-xs text-gray-400 font-medium">
+                                                                 N/A
+                                                            </div>
+                                                       )}
                                                   </TableCell>
-                                             </TableRow>
-                                        ) : (
-                                             initialCategories.map((cat, index) => (
-                                                  <TableRow key={cat.id}>
-                                                       <TableCell>{index + 1}</TableCell>
-                                                       <TableCell>
-                                                            {cat.image ? (
-                                                                 <AppImage
-                                                                      src={cat.image}
-                                                                      alt={cat.name}
-                                                                      className="h-12 w-12 rounded object-cover"
-                                                                 />
-                                                            ) : (
-                                                                 <div className="h-12 w-12 flex items-center justify-center border rounded">
-                                                                      N/A
-                                                                 </div>
-                                                            )}
-                                                       </TableCell>
-                                                       <TableCell className="font-medium">{cat.name}</TableCell>
-                                                       <TableCell>
-                                                            {new Date(cat.createdAt).toLocaleDateString()}
-                                                       </TableCell>
-                                                       <TableCell className="flex gap-2">
+                                                  <TableCell>
+                                                       <span className="text-sm font-semibold text-gray-800">{cat.name}</span>
+                                                  </TableCell>
+                                                  <TableCell className="max-w-xs">
+                                                       <span
+                                                            className="text-sm text-gray-500 line-clamp-1"
+                                                            title={cat.description}
+                                                       >
+                                                            {cat.description || <span className="italic text-gray-300">No description</span>}
+                                                       </span>
+                                                  </TableCell>
+                                                  <TableCell>
+                                                       <span className="text-sm text-gray-400">
+                                                            {new Date(cat.createdAt).toLocaleDateString("en-US", {
+                                                                 month: "short",
+                                                                 day: "numeric",
+                                                                 year: "numeric",
+                                                            })}
+                                                       </span>
+                                                  </TableCell>
+                                                  <TableCell className="text-right pr-5">
+                                                       <div className="flex items-center justify-end gap-2">
                                                             <Link href={`/admin-dashboard/category/update/${cat.id}`}>
-                                                                 <Button size="sm" variant="outline">
-                                                                      <Pencil className="h-4 w-4" />
+                                                                 <Button
+                                                                      size="sm"
+                                                                      variant="outline"
+                                                                      className="h-8 w-8 p-0 rounded-lg border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                                                                 >
+                                                                      <Pencil className="h-3.5 w-3.5" />
                                                                  </Button>
                                                             </Link>
-
                                                             <Button
                                                                  size="sm"
-                                                                 variant="destructive"
+                                                                 variant="ghost"
+                                                                 className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                                  onClick={() => openDeleteDialog(cat)}
                                                             >
-                                                                 <Trash2 className="h-4 w-4" />
+                                                                 <Trash2 className="h-3.5 w-3.5" />
                                                             </Button>
-                                                       </TableCell>
-                                                  </TableRow>
-                                             ))
-                                        )}
-                                   </TableBody>
-                              </Table>
-                         )}
-                    </CardContent>
-               </Card>
+                                                       </div>
+                                                  </TableCell>
+                                             </TableRow>
+                                        ))
+                                   )}
+                              </TableBody>
+                         </Table>
+                    )}
+               </div>
 
-               {/* Delete Confirmation Dialog */}
+               {/* Delete Dialog */}
                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent>
-                         <DialogHeader>
-                              <DialogTitle>Delete Category</DialogTitle>
-                         </DialogHeader>
-                         <p>
-                              Are you sure you want to delete{" "}
-                              <span className="font-medium">
-                                   {selectedCategory?.name}
-                              </span>
-                              ? This action cannot be undone.
-                         </p>
-                         <DialogFooter className="mt-4 flex justify-end gap-2">
+                    <DialogContent className="sm:max-w-md rounded-2xl border-gray-100 p-0 overflow-hidden">
+                         <div className="p-6 pb-0">
+                              <div className="flex items-center gap-4 mb-4">
+                                   <div className="h-11 w-11 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                                        <Trash2 className="h-5 w-5 text-red-500" />
+                                   </div>
+                                   <DialogHeader className="text-left space-y-0">
+                                        <DialogTitle className="text-base font-semibold text-gray-900">Delete Category</DialogTitle>
+                                        <p className="text-sm text-gray-500 mt-0.5">This action cannot be undone</p>
+                                   </DialogHeader>
+                              </div>
+                              <p className="text-sm text-gray-600 bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
+                                   You are about to delete{" "}
+                                   <span className="font-semibold text-gray-900">&ldquo;{selectedCategory?.name}&rdquo;</span>.
+                                   All associated data will be permanently removed.
+                              </p>
+                         </div>
+                         <DialogFooter className="flex gap-2 p-6 pt-4">
                               <Button
                                    variant="outline"
+                                   className="flex-1 rounded-lg border-gray-200"
                                    onClick={() => setIsDialogOpen(false)}
                                    disabled={actionLoading === selectedCategory?.id}
                               >
                                    Cancel
                               </Button>
                               <Button
-                                   variant="destructive"
+                                   className="flex-1 rounded-lg bg-red-500 hover:bg-red-600 text-white border-0"
                                    onClick={handleDelete}
                                    disabled={actionLoading === selectedCategory?.id}
                               >
-                                   {actionLoading === selectedCategory?.id
-                                        ? "Deleting..."
-                                        : "Delete"}
+                                   {actionLoading === selectedCategory?.id ? "Deleting..." : "Delete"}
                               </Button>
                          </DialogFooter>
                     </DialogContent>

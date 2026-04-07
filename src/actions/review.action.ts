@@ -62,7 +62,7 @@ export async function getAllReviewsAction() {
                return { ok: false, message: res?.message || "Failed to fetch reviews", data: [] };
           }
 
-          return { ok: true, message: res?.message || "Reviews fetched successfully", data: res?.data?.data || [] };
+          return { ok: true, message: res?.message || "Reviews fetched successfully", data: res?.data || [] };
      } catch (err: any) {
           return { ok: false, message: err?.message || "Something went wrong while fetching reviews", data: [] };
      }
