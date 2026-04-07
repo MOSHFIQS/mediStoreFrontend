@@ -10,7 +10,7 @@ export default function PaymentCancelPage() {
                     <h1 className="text-3xl font-bold">Payment Cancelled</h1>
                     <p className="text-muted-foreground">You cancelled the payment. Your order is still saved.</p>
                     <div className="flex gap-3 justify-center">
-                         <Button asChild><Link href="/my-orders">View Orders</Link></Button>
+                         <Button asChild><Link href="/orders">View Orders</Link></Button>
                          <Button variant="outline" asChild><Link href="/cart">Back to Cart</Link></Button>
                     </div>
                </div>

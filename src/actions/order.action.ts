@@ -67,7 +67,7 @@ export async function createCartOrderAction({
 
           if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-          return { ok: true, message: "Order created successfully", data: res.data.data };
+          return { ok: true, message: "Order created successfully", data: res.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
      }
@@ -82,7 +82,6 @@ export async function initiatePaymentForOrderAction(orderId: string) {
 
           if (!res?.ok) throw new Error(res?.message || "Failed to initiate payment");
 
-          // res.data.data = { gatewayUrl, tranId }
           return { ok: true, message: "Payment initiated", data: res.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
@@ -122,7 +121,7 @@ export async function cancelOrderAction(orderId: string) {
 
           revalidatePath("/my-orders");
 
-          return { ok: true, message: "Order cancelled successfully", data: res.data.data };
+          return { ok: true, message: "Order cancelled successfully", data: res.data };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong" };
      }

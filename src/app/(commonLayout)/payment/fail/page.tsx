@@ -16,7 +16,7 @@ export default function PaymentFailPage() {
                               <Link href="/cart">Back to Cart</Link>
                          </Button>
                          <Button variant="outline" asChild>
-                              <Link href="/my-orders">My Orders</Link>
+                              <Link href="/orders">My Orders</Link>
                          </Button>
                     </div>
                </div>
