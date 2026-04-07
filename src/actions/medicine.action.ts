@@ -114,6 +114,19 @@ export async function getAllMedicinesAction(params?: { categoryId?: string; sear
           return { ok: false, message: err?.message || "Something went wrong while fetching medicines", data: [] };
      }
 }
+export async function getSellerMedicinesAction() {
+     try {
+          const res = await medicineServiceServer.getSellerMedicines();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch medicines", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Medicines fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching medicines", data: [] };
+     }
+}
 
 // Get a medicine by ID
 export async function getMedicineByIdAction(id: string) {
