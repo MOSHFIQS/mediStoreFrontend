@@ -1,7 +1,7 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const couponServiceServer = {
-     getAll: () => apiFetchServerMain("/coupons"),
+     getAll: () => apiFetchServerMain("/coupon"),
 
      create: (payload: any) =>
           apiFetchServerMain("/coupon", {

@@ -10,6 +10,7 @@ import { createCouponAction, deleteCouponAction } from "@/actions/coupon.action"
 import { Trash2, Plus } from "lucide-react";
 
 export default function AdminCouponsClient({ coupons }: { coupons: any[] }) {
+     console.log(coupons);
      const router = useRouter();
      const [showForm, setShowForm] = useState(false);
      const [loading, setLoading] = useState(false);

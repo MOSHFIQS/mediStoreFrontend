@@ -15,7 +15,7 @@ export const adminRoutes: Route[] = [
                },
                {
                     title: "All Users",
-                    url: "/admin-dashboard/all-users",
+                    url: "/admin-dashboard/users",
                },
                {
                     title: "Coupons",
@@ -24,6 +24,10 @@ export const adminRoutes: Route[] = [
                {
                     title: "Create Category",
                     url: "/admin-dashboard/category/create",
+               },
+               {
+                    title: "Create Coupons",
+                    url: "/admin-dashboard/coupons/create",
                },
                {
                     title: "All Category",
@@ -36,6 +40,10 @@ export const adminRoutes: Route[] = [
                {
                     title: "Audit Logs",
                     url: "/admin-dashboard/audit",
+               },
+               {
+                    title: "All Payments",
+                    url: "/admin-dashboard/payments",
                },
                {
                     title: "Home",

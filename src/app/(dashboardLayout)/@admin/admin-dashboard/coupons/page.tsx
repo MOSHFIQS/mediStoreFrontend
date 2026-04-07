@@ -1,7 +1,7 @@
-import AdminCouponsClient from "@/components/admin/AdminCouponsClient";
-import { couponServiceServer } from "@/service/coupon.server.service";
+import { getAllCouponsAction } from "@/actions/coupon.action";
+import AllCoupons from "@/components/admin/coupons/AllCoupons";
 
-export default async function AdminCouponsPage() {
-     const res = await couponServiceServer.getAll();
-     return <AdminCouponsClient coupons={res.ok ? res.data.data : []} />;
+export default async function CouponsPage() {
+  const res = await getAllCouponsAction();
+  return <AllCoupons coupons={res.data} />;
 }

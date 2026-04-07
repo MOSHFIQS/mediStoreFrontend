@@ -18,6 +18,10 @@ export const customerRoutes: Route[] = [
                     url: "/dashboard/my-cart",
                },
                {
+                    title: "My Payments",
+                    url: "/dashboard/payments",
+               },
+               {
                     title: "Home",
                     url: "/",
                },

@@ -43,3 +43,32 @@ export async function updateProfileAction(formData: FormData) {
           return { ok: false, message: "Something went wrong" };
      }
 }
+
+
+export async function getAdminStatisticsAction() {
+     try {
+          const res = await userServiceServer.getAdminStatistics();
+          if (!res?.ok) return { ok: false, message: res?.message || "Failed to fetch statistics", data: null };
+          return { ok: true, message: "Statistics fetched", data: res?.data };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong", data: null };
+     }
+}
+export async function getCustomerStatisticsAction() {
+     try {
+          const res = await userServiceServer.getCustomerStatistics();
+          if (!res?.ok) return { ok: false, message: res?.message || "Failed to fetch statistics", data: null };
+          return { ok: true, message: "Statistics fetched", data: res?.data };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong", data: null };
+     }
+}
+export async function getSellerStatisticsAction() {
+     try {
+          const res = await userServiceServer.getSellerStatistics();
+          if (!res?.ok) return { ok: false, message: res?.message || "Failed to fetch statistics", data: null };
+          return { ok: true, message: "Statistics fetched", data: res?.data };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong", data: null };
+     }
+}

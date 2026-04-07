@@ -1,10 +1,12 @@
-// app/customer-dashboard/page.tsx
-import { redirect } from "next/navigation";
+import { getSellerStatisticsAction } from "@/actions/user.action";
+import SellerStats from "@/components/seller/stats/SellerStats";
 
-const CustomerDashboard = () => {
-     redirect("/seller-dashboard/profile");
+export default async function AdminPage() {
+  const res = await getSellerStatisticsAction();
 
-     // return null;
-};
+  if (!res?.ok) {
+    return <p className="p-6 text-red-600">Failed to load statistics</p>;
+  }
 
-export default CustomerDashboard;
+  return <SellerStats stats={res.data} />;
+}

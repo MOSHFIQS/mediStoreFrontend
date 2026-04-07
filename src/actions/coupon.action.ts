@@ -27,6 +27,19 @@ export async function createCouponAction(payload: any) {
      }
 }
 
+
+export async function getAllCouponsAction() {
+     try {
+          const res = await couponServiceServer.getAll();
+          if (!res?.ok) throw new Error(res?.message || "Failed to fetch coupons");
+          return { ok: true, data: res.data , message: res?.message || "couponss fetched successfully" };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong", data: [] };
+     }
+}
+
+
+
 // Update coupon
 export async function updateCouponAction(id: string, payload: any) {
      try {
