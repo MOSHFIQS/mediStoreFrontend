@@ -37,6 +37,8 @@ const Navbar = () => {
      const menu = [
           { title: "Home", url: "/" },
           { title: "All Medicines", url: "/medicines" },
+          { title: "About Us", url: "/about" },
+          { title: "Contact Us", url: "/contact" },
 
           // show only when logged in
           ...(user?.id
@@ -75,8 +77,11 @@ const Navbar = () => {
                                    <img src="/logo.png" className="max-h-8" />
                                    <span className="text-lg font-semibold">Medi Store</span>
                               </Link>
+                         </div>
 
-                              {/* Menu */}
+                         
+
+                          {/* Menu */}
                               <div className="flex items-center gap-3">
                                    {menu.map((item) => (
                                         <button key={item.title} className={""}>
@@ -94,7 +99,6 @@ const Navbar = () => {
                                         </button>
                                    ))}
                               </div>
-                         </div>
 
                          {/* Search + Auth */}
                          <div className="flex items-center gap-3">
