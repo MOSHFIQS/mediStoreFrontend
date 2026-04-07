@@ -6,7 +6,7 @@ export default function CommonLayout({
      children: React.ReactNode;
 }) {
      return (
-          <div className="max-w-[90vw] mx-auto">
+          <div className="max-w-[90vw] mx-auto w-full">
               <Navbar />
                {children}
           </div>

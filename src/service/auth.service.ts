@@ -13,6 +13,7 @@ export const authService = {
           name: string
           email: string
           password: string
+          phone: string
           role: string
           image?: string
      }) =>
@@ -27,5 +28,5 @@ export const authService = {
                body: JSON.stringify(payload),
           }),
 
-   
+
 }
