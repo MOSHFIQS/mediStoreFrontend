@@ -6,4 +6,17 @@ export const paymentServiceServer = {
 
      getByOrder: (orderId: string) =>
           apiFetchServerMain(`/payment/order/${orderId}`),
+
+     getMy: () =>
+          apiFetchServerMain("/payment/my"),
+
+     getSeller: () =>
+          apiFetchServerMain("/payment/seller"),
+
+     getAll: () =>
+          apiFetchServerMain("/payment/admin"),
+
+     refund: (paymentId: string) =>
+          apiFetchServerMain(`/payment/admin/${paymentId}/refund`, { method: "PATCH" }),
 };
+
