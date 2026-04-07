@@ -67,7 +67,7 @@ const Navbar = () => {
                          <div className="flex items-center justify-center gap-10">
                               {/* Logo */}
                               <Link href="/" className="flex items-center gap-2">
-                                   <img src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg" className="max-h-8" />
+                                   <img src="/logo.png" className="max-h-8" />
                                    <span className="text-lg font-semibold">Medi Store</span>
                               </Link>
 
@@ -141,7 +141,7 @@ const Navbar = () => {
 
                          {/* Logo */}
                          <Link href="/" className="flex items-center gap-2">
-                              <img src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg" className="h-8" />
+                              <img src="/logo.png" className="h-8" />
                               <span className="font-semibold">PLANORA</span>
                          </Link>
 

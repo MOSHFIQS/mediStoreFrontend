@@ -10,5 +10,5 @@ export default async function CategoriesPage() {
           return <p className="p-6 text-red-600">Failed to load categories</p>;
      }
 
-     return <AllCategories initialCategories={res?.data?.data} />;
+     return <AllCategories initialCategories={res?.data} />;
 }
