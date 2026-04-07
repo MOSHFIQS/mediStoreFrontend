@@ -1,27 +1,29 @@
-// import { medicineService } from "@/service/medicine.service";
-import { sessionService } from "@/service/token.service";
-import MedicineDetailsClient from "./MedicineDetailsClient";
 import { medicineServiceServer } from "@/service/medicine.server.service";
-
-
+import MedicineDetails from "@/components/medicine/MedicineDetails";
+import { getMedicineByIdAction } from "@/actions/medicine.action";
+import { getAddressesAction } from "@/actions/address.action";
 
 export default async function MedicineDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-     // const medicineId = await params.id;
-     const { id } = await params;
-     console.log(id);
 
-     // ✅ Fetch medicine on server
-     const res = await medicineServiceServer.getById(id);
+     const { id } = await params;
+
+     const [addressesRes, res] = await Promise.all([
+          getAddressesAction(),
+          getMedicineByIdAction(id),
+     ]);
+
+     if (!addressesRes?.ok) {
+          return <p className="p-6 text-red-600">Failed to load addresses</p>;
+     }
+
      if (!res.ok) {
           return <p className="p-4">Medicine not found</p>;
      }
 
-     // ✅ Get logged-in user from cookie (SERVER ONLY)
-     const user = await sessionService.getUserFromToken();
-
      return (
-          <MedicineDetailsClient
-               medicine={res?.data?.data}
+          <MedicineDetails
+               medicine={res?.data}
+               addresses={addressesRes.data}
           />
      );
 }

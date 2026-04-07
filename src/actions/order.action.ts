@@ -1,70 +1,176 @@
 "use server";
 
 import { orderServiceServer } from "@/service/order.server.service";
+import { paymentServiceServer } from "@/service/payment.server.service";
 import { revalidatePath } from "next/cache";
 
-// Server action to create an order
+// ── Single medicine "Buy Now" ──────────────────────────────
 export async function createOrderAction({
      medicineId,
      quantity,
-     address,
+     addressId,
+     addressSnapshot,
+     notes
 }: {
      medicineId: string;
      quantity: number;
-     address: string;
+     addressId?: string;
+     addressSnapshot?: { line1: string; city?: string; district?: string };
+     notes?: string;
 }) {
-     // Get token from cookie
+     try {
+          if (!medicineId) throw new Error("Medicine ID is required");
+          if (!quantity || quantity <= 0) throw new Error("Quantity must be greater than 0");
+          if (!addressId && !addressSnapshot?.line1) throw new Error("Delivery address is required");
 
-     const res = await orderServiceServer.create({
-          address,
-          items: [{ medicineId, quantity }],
-     });
+          const res = await orderServiceServer.create({
+               items: [{ medicineId, quantity }],
+               ...(addressId ? { addressId } : { addressSnapshot }),
+               notes
+          });
 
-     if (!res.ok) throw new Error(res.message);
+          if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-     return res;
+          return { ok: true, message: "Order created successfully", data: res.data };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong" };
+     }
 }
 
-
+// ── Cart order ─────────────────────────────────────────────
 export async function createCartOrderAction({
      items,
-     address,
+     addressId,
+     addressSnapshot,
+     couponCode,
+     notes,
+     shippingFee,
 }: {
      items: { medicineId: string; quantity: number }[];
-     address: string;
+     addressId?: string;
+     addressSnapshot?: { line1: string; city?: string; district?: string, label?: string, line2?: string, postalCode?: string };
+     couponCode?: string;
+     notes?: string;
+     shippingFee?: number;
 }) {
-     if (!address) throw new Error("Address is required");
-     if (!items || items.length === 0) throw new Error("Cart is empty");
+     try {
+          if (!items?.length) throw new Error("Cart is empty");
+          if (!addressId && !addressSnapshot?.line1) throw new Error("Delivery address is required");
 
-     const res = await orderServiceServer.create({
-          address,
-          items,
-     });
+          const res = await orderServiceServer.create({
+               items,
+               ...(addressId ? { addressId } : { addressSnapshot }),
+               couponCode,
+               notes,
+               shippingFee,
+          });
 
-     if (!res.ok) throw new Error(res.message);
+          if (!res?.ok) throw new Error(res?.message || "Failed to create order");
 
-     return res;
-}
-
-export async function updateOrderStatusAction(
-     orderId: string,
-     status: string
-) {
-     const res = await orderServiceServer.updateStatus(orderId, status);
-
-     if (!res.ok) {
-          return { success: false, message: res.message };
+          return { ok: true, message: "Order created successfully", data: res.data.data };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong" };
      }
+}
 
-     revalidatePath("/my-orders");
-     return { success: true };
+// ── Initiate SSLCommerz payment ────────────────────────────
+export async function initiatePaymentForOrderAction(orderId: string) {
+     try {
+          if (!orderId) throw new Error("Order ID is required");
+
+          const res = await paymentServiceServer.initiate(orderId);
+
+          if (!res?.ok) throw new Error(res?.message || "Failed to initiate payment");
+
+          // res.data.data = { gatewayUrl, tranId }
+          return { ok: true, message: "Payment initiated", data: res.data };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong" };
+     }
+}
+
+// ── Update order status (seller) ───────────────────────────
+export async function updateOrderStatusAction(orderId: string, status: string) {
+     try {
+          if (!orderId) throw new Error("Order ID is required");
+          if (!status) throw new Error("Status is required");
+
+          const allowed = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED","CANCELLED"];
+          if (!allowed.includes(status)) throw new Error(`Invalid status: ${status}`);
+
+          const res = await orderServiceServer.updateStatus(orderId, status);
+
+          if (!res?.ok) throw new Error(res?.message || "Failed to update status");
+
+          revalidatePath("/seller-dashboard/orders");
+          revalidatePath("/my-orders");
+
+          return { ok: true, message: `Order marked as ${status}` };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong" };
+     }
+}
+
+// ── Cancel order (customer) ────────────────────────────────
+export async function cancelOrderAction(orderId: string) {
+     try {
+          if (!orderId) throw new Error("Order ID is required");
+
+          const res = await orderServiceServer.cancel(orderId);
+
+          if (!res?.ok) throw new Error(res?.message || "Failed to cancel order");
+
+          revalidatePath("/my-orders");
+
+          return { ok: true, message: "Order cancelled successfully", data: res.data.data };
+     } catch (err: any) {
+          return { ok: false, message: err.message || "Something went wrong" };
+     }
 }
 
 
-export async function cancelOrderAction(orderId: string) {
 
-     const res = await orderServiceServer.cancel(orderId);
-     if (!res.ok) throw new Error(res.message);
+// Get orders of the logged-in seller
+export async function getSellerOrdersAction() {
+     try {
+          const res = await orderServiceServer.getSellerOrders?.();
 
-     return res;
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch seller orders", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Seller orders fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching seller orders", data: [] };
+     }
+}
+
+// Get orders of the logged-in user
+export async function getMyOrdersAction() {
+     try {
+          const res = await orderServiceServer.getMyOrders?.();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch your orders", data: [] };
+          }
+
+          return { ok: true, message: res?.message || "Your orders fetched successfully", data: res?.data || [] };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching your orders", data: [] };
+     }
+}
+
+// Get order by ID
+export async function getOrderByIdAction(id: string) {
+     try {
+          const res = await orderServiceServer.getById?.(id);
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch order", data: null };
+          }
+
+          return { ok: true, message: res?.message || "Order fetched successfully", data: res?.data || null };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching order", data: null };
+     }
 }

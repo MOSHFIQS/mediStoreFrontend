@@ -14,4 +14,8 @@ export const userServiceServer = {
                method: "PATCH",
                body: JSON.stringify(payload),
           }),
+
+     getAdminStatistics: () => apiFetchServerMain("/user/admin/statistics"),
+     getCustomerStatistics: () => apiFetchServerMain("/user/customer/statistics"),
+     getSellerStatistics: () => apiFetchServerMain("/user/seller/statistics"),
 }

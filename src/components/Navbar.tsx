@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { usePathname, useRouter } from "next/navigation";
+import NotificationBell from "./notifications/NotificationBell";
 
 const Navbar = () => {
      const { user, logout, loading } = useAuth();
@@ -36,10 +37,16 @@ const Navbar = () => {
      const menu = [
           { title: "Home", url: "/" },
           { title: "All Medicines", url: "/medicines" },
-          { title: "My Cart", url: "/cart" },
+
+          // show only when logged in
+          ...(user?.id
+               ? [
+                    { title: "My Cart", url: "/cart" },
+                    { title: "My Orders", url: "/orders" },
+               ]
+               : []),
      ];
 
-  
 
      const isActive = (url: string) => {
           if (url === "/") {
@@ -57,15 +64,15 @@ const Navbar = () => {
      }
 
      return (
-          <section className="py-6  sticky top-0 z-50 ">
+          <section className="py-6  sticky top-0 z-50 bg-white">
                <div>
-                 
+
                     <nav className="hidden items-center justify-between lg:flex px-4">
 
                          <div className="flex items-center justify-center gap-10">
                               {/* Logo */}
                               <Link href="/" className="flex items-center gap-2">
-                                   <img src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg" className="max-h-8" />
+                                   <img src="/logo.png" className="max-h-8" />
                                    <span className="text-lg font-semibold">Medi Store</span>
                               </Link>
 
@@ -91,10 +98,11 @@ const Navbar = () => {
 
                          {/* Search + Auth */}
                          <div className="flex items-center gap-3">
-                             
+
 
                               {user?.id ? (
                                    <>
+                                        <NotificationBell />
                                         <Button
                                              variant="outline"
                                              className="rounded-full"
@@ -138,7 +146,7 @@ const Navbar = () => {
 
                          {/* Logo */}
                          <Link href="/" className="flex items-center gap-2">
-                              <img src="/logo/logo.png" className="h-8" />
+                              <img src="/logo.png" className="h-8" />
                               <span className="font-semibold">PLANORA</span>
                          </Link>
 
@@ -158,7 +166,7 @@ const Navbar = () => {
 
                                    <div className="flex flex-col gap-4 mt-6">
 
-                                       
+
                                         {/* Menu */}
                                         <div className="flex flex-col gap-2">
                                              {menu.map((item) => (
@@ -180,6 +188,7 @@ const Navbar = () => {
                                         <div className="flex flex-col gap-2">
                                              {user?.id ? (
                                                   <>
+                                                       <NotificationBell />
                                                        <Button
                                                             variant="violet"
                                                             className="w-full rounded-full"

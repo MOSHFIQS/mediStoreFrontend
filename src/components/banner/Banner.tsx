@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function CarouselPlugin() {
      const plugin = React.useRef(
@@ -82,9 +83,9 @@ export function CarouselPlugin() {
 
                                              {/* Button */}
                                              <div className="pt-2 flex justify-center lg:justify-start">
-                                                  <Button className="bg-white text-black hover:bg-gray-200 text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2">
+                                                  <Link href={"/medicines"} className="bg-white text-black hover:bg-gray-200 text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2">
                                                        Shop Now
-                                                  </Button>
+                                                  </Link>
                                              </div>
 
                                         </div>
