@@ -91,7 +91,7 @@ export async function deleteMedicineAction(id: string) {
                return { ok: false, message: res?.message || "Failed to delete medicine" };
           }
 
-          revalidatePath("/seller-dashboard/medicines");
+          revalidatePath("/seller-dashboard/medicine");
 
           return { ok: true, message: res?.message || "Medicine deleted successfully" };
      } catch (err: any) {

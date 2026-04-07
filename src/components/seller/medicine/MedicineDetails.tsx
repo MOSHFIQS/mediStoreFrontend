@@ -46,7 +46,7 @@ export default async function MedicineDetails({ medicine }: { medicine: any }) {
                               Back to medicines
                          </Button>
                     </Link>
-                    <Link href={`/seller-dashboard/update-medicine/${med.id}`}>
+                    <Link href={`/seller-dashboard/medicine/update/${med.id}`}>
                          <Button size="sm" className="gap-2">
                               <Pencil className="w-4 h-4" />
                               Edit medicine

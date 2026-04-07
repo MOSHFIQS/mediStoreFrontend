@@ -2,14 +2,20 @@
 import UpdateMedicineClient from "@/components/updateMedicine/UpdateMedicineClient"
 import { medicineServiceServer } from "@/service/medicine.server.service"
 import { categoryServiceServer } from "@/service/category.server.service"
+import { getMedicineByIdAction } from "@/actions/medicine.action";
+import { getAllCategoriesAction } from "@/actions/category.action";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-     const {id} = await params
-     const medRes = await medicineServiceServer.getById(id)
-     const catRes = await categoryServiceServer.getAll()
+     const { id } = await params
+     const [medRes, catRes] = await Promise.all([
+          getMedicineByIdAction(id),
+          getAllCategoriesAction(),
+     ]);
+     console.log(medRes);
+     console.log(catRes);
 
-     const medicine = medRes.ok ? medRes.data.data : null
-     const categories = catRes.ok ? catRes.data.data : []
+     const medicine = medRes.ok ? medRes.data: null
+     const categories = catRes.ok ? catRes.data : []
 
      if (!medicine) return <p className="p-6">Medicine not found</p>
 

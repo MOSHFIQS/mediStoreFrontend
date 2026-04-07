@@ -20,8 +20,13 @@ export default function SellersMedicines({ medicines }: any) {
      const handleDelete = (id: string) => {
           startTransition(async () => {
                try {
-                    await deleteMedicineAction(id)
-                    toast.success("Medicine deleted successfully")
+                    const res = await deleteMedicineAction(id)
+                    console.log(res);
+                    if(!res.ok){
+                         toast.error(res.message)
+                    }
+
+                    // toast.success("Medicine deleted successfully")
                     setOpenDialogId(null)
                } catch (err: any) {
                     toast.error(err.message)
@@ -203,7 +208,7 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  size="icon"
                                                                  variant="ghost"
                                                                  className="h-8 w-8"
-                                                                 onClick={() => router.push(`/seller-dashboard/update-medicine/${med.id}`)}
+                                                                 onClick={() => router.push(`/seller-dashboard/medicine/update/${med.id}`)}
                                                             >
                                                                  <Pencil className="w-3.5 h-3.5" />
                                                             </Button>
