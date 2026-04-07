@@ -1,9 +1,9 @@
 
+import { getMeAction } from "@/actions/user.action";
 import UserProfile from "@/components/userProfile/UserProfile";
-import { userServiceServer } from "@/service/user.server.service";
 
 export default async function SellerProfilePage() {
-     const res = await userServiceServer.getMe();
+     const res = await getMeAction();
      console.log(res);
 
      if (!res.ok) {

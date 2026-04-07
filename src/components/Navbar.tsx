@@ -42,7 +42,7 @@ const Navbar = () => {
           ...(user?.id
                ? [
                     { title: "My Cart", url: "/cart" },
-                    { title: "My Orders", url: "/my-orders" },
+                    { title: "My Orders", url: "/orders" },
                ]
                : []),
      ];

@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
 
      const isProtectedUserRoute =
           pathname.startsWith("/cart") ||
-          pathname.startsWith("/my-orders");
+          pathname.startsWith("/orders");
 
      if (!data?.id && isProtectedUserRoute) {
           return NextResponse.redirect(
@@ -53,9 +53,7 @@ export const config = {
           "/dashboard/:path*",
           "/admin-dashboard/:path*",
           "/seller-dashboard/:path*",
-
-          // 👇 add these
-          "/cart",
-          "/my-orders",
+          "/cart/:path*",
+          "/orders/:path*",
      ],
 };

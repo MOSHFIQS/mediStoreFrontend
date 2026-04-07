@@ -5,34 +5,27 @@ import { userServiceServer } from "@/service/user.server.service";
 import { revalidatePath } from "next/cache";
 
 
-export async function updateProfileAction(formData: FormData) {
+export async function updateProfileAction({
+     name,
+     phone,
+     image,
+}: {
+     name: string;
+     phone: string;
+     image: string ; 
+}) {
      try {
-          const name = formData.get("name") as string;
-          const phone = formData.get("phone") as string;
-          const file = formData.get("image") as File | null;
-
-          let imageUrl: string | undefined = undefined;
-
-          if (file && file.size > 0) {
-               const uploadRes = await imageHostingService.uploadImage(file);
-
-               if (!uploadRes.ok || !uploadRes.url) {
-                    return { ok: false, message: "Image upload failed" };
-               }
-
-               imageUrl = uploadRes.url;
-          }
-
           const res = await userServiceServer.updateMe({
                name,
                phone,
-               ...(imageUrl && { image: imageUrl }),
+               image,
           });
 
           if (!res.ok) {
                return { ok: false, message: res.message || "Profile update failed" };
           }
 
+          // Revalidate relevant paths
           revalidatePath("/dashboard/profile");
           revalidatePath("/seller-dashboard/profile");
           revalidatePath("/admin-dashboard/profile");
@@ -70,5 +63,20 @@ export async function getSellerStatisticsAction() {
           return { ok: true, message: "Statistics fetched", data: res?.data };
      } catch (err: any) {
           return { ok: false, message: err?.message || "Something went wrong", data: null };
+     }
+}
+
+
+export async function getMeAction() {
+     try {
+          const res = await userServiceServer.getMe?.();
+
+          if (!res?.ok) {
+               return { ok: false, message: res?.message || "Failed to fetch user data", data: null };
+          }
+
+          return { ok: true, message: res?.message || "User data fetched successfully", data: res?.data || null };
+     } catch (err: any) {
+          return { ok: false, message: err?.message || "Something went wrong while fetching user data", data: null };
      }
 }
