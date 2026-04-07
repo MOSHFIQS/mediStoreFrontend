@@ -34,6 +34,10 @@ export const adminRoutes: Route[] = [
                     url: "/admin-dashboard/reviews",
                },
                {
+                    title: "Audit Logs",
+                    url: "/admin-dashboard/audit",
+               },
+               {
                     title: "Home",
                     url: "/",
                },

@@ -10,5 +10,5 @@ export default async function SellerProfilePage() {
           return <p className="p-6 ">Failed to load profile</p>;
      }
 
-     return <UserProfile initialUser={res?.data?.data?.user} />;
+     return <UserProfile initialUser={res?.data?.user} />;
 }

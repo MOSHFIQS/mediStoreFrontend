@@ -95,7 +95,7 @@ export async function updateOrderStatusAction(orderId: string, status: string) {
           if (!orderId) throw new Error("Order ID is required");
           if (!status) throw new Error("Status is required");
 
-          const allowed = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
+          const allowed = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED","CANCELLED"];
           if (!allowed.includes(status)) throw new Error(`Invalid status: ${status}`);
 
           const res = await orderServiceServer.updateStatus(orderId, status);
