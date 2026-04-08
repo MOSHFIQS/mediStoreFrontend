@@ -7,6 +7,9 @@ import {
      AlertDialog, AlertDialogTrigger, AlertDialogContent,
      AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
+import {
+     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table"
 import { Pencil, Trash2, Plus, Eye, Package, Tag, Layers } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -21,12 +24,9 @@ export default function SellersMedicines({ medicines }: any) {
           startTransition(async () => {
                try {
                     const res = await deleteMedicineAction(id)
-                    console.log(res);
-                    if(!res.ok){
+                    if (!res.ok) {
                          toast.error(res.message)
                     }
-
-                    // toast.success("Medicine deleted successfully")
                     setOpenDialogId(null)
                } catch (err: any) {
                     toast.error(err.message)
@@ -35,7 +35,7 @@ export default function SellersMedicines({ medicines }: any) {
      }
 
      return (
-          <div className="space-y-4">
+          <div className="space-y-4 px-4">
                {/* Header */}
                <div className="flex items-center justify-between">
                     <div>
@@ -53,39 +53,40 @@ export default function SellersMedicines({ medicines }: any) {
                {/* Table card */}
                <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
-                         <table className="w-full text-sm">
-                              <thead>
-                                   <tr className="border-b bg-muted/40">
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground w-16">Image</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Name</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Category</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Brand</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Form</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">SKU</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Price</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Discount</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Stock</th>
-                                        <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-                                        <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
-                                   </tr>
-                              </thead>
-                              <tbody className="divide-y divide-border">
+                         <Table>
+                              <TableHeader>
+                                   <TableRow className="bg-muted/40 hover:bg-muted/40">
+                                        <TableHead className="w-16">Image</TableHead>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Category</TableHead>
+                                        <TableHead>Brand</TableHead>
+                                        <TableHead>Form</TableHead>
+                                        <TableHead>SKU</TableHead>
+                                        <TableHead>Price</TableHead>
+                                        <TableHead>Discount</TableHead>
+                                        <TableHead>Stock</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                   </TableRow>
+                              </TableHeader>
+
+                              <TableBody>
                                    {medicines.length === 0 ? (
-                                        <tr>
-                                             <td colSpan={11} className="px-4 py-16 text-center">
+                                        <TableRow>
+                                             <TableCell colSpan={11} className="px-4 py-16 text-center">
                                                   <div className="flex flex-col items-center gap-3 text-muted-foreground">
                                                        <Package className="w-10 h-10 opacity-30" />
                                                        <p className="font-medium">No medicines found</p>
                                                        <p className="text-xs">Add your first medicine to get started</p>
                                                   </div>
-                                             </td>
-                                        </tr>
+                                             </TableCell>
+                                        </TableRow>
                                    ) : (
                                         medicines.map((med: any) => (
-                                             <tr key={med.id} className="hover:bg-muted/30 transition-colors group">
+                                             <TableRow key={med.id} className="group">
 
                                                   {/* Image */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        {med.image ? (
                                                             <img
                                                                  src={med.image}
@@ -97,10 +98,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  <Package className="w-4 h-4 text-muted-foreground opacity-50" />
                                                             </div>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
-                                                  {/* Name + generic */}
-                                                  <td className="px-4 py-3">
+                                                  {/* Name */}
+                                                  <TableCell>
                                                        <div className="font-medium leading-tight">{med.name}</div>
                                                        {med.genericName && (
                                                             <div className="text-xs text-muted-foreground mt-0.5">{med.genericName}</div>
@@ -108,10 +109,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                        {med.strength && (
                                                             <div className="text-xs text-muted-foreground">{med.strength} · {med.unit}</div>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Category */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        {med.category?.name ? (
                                                             <Badge variant="secondary" className="gap-1 font-normal">
                                                                  <Layers className="w-3 h-3" />
@@ -120,10 +121,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                        ) : (
                                                             <span className="text-muted-foreground text-xs">—</span>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Brand */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        {med.brand ? (
                                                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                                                  <Tag className="w-3 h-3" />
@@ -132,10 +133,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                        ) : (
                                                             <span className="text-muted-foreground text-xs">—</span>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Dosage Form */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        {med.dosageForm ? (
                                                             <Badge variant="outline" className="text-xs font-normal">
                                                                  {med.dosageForm}
@@ -143,22 +144,22 @@ export default function SellersMedicines({ medicines }: any) {
                                                        ) : (
                                                             <span className="text-muted-foreground text-xs">—</span>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* SKU */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground font-mono">
                                                             {med.sku || "—"}
                                                        </code>
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Price */}
-                                                  <td className="px-4 py-3 font-medium tabular-nums">
+                                                  <TableCell className="font-medium tabular-nums">
                                                        ৳{med.price}
-                                                  </td>
+                                                  </TableCell>
 
-                                                  {/* Discount price */}
-                                                  <td className="px-4 py-3 tabular-nums">
+                                                  {/* Discount */}
+                                                  <TableCell className="tabular-nums">
                                                        {med.discountPrice ? (
                                                             <span className="text-emerald-600 dark:text-emerald-400 font-medium">
                                                                  ৳{med.discountPrice}
@@ -166,10 +167,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                        ) : (
                                                             <span className="text-muted-foreground text-xs">—</span>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Stock */}
-                                                  <td className="px-4 py-3 tabular-nums">
+                                                  <TableCell className="tabular-nums">
                                                        {med.stock > 10 ? (
                                                             <span className="text-emerald-600 dark:text-emerald-400 font-medium">{med.stock}</span>
                                                        ) : med.stock > 0 ? (
@@ -177,10 +178,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                        ) : (
                                                             <span className="text-destructive font-medium">Out</span>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Status */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell>
                                                        {med.isActive ? (
                                                             <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800 font-normal text-xs">
                                                                  Active
@@ -190,10 +191,10 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  Inactive
                                                             </Badge>
                                                        )}
-                                                  </td>
+                                                  </TableCell>
 
                                                   {/* Actions */}
-                                                  <td className="px-4 py-3">
+                                                  <TableCell className="text-right">
                                                        <div className="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                                                             <Button
                                                                  size="icon"
@@ -252,12 +253,12 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  </AlertDialogContent>
                                                             </AlertDialog>
                                                        </div>
-                                                  </td>
-                                             </tr>
+                                                  </TableCell>
+                                             </TableRow>
                                         ))
                                    )}
-                              </tbody>
-                         </table>
+                              </TableBody>
+                         </Table>
                     </div>
                </div>
           </div>
