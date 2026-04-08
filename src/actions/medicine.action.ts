@@ -1,6 +1,5 @@
 "use server";
 
-import { imageHostingService } from "@/service/image-hosting.service";
 import { medicineServiceServer } from "@/service/medicine.server.service";
 import { revalidatePath } from "next/cache";
 

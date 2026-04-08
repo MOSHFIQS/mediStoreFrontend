@@ -19,7 +19,6 @@ import { Label } from "@/components/ui/label"
 import {
      Upload, Package, FlaskConical, Tag, Info, ImageIcon, X
 } from "lucide-react"
-import { imageHostingService } from "@/service/image-hosting.service"
 import ImageUploader from "../shared/image/ImageUploader"
 import { useImageUpload } from "@/hooks/useImageUpload"
 import { useRouter } from "next/navigation"
