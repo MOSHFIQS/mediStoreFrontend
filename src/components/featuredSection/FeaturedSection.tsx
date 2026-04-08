@@ -32,7 +32,7 @@ export default function FeaturedSection() {
      ];
 
      return (
-          <section className="py-16 ">
+          <section className=" ">
                <div className="container mx-auto px-4 text-center mb-12">
                     <h2 className="text-4xl font-bold">Why Choose MediStore?</h2>
                     <p className="text-gray-700 mt-4 max-w-xl mx-auto">

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
      return (
-          <footer className=" pt-12 border-t border-t-black">
+          <footer className=" py-12 border  bg-white mb-10" >
                <div className="container mx-auto px-6 md:px-12 grid md:grid-cols-4 gap-8">
           
 
@@ -53,9 +53,9 @@ export default function Footer() {
                </div>
 
                {/* Bottom Bar */}
-               <div className="border-t border-gray-700 mt-12 py-4 text-center text-sm text-gray-500">
+               {/* <div className="border-t border-gray-700 mt-12 py-4 text-center text-sm text-gray-500">
                     © 2026 MediStore. All rights reserved.
-               </div>
+               </div> */}
           </footer>
      );
 }

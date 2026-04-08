@@ -392,7 +392,7 @@ export default function MedicineDetails({
 
                                                   <button
                                                        onClick={() => { setUseNewAddress(!useNewAddress); setSelectedAddressId(null); }}
-                                                       className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition
+                                                       className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition bg-white
                                                        ${useNewAddress
                                                                  ? "border-purple-400 bg-purple-50 text-purple-700"
                                                                  : "border-dashed border-gray-300 text-muted-foreground hover:border-purple-300"

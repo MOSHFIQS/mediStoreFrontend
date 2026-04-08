@@ -19,7 +19,7 @@ export async function getNotificationsAction() {
           return {
                ok: true,
                message: res?.message || "Notifications fetched successfully",
-               data: res?.data?.data || [],
+               data: res?.data || [],
           };
      } catch (err: any) {
           return {

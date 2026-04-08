@@ -8,6 +8,11 @@ import FeaturedSection from "@/components/featuredSection/FeaturedSection";
 import AllMedicines from "@/components/medicine/AllMedicines";
 import { getAllMedicinesAction } from "@/actions/medicine.action";
 import { getAllCategoriesAction } from "@/actions/category.action";
+import FeaturesSection from "@/components/home/FeaturesSection";
+import StatisticsSection from "@/components/home/StatisticsSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import FaqSection from "@/components/home/FaqSection";
+import NewsletterSection from "@/components/home/NewsletterSection";
 
 export default async function HomePage({
      searchParams,
@@ -29,15 +34,29 @@ export default async function HomePage({
      if (!catRes.ok) return <p className="p-4">Failed to load categories</p>;
 
      return (
-          <>
+          <div className="space-y-10">
                <CarouselPlugin />
+               <FeaturesSection />
                <FeaturedSection />
                <AllMedicines
                     initialMedicines={medRes.data.data}
                     categories={[]}
                />
+               {/* 6. Statistics */}
+               <StatisticsSection />
+
+               {/* 7. Testimonials */}
+               <TestimonialsSection />
+
+               {/* 8. Blogs / Health Tips */}
                <HealthTips />
+
+               {/* 9. FAQs */}
+               <FaqSection />
+
+               {/* 10. Newsletter */}
+               <NewsletterSection />
                <Footer />
-          </>
+          </div>
      );
 }

@@ -48,10 +48,28 @@ export default function NotificationBell() {
      return (
           <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) load(); }}>
                <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative">
-                         <Bell className="w-5 h-5" />
+                    <Button
+                         variant="ghost"
+                         size="icon"
+                         className="relative rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+                    >
+                         {/* Bell Icon */}
+                         <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+
+                         {/* Notification Badge */}
                          {unread > 0 && (
-                              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                              <span
+                                   className="
+        absolute -top-1 -right-1
+        min-w-[18px] h-[18px] px-[4px]
+        bg-gradient-to-r from-red-500 to-pink-500
+        text-white text-[10px] font-semibold
+        rounded-full flex items-center justify-center
+        shadow-md
+        ring-2 ring-white dark:ring-gray-900
+        animate-in fade-in zoom-in-50
+      "
+                              >
                                    {unread > 9 ? "9+" : unread}
                               </span>
                          )}
