@@ -46,6 +46,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
 
   const handleCategoryClick = (id: string) => {
     router.push(id === "all" ? "/medicines" : `/medicines?category=${id}`);
+    setSearch("")
   };
 
   const medicines =
@@ -68,7 +69,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search medicines..."
-            className="border rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300 w-64 bg-white"
+            className="border mt-2 rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300 w-64 bg-white"
           />
           {(search || categoryFromUrl !== "all") && (
             <Button

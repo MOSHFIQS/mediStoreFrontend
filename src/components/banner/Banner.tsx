@@ -18,13 +18,6 @@ export function CarouselPlugin() {
 
      const slides = [
           {
-               image: "/image1.png",
-               title: "Your Trusted Medicine Store",
-               description: "Get genuine medicines delivered to your doorstep quickly and safely with our 24/7 delivery network.",
-               highlight: "100% Authentic Products",
-               icon: <ShieldCheck className="w-5 h-5 mr-2" />
-          },
-          {
                image: "/image2.png",
                title: "Health Comes First",
                description: "We ensure quality healthcare products for you and your family. Because your wellbeing is our top priority.",
@@ -37,6 +30,13 @@ export function CarouselPlugin() {
                description: "Browse, order, and receive medicines with just a few clicks from the comfort of your home.",
                highlight: "24/7 Service Available",
                icon: <Activity className="w-5 h-5 mr-2" />
+          },
+          {
+               image: "/image1.png",
+               title: "Your Trusted Medicine Store",
+               description: "Get genuine medicines delivered to your doorstep quickly and safely with our 24/7 delivery network.",
+               highlight: "100% Authentic Products",
+               icon: <ShieldCheck className="w-5 h-5 mr-2" />
           },
      ]
 
@@ -58,7 +58,7 @@ export function CarouselPlugin() {
                                              alt={slide.title}
                                              className="w-full h-full object-cover rounded-2xl"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-r from-background/75 via-background/30 to-transparent dark:from-background dark:via-background/90 dark:to-background/20" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/30 to-transparent dark:from-background dark:via-background/90 dark:to-background/20" />
                                    </div>
 
                                    {/* Content Container */}

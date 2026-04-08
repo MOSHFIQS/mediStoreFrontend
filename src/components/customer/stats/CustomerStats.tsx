@@ -1,9 +1,15 @@
+"use client"
 import {
      ShoppingBag, DollarSign, TrendingUp, TrendingDown, Star,
-     FileText, Bell, MapPin, CreditCard, Package, Clock,
+     Bell, MapPin, CreditCard, Package, Clock,
      CheckCircle2, XCircle, Truck, RefreshCw, AlertCircle,
      Tag, BarChart3, Heart
 } from "lucide-react";
+import {
+     AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, RadarChart, Radar,
+     PolarGrid, PolarAngleAxis, LineChart, Line,
+     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 
 // ── Types ──────────────────────────────────────────────────────
 type CustomerStats = {
@@ -17,6 +23,7 @@ type CustomerStats = {
      spending: {
           total: number; today: number; thisMonth: number; lastMonth: number;
           growth: number; couponSavings: number;
+          monthly?: { month: string; amount: number }[];
      };
      payments: { total: number; success: number; pending: number; failed: number };
      reviews: { total: number; avgRating: number };
@@ -28,7 +35,6 @@ type CustomerStats = {
 
 interface Props { stats?: CustomerStats }
 
-// ── Helpers ────────────────────────────────────────────────────
 const fmt = (n: number) => new Intl.NumberFormat("en-US").format(n);
 const fmtMoney = (n: number) => `৳${new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)}`;
 
@@ -52,26 +58,91 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string })
      );
 }
 
-const ORDER_STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string; dot: string }> = {
-     placed: { label: "Placed", icon: <Clock className="w-4 h-4" />, color: "text-blue-500", dot: "bg-blue-400" },
-     confirmed: { label: "Confirmed", icon: <CheckCircle2 className="w-4 h-4" />, color: "text-indigo-500", dot: "bg-indigo-400" },
-     processing: { label: "Processing", icon: <RefreshCw className="w-4 h-4" />, color: "text-amber-500", dot: "bg-amber-400" },
-     shipped: { label: "Shipped", icon: <Truck className="w-4 h-4" />, color: "text-purple-500", dot: "bg-purple-400" },
-     delivered: { label: "Delivered", icon: <Package className="w-4 h-4" />, color: "text-emerald-500", dot: "bg-emerald-400" },
-     cancelled: { label: "Cancelled", icon: <XCircle className="w-4 h-4" />, color: "text-red-500", dot: "bg-red-400" },
-     refunded: { label: "Refunded", icon: <RefreshCw className="w-4 h-4" />, color: "text-gray-500", dot: "bg-gray-400" },
+const ORDER_STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string; dot: string; chartColor: string }> = {
+     placed:     { label: "Placed",     icon: <Clock className="w-4 h-4" />,        color: "text-blue-500",   dot: "bg-blue-400",    chartColor: "#3B82F6" },
+     confirmed:  { label: "Confirmed",  icon: <CheckCircle2 className="w-4 h-4" />, color: "text-indigo-500", dot: "bg-indigo-400",  chartColor: "#6366F1" },
+     processing: { label: "Processing", icon: <RefreshCw className="w-4 h-4" />,    color: "text-amber-500",  dot: "bg-amber-400",   chartColor: "#F59E0B" },
+     shipped:    { label: "Shipped",    icon: <Truck className="w-4 h-4" />,        color: "text-purple-500", dot: "bg-purple-400",  chartColor: "#A855F7" },
+     delivered:  { label: "Delivered",  icon: <Package className="w-4 h-4" />,      color: "text-emerald-500",dot: "bg-emerald-400", chartColor: "#10B981" },
+     cancelled:  { label: "Cancelled",  icon: <XCircle className="w-4 h-4" />,      color: "text-red-500",    dot: "bg-red-400",     chartColor: "#EF4444" },
+     refunded:   { label: "Refunded",   icon: <RefreshCw className="w-4 h-4" />,    color: "text-gray-500",   dot: "bg-gray-400",    chartColor: "#9CA3AF" },
 };
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+     if (active && payload && payload.length) {
+          return (
+               <div className="bg-white border border-gray-100 rounded-xl shadow-sm px-3 py-2 text-xs">
+                    {label && <p className="text-gray-500 mb-1">{label}</p>}
+                    {payload.map((p: any) => (
+                         <p key={p.name} className="font-semibold text-gray-800">
+                              {p.name}: {typeof p.value === "number" && p.name?.toLowerCase().includes("amount") ? fmtMoney(p.value) : p.value}
+                         </p>
+                    ))}
+               </div>
+          );
+     }
+     return null;
+};
 
+const MoneyTooltip = ({ active, payload, label }: any) => {
+     if (active && payload && payload.length) {
+          return (
+               <div className="bg-white border border-gray-100 rounded-xl shadow-sm px-3 py-2 text-xs">
+                    {label && <p className="text-gray-500 mb-1">{label}</p>}
+                    {payload.map((p: any) => (
+                         <p key={p.name} className="font-semibold text-gray-800">{fmtMoney(p.value)}</p>
+                    ))}
+               </div>
+          );
+     }
+     return null;
+};
 
-// ── Main ───────────────────────────────────────────────────────
 export default function CustomerStats({ stats }: Props) {
      if (!stats) return <p className="p-6 text-red-500">No statistics available.</p>;
 
-     const { orders, spending, payments,  reviews, addresses, notifications, topOrderedMedicines, recentOrders } = stats;
+     const { orders, spending, payments, reviews, addresses, notifications, topOrderedMedicines, recentOrders } = stats;
+
+     // Prepare chart data
+     const orderStatusData = Object.entries(orders.byStatus)
+          .map(([key, count]) => ({
+               name: ORDER_STATUS_CONFIG[key]?.label || key,
+               value: count,
+               color: ORDER_STATUS_CONFIG[key]?.chartColor || "#9CA3AF",
+          }))
+          .filter(d => d.value > 0);
+
+     const paymentData = [
+          { name: "Success", value: payments.success, color: "#10B981" },
+          { name: "Pending", value: payments.pending, color: "#F59E0B" },
+          { name: "Failed",  value: payments.failed,  color: "#EF4444" },
+     ].filter(d => d.value > 0);
+
+     const spendingCompareData = [
+          { period: "Last Month", amount: spending.lastMonth },
+          { period: "This Month", amount: spending.thisMonth },
+          { period: "Today",      amount: spending.today },
+     ];
+
+     const monthlySpending = spending.monthly || [
+          { month: "Jan", amount: 0 }, { month: "Feb", amount: 0 },
+          { month: "Mar", amount: 0 }, { month: "Apr", amount: 0 },
+          { month: "May", amount: 0 }, { month: "Jun", amount: 0 },
+     ];
+
+     const topMedicinesChartData = topOrderedMedicines.slice(0, 5).map(m => ({
+          name: m.medicineName.length > 14 ? m.medicineName.slice(0, 14) + "…" : m.medicineName,
+          qty: m.totalQuantity,
+          spent: m.totalSpent,
+     }));
+
+     const ordersCompareData = [
+          { period: "Last Month", orders: orders.lastMonth },
+          { period: "This Month", orders: orders.thisMonth },
+     ];
 
      return (
-          <div className="p-6 space-y-8  min-h-screen">
+          <div className="p-6 space-y-8 min-h-screen">
 
                {/* Header */}
                <div>
@@ -108,7 +179,14 @@ export default function CustomerStats({ stats }: Props) {
                          <p className="text-xs text-gray-400 mt-0.5">This month: {orders.thisMonth}</p>
                     </div>
 
-                
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <div className="flex items-center justify-between mb-3">
+                              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Reviews</span>
+                              <Star className="w-4 h-4 text-amber-400" />
+                         </div>
+                         <p className="text-3xl font-bold text-gray-900">{reviews.avgRating}<span className="text-base font-normal text-gray-400">/5</span></p>
+                         <p className="text-xs text-gray-400 mt-2">{reviews.total} reviews written</p>
+                    </div>
 
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                          <div className="flex items-center justify-between mb-3">
@@ -124,91 +202,184 @@ export default function CustomerStats({ stats }: Props) {
                     </div>
                </div>
 
-               {/* ── Order Status Breakdown ── */}
-               <div>
-                    <SectionTitle icon={<ShoppingBag className="w-4 h-4" />} title="Orders by Status" />
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-                         {Object.entries(orders.byStatus).map(([key, count]) => {
-                              const cfg = ORDER_STATUS_CONFIG[key];
-                              return (
-                                   <div key={key} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
-                                        <span className={`${cfg?.color || "text-gray-400"} flex justify-center mb-1`}>{cfg?.icon}</span>
-                                        <p className="text-xl font-bold text-gray-900">{count}</p>
-                                        <p className="text-xs text-gray-400 mt-0.5">{cfg?.label || key}</p>
-                                   </div>
-                              );
-                         })}
-                    </div>
-               </div>
-
-               {/* ── Spending + Payments + Reviews ── */}
-               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-                    {/* Spending breakdown */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                         <SectionTitle icon={<DollarSign className="w-4 h-4" />} title="Spending Breakdown" />
-                         <div className="space-y-3">
-                              {[
-                                   { label: "This Month", value: spending.thisMonth },
-                                   { label: "Last Month", value: spending.lastMonth },
-                                   { label: "Today", value: spending.today },
-                              ].map((s) => (
-                                   <div key={s.label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                                        <span className="text-sm text-gray-500">{s.label}</span>
-                                        <span className="text-sm font-bold text-gray-800">{fmtMoney(s.value)}</span>
-                                   </div>
-                              ))}
-                              <div className="flex items-center justify-between py-2">
-                                   <span className="text-sm text-emerald-600 flex items-center gap-1"><Tag className="w-3 h-3" /> Coupon Savings</span>
-                                   <span className="text-sm font-bold text-emerald-600">{fmtMoney(spending.couponSavings)}</span>
-                              </div>
-                         </div>
-                    </div>
-
-                    {/* Payments */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                         <SectionTitle icon={<CreditCard className="w-4 h-4" />} title="Payments" />
-                         <div className="space-y-3">
-                              {[
-                                   { label: "Total", value: payments.total, dot: "bg-gray-400" },
-                                   { label: "Success", value: payments.success, dot: "bg-emerald-400" },
-                                   { label: "Pending", value: payments.pending, dot: "bg-amber-400" },
-                                   { label: "Failed", value: payments.failed, dot: "bg-red-400" },
-                              ].map((p) => (
-                                   <div key={p.label} className="flex items-center justify-between">
-                                        <span className="flex items-center gap-2 text-sm text-gray-500">
-                                             <span className={`w-2 h-2 rounded-full ${p.dot}`} /> {p.label}
-                                        </span>
-                                        <span className="text-sm font-bold text-gray-800">{p.value}</span>
-                                   </div>
-                              ))}
-                         </div>
-                    </div>
-
-                    {/* Reviews + misc */}
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                         <SectionTitle icon={<Star className="w-4 h-4" />} title="Activity" />
-                         <div className="grid grid-cols-2 gap-3">
-                              <div className="bg-amber-50 rounded-xl p-4 text-center">
-                                   <p className="text-2xl font-bold text-amber-700">{reviews.avgRating}</p>
-                                   <p className="text-xs text-amber-600 mt-0.5">Avg Rating Given</p>
-                              </div>
-                              <div className="bg-blue-50 rounded-xl p-4 text-center">
-                                   <p className="text-2xl font-bold text-blue-700">{reviews.total}</p>
-                                   <p className="text-xs text-blue-600 mt-0.5">Reviews Written</p>
-                              </div>
-                              <div className="bg-purple-50 rounded-xl p-4 text-center">
-                                   <p className="text-2xl font-bold text-purple-700">{addresses.total}</p>
-                                   <p className="text-xs text-purple-600 mt-0.5">Saved Addresses</p>
-                              </div>
-                         </div>
-                    </div>
-               </div>
-
-               {/* ── Top Ordered Medicines + Recent Orders ── */}
+               {/* ── CHARTS ROW 1: Order Status Donut + Payment Donut ── */}
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                    {/* Top Ordered */}
+                    {/* Order Status Donut */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <SectionTitle icon={<ShoppingBag className="w-4 h-4" />} title="Orders by Status" />
+                         <div className="flex items-center gap-4">
+                              <div className="flex-shrink-0" style={{ width: 200, height: 200 }}>
+                                   <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                             <Pie data={orderStatusData} cx="50%" cy="50%" innerRadius={55} outerRadius={85}
+                                                  paddingAngle={2} dataKey="value">
+                                                  {orderStatusData.map((entry, i) => (
+                                                       <Cell key={i} fill={entry.color} />
+                                                  ))}
+                                             </Pie>
+                                             <Tooltip formatter={(v: any, n: any) => [v, n]} />
+                                        </PieChart>
+                                   </ResponsiveContainer>
+                              </div>
+                              <div className="flex-1 space-y-2">
+                                   {orderStatusData.map((d) => (
+                                        <div key={d.name} className="flex items-center justify-between">
+                                             <span className="flex items-center gap-2 text-xs text-gray-500">
+                                                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.color }} />
+                                                  {d.name}
+                                             </span>
+                                             <span className="text-xs font-bold text-gray-800">{d.value}</span>
+                                        </div>
+                                   ))}
+                              </div>
+                         </div>
+                    </div>
+
+                    {/* Payment Donut */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <SectionTitle icon={<CreditCard className="w-4 h-4" />} title="Payment Status" />
+                         <div className="flex items-center gap-4">
+                              <div className="flex-shrink-0" style={{ width: 200, height: 200 }}>
+                                   <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                             <Pie data={paymentData} cx="50%" cy="50%" innerRadius={55} outerRadius={85}
+                                                  paddingAngle={2} dataKey="value">
+                                                  {paymentData.map((entry, i) => (
+                                                       <Cell key={i} fill={entry.color} />
+                                                  ))}
+                                             </Pie>
+                                             <Tooltip />
+                                        </PieChart>
+                                   </ResponsiveContainer>
+                              </div>
+                              <div className="flex-1 space-y-3">
+                                   {[
+                                        { label: "Total",   value: payments.total,   dot: "bg-gray-400" },
+                                        { label: "Success", value: payments.success, dot: "bg-emerald-400" },
+                                        { label: "Pending", value: payments.pending, dot: "bg-amber-400" },
+                                        { label: "Failed",  value: payments.failed,  dot: "bg-red-400" },
+                                   ].map((p) => (
+                                        <div key={p.label} className="flex items-center justify-between">
+                                             <span className="flex items-center gap-2 text-xs text-gray-500">
+                                                  <span className={`w-2 h-2 rounded-full ${p.dot}`} /> {p.label}
+                                             </span>
+                                             <span className="text-xs font-bold text-gray-800">{p.value}</span>
+                                        </div>
+                                   ))}
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               {/* ── CHARTS ROW 2: Spending Over Time (Area) + Orders Month Compare (Bar) ── */}
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                    {/* Monthly Spending Area Chart */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:col-span-2">
+                         <SectionTitle icon={<TrendingUp className="w-4 h-4" />} title="Spending Trend" />
+                         <div style={{ height: 220 }}>
+                              <ResponsiveContainer width="100%" height="100%">
+                                   <AreaChart data={monthlySpending} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                                        <defs>
+                                             <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+                                                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
+                                                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                             </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+                                        <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                                             tickFormatter={(v) => `৳${(v / 1000).toFixed(0)}k`} />
+                                        <Tooltip content={<MoneyTooltip />} />
+                                        <Area type="monotone" dataKey="amount" name="Spending" stroke="#3B82F6" strokeWidth={2}
+                                             fill="url(#spendGrad)" dot={{ r: 3, fill: "#3B82F6" }} activeDot={{ r: 5 }} />
+                                   </AreaChart>
+                              </ResponsiveContainer>
+                         </div>
+                    </div>
+
+                    {/* Spending Compare Bar */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <SectionTitle icon={<DollarSign className="w-4 h-4" />} title="Spending Breakdown" />
+                         <div style={{ height: 220 }}>
+                              <ResponsiveContainer width="100%" height="100%">
+                                   <BarChart data={spendingCompareData} layout="vertical"
+                                        margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+                                        <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false}
+                                             tickFormatter={(v) => `৳${(v / 1000).toFixed(0)}k`} />
+                                        <YAxis type="category" dataKey="period" tick={{ fontSize: 11, fill: "#6B7280" }}
+                                             axisLine={false} tickLine={false} width={72} />
+                                        <Tooltip content={<MoneyTooltip />} />
+                                        <Bar dataKey="amount" name="Amount" radius={[0, 6, 6, 0]}>
+                                             {spendingCompareData.map((_, i) => (
+                                                  <Cell key={i} fill={i === 1 ? "#3B82F6" : i === 0 ? "#93C5FD" : "#BFDBFE"} />
+                                             ))}
+                                        </Bar>
+                                   </BarChart>
+                              </ResponsiveContainer>
+                         </div>
+                         <div className="mt-3 space-y-1">
+                              <div className="flex justify-between text-xs">
+                                   <span className="text-gray-400">Coupon Savings</span>
+                                   <span className="font-bold text-emerald-600">{fmtMoney(spending.couponSavings)}</span>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               {/* ── CHARTS ROW 3: Top Medicines Bar + Order Status bar ── */}
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                    {/* Top Medicines Bar */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <SectionTitle icon={<Heart className="w-4 h-4" />} title="Most Ordered Medicines" />
+                         {topMedicinesChartData.length === 0 ? (
+                              <p className="text-sm text-gray-400 text-center py-6">No purchases yet</p>
+                         ) : (
+                              <div style={{ height: 220 }}>
+                                   <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={topMedicinesChartData} layout="vertical"
+                                             margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+                                             <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+                                             <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                                             <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#6B7280" }}
+                                                  axisLine={false} tickLine={false} width={90} />
+                                             <Tooltip />
+                                             <Bar dataKey="qty" name="Qty" fill="#6366F1" radius={[0, 6, 6, 0]} />
+                                        </BarChart>
+                                   </ResponsiveContainer>
+                              </div>
+                         )}
+                    </div>
+
+                    {/* Order Status Horizontal Bar */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                         <SectionTitle icon={<ShoppingBag className="w-4 h-4" />} title="Order Status Breakdown" />
+                         <div style={{ height: 220 }}>
+                              <ResponsiveContainer width="100%" height="100%">
+                                   <BarChart data={orderStatusData} layout="vertical"
+                                        margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+                                        <XAxis type="number" tick={{ fontSize: 10, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
+                                        <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#6B7280" }}
+                                             axisLine={false} tickLine={false} width={72} />
+                                        <Tooltip />
+                                        <Bar dataKey="value" name="Orders" radius={[0, 6, 6, 0]}>
+                                             {orderStatusData.map((entry, i) => (
+                                                  <Cell key={i} fill={entry.color} />
+                                             ))}
+                                        </Bar>
+                                   </BarChart>
+                              </ResponsiveContainer>
+                         </div>
+                    </div>
+               </div>
+
+               {/* ── Original Tables: Top Ordered + Recent Orders ── */}
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                          <SectionTitle icon={<Heart className="w-4 h-4" />} title="Your Most Ordered" />
                          {topOrderedMedicines.length === 0 ? (
@@ -231,7 +402,6 @@ export default function CustomerStats({ stats }: Props) {
                          )}
                     </div>
 
-                    {/* Recent Orders */}
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                          <SectionTitle icon={<ShoppingBag className="w-4 h-4" />} title="Recent Orders" />
                          {recentOrders.length === 0 ? (
@@ -268,7 +438,25 @@ export default function CustomerStats({ stats }: Props) {
                     </div>
                </div>
 
-               
+               {/* ── Activity mini stats ── */}
+               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <SectionTitle icon={<Star className="w-4 h-4" />} title="Activity" />
+                    <div className="grid grid-cols-3 gap-3">
+                         <div className="bg-amber-50 rounded-xl p-4 text-center">
+                              <p className="text-2xl font-bold text-amber-700">{reviews.avgRating}</p>
+                              <p className="text-xs text-amber-600 mt-0.5">Avg Rating</p>
+                         </div>
+                         <div className="bg-blue-50 rounded-xl p-4 text-center">
+                              <p className="text-2xl font-bold text-blue-700">{reviews.total}</p>
+                              <p className="text-xs text-blue-600 mt-0.5">Reviews Written</p>
+                         </div>
+                         <div className="bg-purple-50 rounded-xl p-4 text-center">
+                              <p className="text-2xl font-bold text-purple-700">{addresses.total}</p>
+                              <p className="text-xs text-purple-600 mt-0.5">Saved Addresses</p>
+                         </div>
+                    </div>
+               </div>
+
           </div>
      );
 }

@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useAuth } from "@/context/AuthProvider"
 import { Pill, Mail, Lock, ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { AppImage } from "./shared/image/AppImage"
 
 const formSchema = z.object({
      email: z.string().email("Invalid email address"),
@@ -50,9 +51,9 @@ export function LoginForm() {
                <div className="space-y-8 w-full">
 
                     {/* Brand */}
-                    <div className="text-center space-y-2">
-                         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-purple-600 shadow-lg mb-2">
-                              <Pill className="w-7 h-7 text-white" />
+                    <div className="text-center space-y-2 flex items-center  flex-col">
+                         <div className="h-15 w-15">
+                              <AppImage src={'/logo.png'} className="h-full w-full"/>
                          </div>
                          <h1 className="text-3xl font-bold tracking-tight">MediStore</h1>
                          <p className="text-muted-foreground text-sm">

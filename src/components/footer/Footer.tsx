@@ -8,6 +8,7 @@ export default function Footer() {
           
 
                     <div>
+                         
                          <h3 className="text-2xl font-bold mb-4 ">MediStore </h3>
                          <p>Your Trusted Online Medicine Shop.<br/> Browse medicines, get health tips, and shop safely online.</p>
                     </div>
