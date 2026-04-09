@@ -87,9 +87,9 @@ export default function SellersMedicines({ medicines }: any) {
 
                                                   {/* Image */}
                                                   <TableCell>
-                                                       {med.image ? (
+                                                       {med.images?.[0] ? (
                                                             <img
-                                                                 src={med.image}
+                                                                 src={med.images?.[0]}
                                                                  alt={med.name}
                                                                  className="w-11 h-11 object-cover rounded-lg border border-border shadow-sm"
                                                             />

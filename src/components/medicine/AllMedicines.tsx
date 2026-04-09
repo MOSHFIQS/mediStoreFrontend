@@ -11,6 +11,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { Input } from "../ui/input";
+import { AppImage } from "../shared/image/AppImage";
 
 export default function AllMedicines({ initialMedicines, categories }: any) {
   const router = useRouter();
@@ -135,13 +136,15 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
             >
               {/* ── Image ── */}
               <div className="relative h-52 w-full overflow-hidden rounded-2xl group border-2 border-gray-200">
-                <Image
-                  src={med.image || "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg"}
-                  alt={med.name || "Medicine"}
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  fill
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                />
+                <div className="absolute inset-0">
+                  <AppImage
+                    src={med.images?.[0] || "https://i.ibb.co/gLGN1DHh/360-F-434728286-OWQQv-AFo-XZLd-GHl-Obozsol-Neu-Sxhpr84.jpg"}
+                    alt={med.name || "Medicine"}
+                    className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                    width={300}
+                    height={208}
+                  />
+                </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
 
                 {/* Category badge */}
@@ -154,7 +157,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
 
                 {/* Stock badge */}
                 <span className={`absolute top-3 right-3 px-3 py-1 text-xs rounded-full font-medium
-                  ${outOfStock ? "bg-red-100 text-red-600" : "bg-white/85 backdrop-blur"}`}>
+    ${outOfStock ? "bg-red-100 text-red-600" : "bg-white/85 backdrop-blur"}`}>
                   {outOfStock ? "Out of stock" : "In Stock"}
                 </span>
 
@@ -190,13 +193,13 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
                 <div className="w-full flex items-center justify-end gap-2">
                   <Button
                     onClick={() => {
-                      
+
 
                       addToCart({
                         medicineId: med.id,
                         quantity: 1,
                         price: med.discountPrice ?? med.price,
-                        image: med.image,
+                        image: med.images?.[0],
                         name: med.name,
                       });
                       queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -224,7 +227,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
 
                   <Button
                     onClick={() => {
-                     
+
                       router.push(`/medicines/${med.id}`);
                     }}
                     variant="outline"

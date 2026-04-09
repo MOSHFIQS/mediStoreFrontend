@@ -8,6 +8,7 @@ import {
      Building2, Barcode, Calendar, CheckCircle2, XCircle, ImageOff,
 } from "lucide-react"
 import Link from "next/link"
+import { AppImage } from "@/components/shared/image/AppImage"
 
 
 
@@ -60,12 +61,16 @@ export default async function MedicineDetails({ medicine }: { medicine: any }) {
 
                          {/* Image panel */}
                          <div className="bg-muted/40 border-b md:border-b-0 md:border-r flex items-center justify-center p-8 min-h-[260px]">
-                              {med.image ? (
-                                   <img
-                                        src={med.image}
-                                        alt={med.name}
-                                        className="w-full max-w-[200px] h-auto object-contain rounded-lg drop-shadow-sm"
-                                   />
+                              {med.images?.[0] ? (
+                                   <div className="relative w-full max-w-[200px] h-[200px]">
+                                        <AppImage
+                                             src={med.images[0]}
+                                             alt={med.name}
+                                             className="object-contain rounded-lg drop-shadow-sm w-full h-full"
+                                             width={200}
+                                             height={200}
+                                        />
+                                   </div>
                               ) : (
                                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
                                         <ImageOff className="w-12 h-12 opacity-20" />
@@ -135,10 +140,10 @@ export default async function MedicineDetails({ medicine }: { medicine: any }) {
                                    <div>
                                         <p className="text-xs text-muted-foreground mb-1">Stock</p>
                                         <p className={`text-lg font-semibold ${med.stock > 10
-                                                  ? "text-emerald-600 dark:text-emerald-400"
-                                                  : med.stock > 0
-                                                       ? "text-amber-500"
-                                                       : "text-destructive"
+                                             ? "text-emerald-600 dark:text-emerald-400"
+                                             : med.stock > 0
+                                                  ? "text-amber-500"
+                                                  : "text-destructive"
                                              }`}>
                                              {med.stock > 0 ? `${med.stock} units` : "Out of stock"}
                                         </p>

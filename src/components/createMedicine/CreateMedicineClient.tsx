@@ -72,7 +72,6 @@ export default function CreateMedicineClient({ categories }: { categories: { id:
                               strength: value.strength || undefined,
                               unit: value.unit || "piece",
                               sku: value.sku || undefined,
-                              image: medicineImages.images[0]?.img,
                               images: medicineImages.images
                                    .filter((img) => !img.imageUploading)
                                    .map((img) => img.img),

@@ -30,7 +30,10 @@ export default function UpdateMedicineClient({
 }: {
      medicine: any
      categories: { id: string; name: string }[]
+
 }) {
+
+     // console.log(medicine);
      const [isPending, startTransition] = useTransition()
 
      const medicineImages = useImageUpload({
@@ -73,13 +76,19 @@ export default function UpdateMedicineClient({
                               strength: value.strength || undefined,
                               unit: value.unit || "piece",
                               sku: value.sku || undefined,
-                              image: medicineImages.images[0]?.img,
                               images: medicineImages.images
                                    .filter((img) => !img.imageUploading)
                                    .map((img) => img.img),
                          }
 
-                         await updateMedicineAction(medicine.id, payload)
+                         console.log(payload);
+
+                         const res = await updateMedicineAction(medicine.id, payload)
+                         if (!res?.ok) {
+                              toast.error(res?.message);
+                              return;
+                         }
+                         console.log(res);
                          toast.success("Medicine updated successfully!")
                          router.push("/seller-dashboard/medicine")
                     } catch (err: any) {

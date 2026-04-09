@@ -73,7 +73,7 @@ interface NewAddressForm {
      district: string;
      postalCode: string;
 }
-
+const FALLBACK_IMAGE = "https://i.ibb.co/whX8gJjd/medicine-capsule-medical-pills-illustration-png.png";
 export default function MedicineDetails({
      medicine,
      addresses,
@@ -86,7 +86,8 @@ export default function MedicineDetails({
      const { user } = useAuth();
 
      const [quantity, setQuantity] = useState(1);
-     const [activeImage, setActiveImage] = useState(medicine.image || "");
+     const images = medicine.images?.length ? medicine.images : [FALLBACK_IMAGE];
+     const [activeImage, setActiveImage] = useState(images[0]);
      const [isOrdering, setIsOrdering] = useState(false);
 
      // ── Address ───────────────────────────────────────────
@@ -98,8 +99,6 @@ export default function MedicineDetails({
      });
      const [saveNewAddress, setSaveNewAddress] = useState(false);
 
-    
-
 
      const unitPrice = medicine.discountPrice ?? medicine.price;
      const discount = medicine.discountPrice
@@ -108,10 +107,7 @@ export default function MedicineDetails({
      const total = unitPrice * quantity;
      const outOfStock = medicine.stock === 0;
 
-     const allImages = [
-          ...(medicine.image ? [medicine.image] : []),
-          ...(medicine.images?.filter((img) => img !== medicine.image) ?? []),
-     ];
+     const allImages = medicine.images ?? [];
 
      const changeQty = (delta: number) =>
           setQuantity((q) => Math.min(medicine.stock, Math.max(1, q + delta)));
@@ -123,7 +119,7 @@ export default function MedicineDetails({
                medicineId: medicine.id,
                quantity,
                price: unitPrice,
-               image: medicine.image as string,
+               image: images[0],
                name: medicine.name,
           });
           queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -135,7 +131,7 @@ export default function MedicineDetails({
           if (!user) { router.push("/login"); return; }
           if (user.role !== "CUSTOMER") { toast.error("Only customers can place orders"); return; }
 
-          
+
 
           const isUsingNew = useNewAddress || addresses.length === 0;
           if (isUsingNew && !newAddress.line1.trim()) { toast.error("Please enter a delivery address"); return; }
@@ -319,10 +315,10 @@ export default function MedicineDetails({
 
                          <Separator />
 
-                        
+
 
                          {/* Quantity + address — only shown when Rx is satisfied or not required */}
-                         {!outOfStock && user?.role === "CUSTOMER"  && (
+                         {!outOfStock && user?.role === "CUSTOMER" && (
                               <div className="space-y-4">
 
                                    {/* Quantity picker */}
@@ -405,7 +401,7 @@ export default function MedicineDetails({
                                         )}
 
                                         {(useNewAddress || addresses.length === 0) && (
-                                             <div className="space-y-2 border p-3 rounded-xl">
+                                             <div className="space-y-2 border p-3 rounded-xl bg-white">
                                                   <Input placeholder="Label (Home, Office)" value={newAddress.label}
                                                        onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })} />
                                                   <Input placeholder="Address Line 1 *" value={newAddress.line1}
@@ -442,7 +438,7 @@ export default function MedicineDetails({
                                         <Button
                                              className="flex-1 rounded-full gap-2 bg-purple-600 hover:bg-purple-700"
                                              onClick={handleBuyNow}
-                                             disabled={isOrdering || !isAddressValid }
+                                             disabled={isOrdering || !isAddressValid}
                                         >
                                              {isOrdering ? (
                                                   <>

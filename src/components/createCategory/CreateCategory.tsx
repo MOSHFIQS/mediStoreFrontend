@@ -31,7 +31,11 @@ export default function CreateCategory() {
                          description: value.description || undefined,
                          image: categoryImages.images[0]?.img,
                     };
-                    await createCategoryAction(payload);
+                    const res =  await createCategoryAction(payload);
+                    if (!res?.ok) {
+                         toast.error(res?.message);
+                         return;
+                    }
                     toast.success("Category created successfully");
                     form.reset();
                     router.push("/admin-dashboard/category");

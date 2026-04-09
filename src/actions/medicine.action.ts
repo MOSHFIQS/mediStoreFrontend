@@ -18,11 +18,9 @@ export async function createMedicineAction(data: {
      price: number;
      discountPrice?: number;
      stock: number;
-     image: string;
      images?: string[];
 }) {
      // Validate required fields
-     if (!data.image) return { ok: false, message: "Image is required" };
      if (!data.name) return { ok: false, message: "Name is required" };
      if (!data.description) return { ok: false, message: "Description is required" };
      if (!data.categoryId) return { ok: false, message: "Category is required" };
@@ -44,7 +42,6 @@ export async function createMedicineAction(data: {
                price: data.price,
                discountPrice: data.discountPrice,
                stock: data.stock,
-               image: data.image,
                images: data.images,
           });
 
@@ -69,11 +66,13 @@ export async function updateMedicineAction(id: string, data: any) {
      try {
           const res = await medicineServiceServer.update(id, data);
 
+          
+
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to update medicine" };
           }
 
-          revalidatePath("/seller-dashboard/medicines");
+          revalidatePath("/seller-dashboard/medicine");
 
           return { ok: true, message: res?.message || "Medicine updated successfully", data: res?.data };
      } catch (err: any) {

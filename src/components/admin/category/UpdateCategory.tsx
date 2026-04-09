@@ -14,10 +14,11 @@ import { Tag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function UpdateCategory({ category }: { category: any }) {
+     console.log(category);
      const [loading, setLoading] = useState(false);
      const categoryImages = useImageUpload({
           max: 1,
-          defaultImages: category?.image ? [category.image] : [],
+          defaultImages: category?.image ? [category?.image] : [],
      });
      const router = useRouter();
 
@@ -34,7 +35,10 @@ export default function UpdateCategory({ category }: { category: any }) {
                          image: categoryImages.images[0]?.img,
                     };
                     const res = await updateCategoryAction(category.id, payload);
-                    if (!res.ok) throw new Error(res.message);
+                    if (!res?.ok) {
+                         toast.error(res?.message);
+                         return;
+                    }
                     router.push("/admin-dashboard/category");
                     toast.success(res.message);
                     form.reset();

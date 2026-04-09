@@ -26,6 +26,8 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
           }))
      );
 
+  
+
      const upload = async (file: File) => {
 
           const MAX_SIZE = 4.5 * 1024 * 1024; // 4.5 MB in bytes
@@ -80,8 +82,11 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
                          i.id === img.id ? { ...i, imageUploading: true } : i
                     )
                );
+               console.log(img.img);
 
                const res = await deleteImagesAction({ url: img.img });
+
+
                console.log(res);
 
                setImages((prev) => prev.filter((i) => i.id !== img.id));
