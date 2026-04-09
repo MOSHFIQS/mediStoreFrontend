@@ -87,7 +87,7 @@ const Navbar = () => {
                          <div className="flex items-center gap-3">
                               {user?.id ? (
                                    <>
-                                        <NotificationBell />
+                                        {user?.role === 'CUSTOMER' && <NotificationBell />}
 
                                         {/* Profile Dropdown */}
                                         <DropdownMenu>
@@ -240,7 +240,7 @@ const Navbar = () => {
 
                          <div>
                               {
-                                   user?.id && <NotificationBell />
+                                   user?.id && user?.role === 'CUSTOMER' && <NotificationBell />
                               }
                               <Sheet>
                                    <SheetTrigger asChild>

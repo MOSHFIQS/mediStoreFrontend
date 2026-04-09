@@ -91,7 +91,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
           <button
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${categoryFromUrl === "all"
               ? "bg-purple-500 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              : "bg-white text-gray-700 hover:bg-gray-200 "
               }`}
             onClick={() => handleCategoryClick("all")}
           >
@@ -102,7 +102,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
               key={cat.id}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${categoryFromUrl === cat.id
                 ? "bg-purple-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-gray-700  text-white hover:bg-gray-500"
                 }`}
               onClick={() => handleCategoryClick(cat.id)}
             >
@@ -123,7 +123,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
       )}
 
       {/* ── Medicine cards ── */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 py-10">
         {medicines.map((med: any) => {
           const itemInCart = cart.find((i: any) => i.medicineId === med.id);
           const outOfStock = med.stock === 0;

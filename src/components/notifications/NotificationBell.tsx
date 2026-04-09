@@ -10,14 +10,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { getNotificationsAction, markAllNotificationsReadAction, markNotificationReadAction } from "@/actions/notification.action";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function NotificationBell() {
      const [notifications, setNotifications] = useState<any[]>([]);
      const [open, setOpen] = useState(false);
+     const { user } = useAuth();
 
      const unread = notifications.filter((n) => !n.isRead).length;
 
      const load = async () => {
+          if (user?.role !== 'CUSTOMER') return;
           const res = await getNotificationsAction();
           console.log(res);
           if (res.ok) setNotifications(res.data);
