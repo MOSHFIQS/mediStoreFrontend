@@ -21,14 +21,14 @@ import { useAuth } from "@/context/AuthProvider";
 type Tab = "search" | "foryou" | "trending" | "nav";
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "search",   label: "Search",   icon: <Search size={13} /> },
-  { id: "foryou",   label: "For you",  icon: <Star size={13} /> },
+  { id: "search", label: "Search", icon: <Search size={13} /> },
+  { id: "foryou", label: "For you", icon: <Star size={13} /> },
   { id: "trending", label: "Trending", icon: <TrendingUp size={13} /> },
-  { id: "nav",      label: "Navigate", icon: <Compass size={13} /> },
+  { id: "nav", label: "Navigate", icon: <Compass size={13} /> },
 ];
 
 export default function AIAssistantWidget() {
-  const [isOpen, setIsOpen]       = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("search");
 
   const {
@@ -40,16 +40,16 @@ export default function AIAssistantWidget() {
     loading,
   } = useAIFeatures();
 
-  const router   = useRouter();
+  const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
 
   const smartShortcuts = [
     ...(user?.id
       ? [
-          { title: "My Dashboard", url: "/dashboard",        icon: <LayoutDashboard size={15} /> },
-          { title: "My Orders",    url: "/dashboard/orders", icon: <ShoppingBag size={15} /> },
-        ]
+        { title: "My Dashboard", url: "/dashboard", icon: <LayoutDashboard size={15} /> },
+        { title: "My Orders", url: "/dashboard/orders", icon: <ShoppingBag size={15} /> },
+      ]
       : [{ title: "Sign in", url: "/login", icon: <ArrowRight size={15} /> }]),
     ...(!pathname.includes("/medicines")
       ? [{ title: "Browse Medicines", url: "/medicines", icon: <Search size={15} /> }]
@@ -78,7 +78,7 @@ export default function AIAssistantWidget() {
         style={{ height: 540 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
               <Bot size={15} className="text-neutral-700 dark:text-neutral-300" />
@@ -106,7 +106,7 @@ export default function AIAssistantWidget() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-neutral-100 dark:border-neutral-800 px-1">
+        <div className="flex border-b border-neutral-200 dark:border-neutral-800 px-1">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -161,7 +161,7 @@ export default function AIAssistantWidget() {
                           <button
                             key={med.id}
                             onClick={() => navigate(`/medicines/${med.id}`)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left group border border-neutral-200 dark:border-neutral-800"
                           >
                             <div className="w-9 h-9 rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex-shrink-0">
                               {med.images?.[0] && (
@@ -214,7 +214,7 @@ export default function AIAssistantWidget() {
                     <button
                       key={med.id}
                       onClick={() => navigate(`/medicines/${med.id}`)}
-                      className="flex items-center gap-3 p-3 rounded-xl border border-neutral-100 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all text-left"
+                      className="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all text-left"
                     >
                       <div className="w-11 h-11 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex-shrink-0">
                         {med.images?.[0] && (
@@ -248,7 +248,7 @@ export default function AIAssistantWidget() {
                       <button
                         key={med.id}
                         onClick={() => navigate(`/medicines/${med.id}`)}
-                        className="flex flex-col p-3 rounded-xl border border-neutral-100 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all text-left"
+                        className="flex flex-col p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all text-left"
                       >
                         <div className="flex items-center gap-1 mb-2">
                           <TrendingUp size={11} className="text-orange-400" />
@@ -283,7 +283,7 @@ export default function AIAssistantWidget() {
                     <button
                       key={idx}
                       onClick={() => navigate(s.url)}
-                      className="flex items-center justify-between px-3 py-3 rounded-xl border border-neutral-100 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all group"
+                      className="flex items-center justify-between px-3 py-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all group"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center text-neutral-500 dark:text-neutral-400">
@@ -300,7 +300,7 @@ export default function AIAssistantWidget() {
                     </button>
                   ))}
 
-                  <div className="mt-2 px-3 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-100 dark:border-neutral-800">
+                  <div className="mt-2 px-3 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-800">
                     <p className="text-[10.5px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">
                       Current page
                     </p>
