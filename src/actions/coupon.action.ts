@@ -1,6 +1,7 @@
 "use server";
 
 import { couponServiceServer } from "@/service/coupon.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // Create coupon
@@ -28,11 +29,15 @@ export async function createCouponAction(payload: any) {
 }
 
 
-export async function getAllCouponsAction() {
+export async function getAllCouponsAction(page?: number, limit?: number) {
      try {
-          const res = await couponServiceServer.getAll();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await couponServiceServer.getAll(query);
           if (!res?.ok) throw new Error(res?.message || "Failed to fetch coupons");
-          return { ok: true, data: res.data , message: res?.message || "couponss fetched successfully" };
+          return { ok: true, data: res.data, message: res?.message || "couponss fetched successfully" };
      } catch (err: any) {
           return { ok: false, message: err.message || "Something went wrong", data: [] };
      }

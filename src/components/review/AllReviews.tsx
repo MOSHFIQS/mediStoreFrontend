@@ -22,6 +22,7 @@ interface Review {
 }
 
 export default function AllReviews({ initialReviews }: { initialReviews: Review[] }) {
+     console.log(initialReviews);
      const { user } = useAuth();
      const router = useRouter();
      const [reviews, setReviews] = useState<Review[]>(initialReviews);

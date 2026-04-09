@@ -36,7 +36,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
 
     const timer = setTimeout(() => {
       const query = new URLSearchParams();
-      if (categoryFromUrl && categoryFromUrl !== "all") query.set("category", categoryFromUrl);
+      if (categoryFromUrl && categoryFromUrl !== "all") query.set("categoryId", categoryFromUrl);
       if (search.trim()) query.set("search", search.trim());
       const qs = query.toString();
       router.push(qs ? `/medicines?${qs}` : "/medicines");
@@ -46,7 +46,7 @@ export default function AllMedicines({ initialMedicines, categories }: any) {
   }, [search, categoryFromUrl]);
 
   const handleCategoryClick = (id: string) => {
-    router.push(id === "all" ? "/medicines" : `/medicines?category=${id}`);
+    router.push(id === "all" ? "/medicines" : `/medicines?categoryId=${id}`);
     setSearch("")
   };
 

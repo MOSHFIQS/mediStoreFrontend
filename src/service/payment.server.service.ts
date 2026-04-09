@@ -7,14 +7,14 @@ export const paymentServiceServer = {
      getByOrder: (orderId: string) =>
           apiFetchServerMain(`/payment/order/${orderId}`),
 
-     getMy: () =>
-          apiFetchServerMain("/payment/my"),
+     getMy: (query?: string) =>
+          apiFetchServerMain(`/payment/my?${query || ""}`),
 
-     getSeller: () =>
-          apiFetchServerMain("/payment/seller"),
+     getSeller: (query?: string) =>
+          apiFetchServerMain(`/payment/seller?${query || ""}`),
 
-     getAll: () =>
-          apiFetchServerMain("/payment/admin"),
+     getAll: (query?: string) =>
+          apiFetchServerMain(`/payment/admin?${query || ""}`),
 
      refund: (paymentId: string) =>
           apiFetchServerMain(`/payment/admin/${paymentId}/refund`, { method: "PATCH" }),

@@ -14,7 +14,7 @@ export const orderServiceServer = {
                body: JSON.stringify(payload),
           }),
 
-     getMyOrders: () => apiFetchServerMain("/order"),
+     getMyOrders: (query?: string) => apiFetchServerMain(`/order?${query || ""}`),
 
      getById: (id: string) => apiFetchServerMain(`/order/${id}`),
 
@@ -27,5 +27,5 @@ export const orderServiceServer = {
                body: JSON.stringify({ status }),
           }),
 
-     getSellerOrders: () => apiFetchServerMain("/order/seller/my-orders"),
+     getSellerOrders: (query?: string) => apiFetchServerMain(`/order/seller/my-orders?${query || ""}`),
 };

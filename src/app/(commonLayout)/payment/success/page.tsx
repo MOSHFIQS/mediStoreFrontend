@@ -22,7 +22,7 @@ export default function PaymentSuccessPage({
                     )}
                     <div className="flex gap-3 justify-center">
                          <Button asChild>
-                              <Link href="/orders">View Orders</Link>
+                              <Link href="/dashboard/orders">View Orders</Link>
                          </Button>
                          <Button variant="outline" asChild>
                               <Link href="/medicines">Continue Shopping</Link>

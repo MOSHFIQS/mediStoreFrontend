@@ -8,7 +8,7 @@ export interface CreateReviewPayload {
 }
 
 export const reviewServiceServer = {
-     getAll: () => apiFetchServerMain("/review"),
+     getAll: (query?: string) => apiFetchServerMain(`/review?${query || ""}`),
 
      getByMedicine: (medicineId: string) =>
           apiFetchServerMain(`/review/${medicineId}`),

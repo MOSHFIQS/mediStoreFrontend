@@ -1,6 +1,7 @@
 "use server";
 
 import { medicineServiceServer } from "@/service/medicine.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // Create medicine
@@ -66,7 +67,7 @@ export async function updateMedicineAction(id: string, data: any) {
      try {
           const res = await medicineServiceServer.update(id, data);
 
-          
+
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to update medicine" };
@@ -99,9 +100,19 @@ export async function deleteMedicineAction(id: string) {
 
 
 // Get all medicines (optionally filtered by category or search)
-export async function getAllMedicinesAction(params?: { categoryId?: string; search?: string }) {
+export async function getAllMedicinesAction(searchTerm?: string, categoryId?: string, page?: number, limit?: number) {
      try {
-          const res = await medicineServiceServer.getAll(params);
+
+          const query = buildQueryString({
+               searchTerm,
+               categoryId,
+               page,
+               limit
+          });
+
+          console.log(query);
+
+          const res = await medicineServiceServer.getAll(query);
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to fetch medicines", data: [] };
@@ -112,9 +123,15 @@ export async function getAllMedicinesAction(params?: { categoryId?: string; sear
           return { ok: false, message: err?.message || "Something went wrong while fetching medicines", data: [] };
      }
 }
-export async function getSellerMedicinesAction() {
+export async function getSellerMedicinesAction(page?: number, limit?: number) {
      try {
-          const res = await medicineServiceServer.getSellerMedicines();
+
+          const query = buildQueryString({
+               page,
+               limit
+          });
+
+          const res = await medicineServiceServer.getSellerMedicines(query);
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to fetch medicines", data: [] };

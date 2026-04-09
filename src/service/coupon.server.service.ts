@@ -1,7 +1,7 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const couponServiceServer = {
-     getAll: () => apiFetchServerMain("/coupon"),
+     getAll: (query?: string) => apiFetchServerMain(`/coupon?${query || ""}`),
 
      create: (payload: any) =>
           apiFetchServerMain("/coupon", {

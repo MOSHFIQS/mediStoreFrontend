@@ -1,6 +1,7 @@
 "use server";
 
 import { paymentServiceServer } from "@/service/payment.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // Initiate payment
@@ -20,9 +21,13 @@ export async function initiatePaymentAction(orderId: string) {
      }
 }
 
-export async function getMyPaymentsAction() {
+export async function getMyPaymentsAction(page?: number, limit?: number) {
      try {
-          const res = await paymentServiceServer.getMy();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await paymentServiceServer.getMy(query);
           if (!res?.ok) throw new Error(res?.message || "Failed to fetch payments");
           return { ok: true, data: res.data };
      } catch (err: any) {
@@ -30,9 +35,13 @@ export async function getMyPaymentsAction() {
      }
 }
 
-export async function getSellerPaymentsAction() {
+export async function getSellerPaymentsAction(page?: number, limit?: number) {
      try {
-          const res = await paymentServiceServer.getSeller();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await paymentServiceServer.getSeller(query);
           if (!res?.ok) throw new Error(res?.message || "Failed to fetch payments");
           return { ok: true, data: res.data };
      } catch (err: any) {
@@ -40,9 +49,13 @@ export async function getSellerPaymentsAction() {
      }
 }
 
-export async function getAllPaymentsAction() {
+export async function getAllPaymentsAction(page?: number, limit?: number) {
      try {
-          const res = await paymentServiceServer.getAll();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await paymentServiceServer.getAll(query);
           if (!res?.ok) throw new Error(res?.message || "Failed to fetch payments");
           return { ok: true, data: res.data };
      } catch (err: any) {

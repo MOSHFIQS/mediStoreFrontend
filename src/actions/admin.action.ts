@@ -2,11 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { adminServiceServer } from "@/service/admin.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 
 // Get all users
-export async function getAllUsersAction() {
+export async function getAllUsersAction(page: number, limit: number) {
      try {
-          const res = await adminServiceServer.getUsers();
+           const query = buildQueryString({
+            page,
+            limit
+        });
+          const res = await adminServiceServer.getUsers(query);
           if (!res?.ok) return { ok: false, message: res?.message || "Failed to fetch users", data: [] };
           return { ok: true, message: res?.message || "Users fetched successfully", data: res?.data || [] };
      } catch (err: any) {

@@ -1,7 +1,7 @@
 import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const categoryServiceServer = {
-     getAll: () => apiFetchServerMain("/category"),
+     getAll: (query?: string) => apiFetchServerMain(`/category?${query || ""}`),
      getById: (id: string) => apiFetchServerMain(`/category/${id}`),
 
      create: (data: { name: string; description?: string; image?: string }) =>

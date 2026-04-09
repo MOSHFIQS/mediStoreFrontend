@@ -1,6 +1,7 @@
 "use server";
 
 import { reviewServiceServer } from "@/service/review.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // Create a review
@@ -54,9 +55,14 @@ export async function deleteReviewAction(id: string) {
 }
 
 // Get all reviews
-export async function getAllReviewsAction() {
+export async function getAllReviewsAction(page?: number, limit?: number) {
      try {
-          const res = await reviewServiceServer.getAll();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await reviewServiceServer.getAll(query);
+          console.log("reviews action", res);
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to fetch reviews", data: [] };

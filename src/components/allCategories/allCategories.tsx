@@ -63,7 +63,7 @@ export default function AllCategories({ initialCategories }: Props) {
      };
 
      return (
-          <div className="min-h-screen bg-gray-50/50 p-6 space-y-6">
+          <div className="h-full bg-gray-50/50 p-6 space-y-6">
                {/* Page Header */}
                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function AllCategories({ initialCategories }: Props) {
                                                             <AppImage
                                                                  src={cat.image}
                                                                  alt={cat.name}
-                                                                 className="h-11 w-11 rounded-xl object-cover border border-gray-100"
+                                                                 className="h-11 w-11 rounded-xl object-cover border border-gray-300"
                                                             />
                                                        ) : (
                                                             <div className="h-11 w-11 flex items-center justify-center bg-gray-100 rounded-xl border border-gray-100 text-xs text-gray-400 font-medium">
@@ -174,7 +174,7 @@ export default function AllCategories({ initialCategories }: Props) {
                                                             <Button
                                                                  size="sm"
                                                                  variant="ghost"
-                                                                 className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                                 className="h-8 w-8 p-0 border rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                                                  onClick={() => openDeleteDialog(cat)}
                                                             >
                                                                  <Trash2 className="h-3.5 w-3.5" />

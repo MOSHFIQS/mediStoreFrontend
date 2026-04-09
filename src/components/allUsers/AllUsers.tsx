@@ -37,6 +37,7 @@ import {
      X,
 } from "lucide-react";
 import Image from "next/image";
+import { AppImage } from "../shared/image/AppImage";
 
 interface User {
      id: string;
@@ -98,7 +99,7 @@ function Avatar({ user }: { user: User }) {
      if (user.image) {
           return (
                <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 ring-2 ring-white shadow-sm">
-                    <Image src={user.image} alt={user.name} fill className="object-cover" />
+                    <AppImage src={user.image} alt={user.name} width={32} height={32} className="object-cover" />
                </div>
           );
      }

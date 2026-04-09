@@ -44,6 +44,10 @@ export default function AIAssistantWidget() {
   const pathname = usePathname();
   const { user } = useAuth();
 
+  // ✅ Hide on dashboard routes
+  const hiddenRoutes = ["/dashboard", "/seller-dashboard", "/admin-dashboard"];
+  if (hiddenRoutes.some((route) => pathname.startsWith(route))) return null;
+
   const smartShortcuts = [
     ...(user?.id
       ? [

@@ -1,6 +1,7 @@
 "use server";
 
 import { categoryServiceServer } from "@/service/category.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // Create a category
@@ -35,9 +36,13 @@ export async function createCategoryAction(data: { name: string; description?: s
 }
 
 // Get all categories
-export async function getAllCategoriesAction() {
+export async function getAllCategoriesAction(page?: number, limit?: number) {
     try {
-        const res = await categoryServiceServer.getAll();
+         const query = buildQueryString({
+            page,
+            limit
+        });
+        const res = await categoryServiceServer.getAll(query);
 
         if (!res?.ok) {
             return {

@@ -3,21 +3,17 @@ import { apiFetchServerMain } from "@/lib/apiFetchServer";
 
 export const medicineServiceServer = {
 
-     getAll: async function (params?: { categoryId?: string; search?: string }) {
-          const searchParams = new URLSearchParams();
 
-          if (params) {
-               Object.entries(params).forEach(([key, value]) => {
-                    if (value !== undefined && value !== null && value !== "") {
-                         searchParams.append(key, String(value));
-                    }
-               });
-          }
+     //  getAllEvents: (query?: string) =>
+     //    apiFetchServerMain(`/event?${query || ""}`, {
+     //        method: "GET",
+     //    }),
 
-          const endpoint = `/medicine${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
-          return apiFetchServerMain(endpoint);
-     },
+     getAll: (query?: string) =>
+          apiFetchServerMain(`/medicine?${query || ""}`, {
+               method: "GET",
+          }),
 
 
      getById: (id: string) =>
@@ -35,8 +31,8 @@ export const medicineServiceServer = {
                body: JSON.stringify(payload),
           }),
 
-     getSellerMedicines: () =>
-          apiFetchServerMain("/medicine/seller"),
+     getSellerMedicines: (query?: string) =>
+          apiFetchServerMain(`/medicine/seller?${query || ""}`),
 
      delete: (id: string) =>
           apiFetchServerMain(`/medicine/seller/${id}`, {

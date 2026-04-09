@@ -2,6 +2,7 @@
 
 import { orderServiceServer } from "@/service/order.server.service";
 import { paymentServiceServer } from "@/service/payment.server.service";
+import { buildQueryString } from "@/utils/buildQueryString";
 import { revalidatePath } from "next/cache";
 
 // ── Single medicine "Buy Now" ──────────────────────────────
@@ -130,9 +131,13 @@ export async function cancelOrderAction(orderId: string) {
 
 
 // Get orders of the logged-in seller
-export async function getSellerOrdersAction() {
+export async function getSellerOrdersAction(page?: number, limit?: number) {
      try {
-          const res = await orderServiceServer.getSellerOrders?.();
+           const query = buildQueryString({
+            page,
+            limit
+        });
+          const res = await orderServiceServer.getSellerOrders?.(query);
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to fetch seller orders", data: [] };
@@ -145,9 +150,13 @@ export async function getSellerOrdersAction() {
 }
 
 // Get orders of the logged-in user
-export async function getMyOrdersAction() {
+export async function getMyOrdersAction(page?: number, limit?: number) {
      try {
-          const res = await orderServiceServer.getMyOrders?.();
+          const query = buildQueryString({
+               page,
+               limit
+          });
+          const res = await orderServiceServer.getMyOrders?.(query);
 
           if (!res?.ok) {
                return { ok: false, message: res?.message || "Failed to fetch your orders", data: [] };
