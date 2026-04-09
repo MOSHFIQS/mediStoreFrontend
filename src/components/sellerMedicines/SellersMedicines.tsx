@@ -4,7 +4,7 @@ import React, { useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
-     AlertDialog, AlertDialogTrigger, AlertDialogContent,
+     AlertDialog, AlertDialogContent,
      AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
 } from "@/components/ui/alert-dialog"
 import {
@@ -34,8 +34,43 @@ export default function SellersMedicines({ medicines }: any) {
           })
      }
 
+     // The medicine currently targeted for deletion
+     const medicineToDelete = medicines.find((m: any) => m.id === openDialogId)
+
      return (
           <div className="space-y-4 px-4">
+
+               {/* ✅ Dialog lives OUTSIDE the table — no z-index / trigger conflicts */}
+               <AlertDialog
+                    open={!!openDialogId}
+                    onOpenChange={(isOpen) => !isOpen && setOpenDialogId(null)}
+               >
+                    <AlertDialogContent>
+                         <AlertDialogHeader>
+                              <AlertDialogTitle>Delete medicine?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                   This will permanently remove{" "}
+                                   <span className="font-medium text-foreground">
+                                        "{medicineToDelete?.name}"
+                                   </span>{" "}
+                                   from your inventory. This action cannot be undone.
+                              </AlertDialogDescription>
+                         </AlertDialogHeader>
+                         <AlertDialogFooter>
+                              <Button variant="outline" onClick={() => setOpenDialogId(null)}>
+                                   Cancel
+                              </Button>
+                              <Button
+                                   variant="destructive"
+                                   onClick={() => openDialogId && handleDelete(openDialogId)}
+                                   disabled={isPending}
+                              >
+                                   {isPending ? "Deleting…" : "Delete"}
+                              </Button>
+                         </AlertDialogFooter>
+                    </AlertDialogContent>
+               </AlertDialog>
+
                {/* Header */}
                <div className="flex items-center justify-between">
                     <div>
@@ -195,65 +230,41 @@ export default function SellersMedicines({ medicines }: any) {
 
                                                   {/* Actions */}
                                                   <TableCell className="text-right">
-                                                       <div className="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                                                       <div className="flex justify-end gap-1">
+
+                                                            {/* View */}
                                                             <Button
                                                                  size="icon"
                                                                  variant="ghost"
-                                                                 className="h-8 w-8"
                                                                  onClick={() => router.push(`/seller-dashboard/medicine/${med.id}`)}
+                                                                 className="hover:text-sky-600"
                                                             >
-                                                                 <Eye className="w-3.5 h-3.5" />
+                                                                 <Eye className="h-4 w-4" />
                                                             </Button>
 
+                                                            {/* Edit */}
                                                             <Button
                                                                  size="icon"
                                                                  variant="ghost"
-                                                                 className="h-8 w-8"
                                                                  onClick={() => router.push(`/seller-dashboard/medicine/update/${med.id}`)}
+                                                                 className="hover:text-amber-600"
                                                             >
-                                                                 <Pencil className="w-3.5 h-3.5" />
+                                                                 <Pencil className="h-4 w-4" />
                                                             </Button>
 
-                                                            <AlertDialog
-                                                                 open={openDialogId === med.id}
-                                                                 onOpenChange={(isOpen) => !isOpen && setOpenDialogId(null)}
+                                                            {/* Delete */}
+                                                            <Button
+                                                                 size="icon"
+                                                                 variant="ghost"
+                                                                 onClick={() => setOpenDialogId(med.id)}
+                                                                 className="hover:text-red-600"
                                                             >
-                                                                 <AlertDialogTrigger asChild>
-                                                                      <Button
-                                                                           size="icon"
-                                                                           variant="ghost"
-                                                                           className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                                                           onClick={() => setOpenDialogId(med.id)}
-                                                                      >
-                                                                           <Trash2 className="w-3.5 h-3.5" />
-                                                                      </Button>
-                                                                 </AlertDialogTrigger>
+                                                                 <Trash2 className="h-4 w-4" />
+                                                            </Button>
 
-                                                                 <AlertDialogContent>
-                                                                      <AlertDialogHeader>
-                                                                           <AlertDialogTitle>Delete medicine?</AlertDialogTitle>
-                                                                           <AlertDialogDescription>
-                                                                                This will permanently remove{" "}
-                                                                                <span className="font-medium text-foreground">"{med.name}"</span>{" "}
-                                                                                from your inventory. This action cannot be undone.
-                                                                           </AlertDialogDescription>
-                                                                      </AlertDialogHeader>
-                                                                      <AlertDialogFooter>
-                                                                           <Button variant="outline" onClick={() => setOpenDialogId(null)}>
-                                                                                Cancel
-                                                                           </Button>
-                                                                           <Button
-                                                                                variant="destructive"
-                                                                                onClick={() => handleDelete(med.id)}
-                                                                                disabled={isPending}
-                                                                           >
-                                                                                {isPending ? "Deleting…" : "Delete"}
-                                                                           </Button>
-                                                                      </AlertDialogFooter>
-                                                                 </AlertDialogContent>
-                                                            </AlertDialog>
                                                        </div>
                                                   </TableCell>
+
                                              </TableRow>
                                         ))
                                    )}

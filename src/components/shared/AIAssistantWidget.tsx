@@ -28,7 +28,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export default function AIAssistantWidget() {
-  const [isOpen, setIsOpen]     = useState(false);
+  const [isOpen, setIsOpen]       = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("search");
 
   const {
@@ -50,7 +50,7 @@ export default function AIAssistantWidget() {
           { title: "My Dashboard", url: "/dashboard",        icon: <LayoutDashboard size={15} /> },
           { title: "My Orders",    url: "/dashboard/orders", icon: <ShoppingBag size={15} /> },
         ]
-      : [{ title: "Sign in",       url: "/login",            icon: <ArrowRight size={15} /> }]),
+      : [{ title: "Sign in", url: "/login", icon: <ArrowRight size={15} /> }]),
     ...(!pathname.includes("/medicines")
       ? [{ title: "Browse Medicines", url: "/medicines", icon: <Search size={15} /> }]
       : []),
@@ -59,7 +59,8 @@ export default function AIAssistantWidget() {
   const navigate = (url: string) => { setIsOpen(false); router.push(url); };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3">
+    // ✅ pointer-events-none on wrapper so it never blocks clicks behind it
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 pointer-events-none">
 
       {/* ── Panel ─────────────────────────────────────────────────── */}
       <div
@@ -69,8 +70,9 @@ export default function AIAssistantWidget() {
           "border border-neutral-200 dark:border-neutral-800",
           "rounded-2xl shadow-xl shadow-black/10",
           "transition-all duration-200 ease-out origin-bottom-right",
+          "pointer-events-auto", // ✅ restore clicks on the panel
           isOpen
-            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            ? "opacity-100 scale-100 translate-y-0"
             : "opacity-0 scale-95 translate-y-2 pointer-events-none",
         ].join(" ")}
         style={{ height: 540 }}
@@ -316,6 +318,7 @@ export default function AIAssistantWidget() {
         onClick={() => setIsOpen((o) => !o)}
         className={[
           "w-12 h-12 rounded-2xl flex items-center justify-center",
+          "pointer-events-auto", // ✅ restore clicks on the FAB
           "shadow-lg shadow-black/15 transition-all duration-200",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
           isOpen
