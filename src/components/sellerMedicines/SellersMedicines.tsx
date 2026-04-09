@@ -237,7 +237,7 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  size="icon"
                                                                  variant="ghost"
                                                                  onClick={() => router.push(`/seller-dashboard/medicine/${med.id}`)}
-                                                                 className="hover:text-sky-600"
+                                                                 className="hover:text-sky-600 border rounded-full bg-sky-100"
                                                             >
                                                                  <Eye className="h-4 w-4" />
                                                             </Button>
@@ -247,7 +247,7 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  size="icon"
                                                                  variant="ghost"
                                                                  onClick={() => router.push(`/seller-dashboard/medicine/update/${med.id}`)}
-                                                                 className="hover:text-amber-600"
+                                                                 className="hover:text-amber-600 border rounded-full bg-amber-100"
                                                             >
                                                                  <Pencil className="h-4 w-4" />
                                                             </Button>
@@ -257,7 +257,7 @@ export default function SellersMedicines({ medicines }: any) {
                                                                  size="icon"
                                                                  variant="ghost"
                                                                  onClick={() => setOpenDialogId(med.id)}
-                                                                 className="hover:text-red-600"
+                                                                 className="hover:text-red-600 border rounded-full bg-red-100"
                                                             >
                                                                  <Trash2 className="h-4 w-4" />
                                                             </Button>
