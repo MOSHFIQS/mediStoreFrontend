@@ -14,16 +14,10 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
 
-export default async function HomePage({
-     searchParams,
-}: {
-     searchParams: Promise<{ category?: string }>;
-}) {
-     const params = await searchParams;
-     const categoryId = params.category;
+export default async function HomePage() {
 
      const [medRes, catRes] = await Promise.all([
-          getAllMedicinesAction(categoryId ? { categoryId } : {}),
+          getAllMedicinesAction(),
           getAllCategoriesAction(),
      ]);
 

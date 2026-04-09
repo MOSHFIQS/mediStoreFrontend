@@ -3,7 +3,7 @@ import MyOrders from "@/components/orders/MyOrders";
 import GlobalPagination from "@/components/shared/pagination/GlobalPagination";
 
 
-export default async function MyOrdersPage({searchParams}: {searchParams: Promise<{page?: string, limit?: string}>}) {
+export default async function MyOrdersPage({ searchParams }: { searchParams: Promise<{ page?: number; limit?: number }> }) {
      const { page, limit } = await searchParams
      const res = await getMyOrdersAction(page, limit);
      if (!res.ok) return <p className="p-4 text-red-500">Failed to load orders</p>;

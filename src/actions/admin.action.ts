@@ -5,7 +5,7 @@ import { adminServiceServer } from "@/service/admin.server.service";
 import { buildQueryString } from "@/utils/buildQueryString";
 
 // Get all users
-export async function getAllUsersAction(page: number, limit: number) {
+export async function getAllUsersAction(page?: number, limit?: number) {
      try {
            const query = buildQueryString({
             page,
