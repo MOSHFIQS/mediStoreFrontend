@@ -26,42 +26,27 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
           }))
      );
 
-  
+     // Track URLs that should be deleted only when form is submitted
+     const [pendingDeletes, setPendingDeletes] = useState<string[]>([]);
 
      const upload = async (file: File) => {
-
-          const MAX_SIZE = 4.5 * 1024 * 1024; // 4.5 MB in bytes
-
-          // 🔴 Size validation
-          if (file.size > MAX_SIZE) {
-               toast.error("Image size must be less than 4.5 MB");
-               return;
-          }
-
-          if (images.length >= max) {
-               toast.error(`Maximum ${max} images allowed`);
-               return;
-          }
+          const MAX_SIZE = 4.5 * 1024 * 1024;
+          if (file.size > MAX_SIZE) { toast.error("Image size must be less than 4.5 MB"); return; }
+          if (images.length >= max) { toast.error(`Maximum ${max} images allowed`); return; }
 
           const tempId = crypto.randomUUID();
-
-          const tempImage: ImageType = {
+          setImages((prev) => [...prev, {
                id: tempId,
-               name: `Image`,
+               name: "Image",
                img: URL.createObjectURL(file),
                imageUploading: true,
-          };
-
-          setImages((prev) => [...prev, tempImage]);
+          }]);
 
           try {
                const formData = new FormData();
                formData.append("file", file);
-
                const res = await uploadImagesAction(formData);
-               console.log(res);
                if (!res?.ok) throw new Error(res?.message);
-
                setImages((prev) =>
                     prev.map((img) =>
                          img.id === tempId
@@ -75,30 +60,38 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
           }
      };
 
-     const remove = async (img: ImageType) => {
-          try {
-               setImages((prev) =>
-                    prev.map((i) =>
-                         i.id === img.id ? { ...i, imageUploading: true } : i
-                    )
-               );
-               console.log(img.img);
-
-               const res = await deleteImagesAction({ url: img.img });
-
-
-               console.log(res);
-
-               setImages((prev) => prev.filter((i) => i.id !== img.id));
-          } catch (err: any) {
-               toast.error(err?.message);
-
-               setImages((prev) =>
-                    prev.map((i) =>
-                         i.id === img.id ? { ...i, imageUploading: false } : i
-                    )
-               );
+     // Just remove from UI + queue for deletion — don't hit Cloudinary yet
+     const remove = (img: ImageType) => {
+          setImages((prev) => prev.filter((i) => i.id !== img.id));
+          // Only queue real URLs (not blob: previews of failed/cancelled uploads)
+          if (img.img && !img.img.startsWith("blob:")) {
+               setPendingDeletes((prev) => [...prev, img.img]);
           }
+     };
+
+     // Call this on successful form submit — cleans up Cloudinary
+     const commitDeletes = async () => {
+          if (pendingDeletes.length === 0) return;
+          await Promise.allSettled(
+               pendingDeletes.map((url) => deleteImagesAction({ url }))
+          );
+          setPendingDeletes([]);
+     };
+
+     // Call this on form cancel/discard — restores nothing, just clears queue
+     const discardDeletes = () => {
+          setPendingDeletes([]);
+     };
+
+     // Call on create-form cancel — deletes all uploaded images since none were saved to DB
+     const cleanup = async () => {
+          const realImages = images.filter((img) => !img.img.startsWith("blob:"));
+          if (realImages.length === 0) return;
+          await Promise.allSettled(
+               realImages.map((img) => deleteImagesAction({ url: img.img }))
+          );
+          setImages([]);
+          setPendingDeletes([]);
      };
 
      return {
@@ -106,5 +99,9 @@ export const useImageUpload = ({ max = 5, defaultImages = [] }: Options = {}) =>
           setImages,
           upload,
           remove,
+          commitDeletes,
+          discardDeletes,
+          cleanup,
+          hasPendingDeletes: pendingDeletes.length > 0,
      };
 };

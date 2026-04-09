@@ -96,6 +96,10 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
      });
 
      const handleDialogChange = (state: boolean) => {
+          if (!state) {
+               // Dialog closing without save — discard any removed images, restore queue
+               userImage.discardDeletes();
+          }
           setOpen(state);
           if (state) setForm(user);
      };
@@ -106,11 +110,13 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
           const res = await updateProfileAction({
                name: form.name,
                phone: form.phone as string,
-               image: userImage.images[0]?.img,
+               image: userImage.images[0]?.img ?? null,
           });
           if (res.ok) {
+               // ✅ DB saved — now safe to delete removed image from Cloudinary
+               await userImage.commitDeletes();
                toast.success(res.message || "Profile updated");
-               setUser({ ...user, ...form, image: userImage.images[0]?.img || user.image });
+               setUser({ ...user, ...form, image: userImage.images[0]?.img ?? user.image });
                setOpen(false);
           } else {
                toast.error(res.message || "Update failed");

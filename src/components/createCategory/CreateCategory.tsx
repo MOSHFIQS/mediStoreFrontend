@@ -31,13 +31,14 @@ export default function CreateCategory() {
                          description: value.description || undefined,
                          image: categoryImages.images[0]?.img,
                     };
-                    const res =  await createCategoryAction(payload);
+                    const res = await createCategoryAction(payload);
                     if (!res?.ok) {
                          toast.error(res?.message);
                          return;
                     }
                     toast.success("Category created successfully");
                     form.reset();
+                    categoryImages.setImages([]); // clear uploader state
                     router.push("/admin-dashboard/category");
                } catch (err: any) {
                     toast.error(err.message || "Failed to create category");
@@ -158,6 +159,7 @@ export default function CreateCategory() {
                                                   type="button"
                                                   variant="outline"
                                                   className="rounded-lg border-gray-200 text-gray-600"
+                                                  onClick={() => categoryImages.cleanup()}
                                              >
                                                   Cancel
                                              </Button>
