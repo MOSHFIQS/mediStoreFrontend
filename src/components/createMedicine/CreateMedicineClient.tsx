@@ -27,7 +27,7 @@ const DOSAGE_FORMS = ["Tablet", "Capsule", "Syrup", "Injection", "Cream", "Ointm
 const UNITS = ["piece", "strip", "bottle", "box", "tube", "vial", "sachet"]
 
 export default function CreateMedicineClient({ categories }: { categories: { id: string; name: string }[] }) {
-
+     console.log(categories);
      const [isPending, startTransition] = useTransition()
      const medicineImages = useImageUpload({ max: 10 });
      const router = useRouter()
