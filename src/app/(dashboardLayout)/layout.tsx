@@ -54,15 +54,15 @@ export default async  function DashboardLayout({ admin, customer, seller }: { ad
      return (
           <SidebarProvider>
                <AppSidebar user={userInfo} />
-               <SidebarInset className="bg-[#EFE9E3]">
-                    <header className="flex h-16 shrink-0 items-center gap-2 border-b">
+               <SidebarInset className="bg-background">
+                    <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card/60 backdrop-blur-md px-4">
                          <div className="flex items-center gap-2 px-3">
                               <SidebarTrigger />
                               <Separator orientation="vertical" className="mr-2 h-4" />
 
                          </div>
                     </header>
-                    <div className="flex flex-1 flex-col gap-4 xl:pr-2 bg-[#EFE9E3]">
+                    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 bg-slate-50/60 dark:bg-slate-950/40">
                          {content}
                     </div>
                </SidebarInset>

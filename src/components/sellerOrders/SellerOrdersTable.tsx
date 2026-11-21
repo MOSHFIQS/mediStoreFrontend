@@ -31,7 +31,7 @@ const STATUS_CONFIG: Record<string, {
      PLACED: { label: "Placed", icon: <Hourglass className="w-3 h-3" />, className: "bg-blue-50 text-blue-600 border border-blue-200" },
      CONFIRMED: { label: "Confirmed", icon: <BadgeCheck className="w-3 h-3" />, className: "bg-cyan-50 text-cyan-700 border border-cyan-200" },
      PROCESSING: { label: "Processing", icon: <Loader2 className="w-3 h-3 animate-spin" />, className: "bg-yellow-50 text-yellow-700 border border-yellow-200" },
-     SHIPPED: { label: "Shipped", icon: <Truck className="w-3 h-3" />, className: "bg-purple-50 text-purple-700 border border-purple-200" },
+     SHIPPED: { label: "Shipped", icon: <Truck className="w-3 h-3" />, className: "bg-teal-50 dark:bg-teal-950/40 text-teal-700 border border-teal-200 dark:border-teal-800" },
      DELIVERED: { label: "Delivered", icon: <PackageCheck className="w-3 h-3" />, className: "bg-green-50 text-green-700 border border-green-200" },
      CANCELLED: { label: "Cancelled", icon: <PackageX className="w-3 h-3" />, className: "bg-red-50 text-red-600 border border-red-200" },
 };
@@ -101,8 +101,8 @@ export default function SellerOrdersTable({ orders }: { orders: any[] }) {
 
                {/* Header */}
                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                         <ShoppingBag className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                         <ShoppingBag className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
                          <h1 className="text-2xl font-bold">Customer Orders</h1>
@@ -164,7 +164,7 @@ export default function SellerOrdersTable({ orders }: { orders: any[] }) {
                                                        {/* Customer */}
                                                        <TableCell>
                                                             <div className="flex items-center gap-2">
-                                                                 <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                                 <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                                                                       {order.customer?.name?.charAt(0).toUpperCase()}
                                                                  </div>
                                                                  <div className="min-w-0">
@@ -184,7 +184,7 @@ export default function SellerOrdersTable({ orders }: { orders: any[] }) {
                                                        {/* Address */}
                                                        <TableCell className="max-w-[140px]">
                                                             <p className="text-xs text-muted-foreground flex items-start gap-1 truncate">
-                                                                 <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0 text-purple-400" />
+                                                                 <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0 text-teal-400" />
                                                                  <span className="truncate">{addressText}</span>
                                                             </p>
                                                        </TableCell>
@@ -201,7 +201,7 @@ export default function SellerOrdersTable({ orders }: { orders: any[] }) {
                                                                       </p>
                                                                  ))}
                                                                  {order.items?.length > 2 && (
-                                                                      <p className="text-xs text-purple-500 font-medium">
+                                                                      <p className="text-xs text-teal-600 font-medium">
                                                                            +{order.items.length - 2} more
                                                                       </p>
                                                                  )}
@@ -230,7 +230,7 @@ export default function SellerOrdersTable({ orders }: { orders: any[] }) {
 
                                                        {/* Total */}
                                                        <TableCell>
-                                                            <span className="font-bold tabular-nums text-purple-600">
+                                                            <span className="font-bold tabular-nums text-teal-600">
                                                                  ৳{order.totalPrice?.toFixed(2)}
                                                             </span>
                                                        </TableCell>

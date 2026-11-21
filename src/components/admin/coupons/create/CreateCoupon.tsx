@@ -74,8 +74,8 @@ export default function CreateCoupon() {
                          <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div className="flex items-center gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                              <TicketPercent className="w-5 h-5 text-purple-600" />
+                         <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                              <TicketPercent className="w-5 h-5 text-teal-600" />
                          </div>
                          <div>
                               <h1 className="text-2xl font-bold">Create Coupon</h1>
@@ -88,7 +88,7 @@ export default function CreateCoupon() {
                     <Card>
                          <CardHeader className="border-b">
                               <CardTitle className="text-base flex items-center gap-2">
-                                   <Tag className="w-4 h-4 text-purple-500" /> Coupon Details
+                                   <Tag className="w-4 h-4 text-teal-600" /> Coupon Details
                               </CardTitle>
                               <CardDescription>Fill in the coupon configuration below</CardDescription>
                          </CardHeader>
@@ -251,11 +251,11 @@ export default function CreateCoupon() {
 
                               {/* Preview pill */}
                               {form.code && (
-                                   <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex items-center gap-4">
-                                        <TicketPercent className="w-8 h-8 text-purple-400 flex-shrink-0" />
+                                   <div className="bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 rounded-xl p-4 flex items-center gap-4">
+                                        <TicketPercent className="w-8 h-8 text-teal-400 flex-shrink-0" />
                                         <div>
                                              <p className="text-xs text-muted-foreground">Preview</p>
-                                             <p className="font-mono font-bold text-purple-700 text-lg">{form.code}</p>
+                                             <p className="font-mono font-bold text-teal-700 text-lg">{form.code}</p>
                                              <p className="text-sm text-muted-foreground">
                                                   {form.discountValue
                                                        ? form.discountType === "PERCENTAGE"
@@ -283,7 +283,7 @@ export default function CreateCoupon() {
                               <Button
                                    type="submit"
                                    disabled={isPending}
-                                   className="rounded-full bg-purple-600 hover:bg-purple-700 gap-1.5 min-w-[140px]"
+                                   className="rounded-full bg-teal-600 hover:bg-teal-700 gap-1.5 min-w-[140px]"
                               >
                                    {isPending ? (
                                         <>

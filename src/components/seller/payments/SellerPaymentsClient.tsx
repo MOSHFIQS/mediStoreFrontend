@@ -41,8 +41,8 @@ export default function SellerPaymentsClient({ payments }: { payments: any[] }) 
 
                {/* Header */}
                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                         <TrendingUp className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                         <TrendingUp className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
                          <h1 className="text-2xl font-bold">Payment History</h1>
@@ -55,7 +55,7 @@ export default function SellerPaymentsClient({ payments }: { payments: any[] }) 
                {/* Stats */}
                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {[
-                         { label: "Total Revenue", value: `৳${totalRevenue.toFixed(2)}`, className: "text-purple-600" },
+                         { label: "Total Revenue", value: `৳${totalRevenue.toFixed(2)}`, className: "text-teal-600" },
                          { label: "Successful", value: successCount, className: "text-green-600" },
                          { label: "Total Orders", value: payments.length, className: "text-blue-600" },
                     ].map((s) => (
@@ -107,7 +107,7 @@ export default function SellerPaymentsClient({ payments }: { payments: any[] }) 
                                                   <TableCell>
                                                        {p.order?.customer ? (
                                                             <div className="flex items-center gap-2">
-                                                                 <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                                 <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                                                                       {p.order.customer.name?.charAt(0).toUpperCase()}
                                                                  </div>
                                                                  <div>
@@ -132,7 +132,7 @@ export default function SellerPaymentsClient({ payments }: { payments: any[] }) 
                                                                  </p>
                                                             ))}
                                                             {p.order?.items?.length > 2 && (
-                                                                 <p className="text-xs text-purple-500 font-medium">+{p.order.items.length - 2} more</p>
+                                                                 <p className="text-xs text-teal-600 font-medium">+{p.order.items.length - 2} more</p>
                                                             )}
                                                        </div>
                                                   </TableCell>
@@ -147,7 +147,7 @@ export default function SellerPaymentsClient({ payments }: { payments: any[] }) 
                                                   </TableCell>
 
                                                   <TableCell>
-                                                       <p className="font-bold text-purple-600 tabular-nums">৳{p.amount?.toFixed(2)}</p>
+                                                       <p className="font-bold text-teal-600 tabular-nums">৳{p.amount?.toFixed(2)}</p>
                                                   </TableCell>
 
                                                   <TableCell>

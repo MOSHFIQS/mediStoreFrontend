@@ -66,7 +66,7 @@ function GrowthBadge({ value }: { value: number }) {
 function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string }) {
      return (
           <div className="flex items-center gap-2 mb-4">
-               <span className="text-purple-500">{icon}</span>
+               <span className="text-teal-600">{icon}</span>
                <h2 className="text-base font-bold text-gray-800">{title}</h2>
           </div>
      );
@@ -76,7 +76,7 @@ const ORDER_STATUS_COLOR: Record<string, string> = {
      PLACED: "bg-blue-100 text-blue-700",
      CONFIRMED: "bg-indigo-100 text-indigo-700",
      PROCESSING: "bg-amber-100 text-amber-700",
-     SHIPPED: "bg-purple-100 text-purple-700",
+     SHIPPED: "bg-teal-100 dark:bg-teal-950/60 text-teal-700",
      DELIVERED: "bg-emerald-100 text-emerald-700",
      CANCELLED: "bg-red-100 text-red-600",
      REFUNDED: "bg-gray-100 text-gray-600",
@@ -178,7 +178,7 @@ export default function AdminStats({ stats }: Props) {
                {/* Header */}
                <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                         <BarChart3 className="w-6 h-6 text-purple-500" /> Admin Dashboard
+                         <BarChart3 className="w-6 h-6 text-teal-600" /> Admin Dashboard
                     </h1>
                     <p className="text-sm text-gray-500 mt-0.5">Platform-wide overview and analytics</p>
                </div>
@@ -188,7 +188,7 @@ export default function AdminStats({ stats }: Props) {
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                          <div className="flex items-center justify-between mb-3">
                               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Revenue</span>
-                              <DollarSign className="w-4 h-4 text-purple-400" />
+                              <DollarSign className="w-4 h-4 text-teal-400" />
                          </div>
                          <p className="text-3xl font-bold text-gray-900">{fmtMoney(revenue.total)}</p>
                          <div className="flex items-center gap-2 mt-2">
@@ -493,7 +493,7 @@ export default function AdminStats({ stats }: Props) {
                          {[
                               { label: "Customers",  value: users.customers,    icon: <UserCheck className="w-4 h-4" />,  color: "text-blue-500" },
                               { label: "Sellers",    value: users.sellers,      icon: <Store className="w-4 h-4" />,      color: "text-indigo-500" },
-                              { label: "Admins",     value: users.admins,       icon: <ShieldCheck className="w-4 h-4" />,color: "text-purple-500" },
+                              { label: "Admins",     value: users.admins,       icon: <ShieldCheck className="w-4 h-4" />,color: "text-teal-600" },
                               { label: "Active",     value: users.active,       icon: <Activity className="w-4 h-4" />,   color: "text-emerald-500" },
                               { label: "Banned",     value: users.banned,       icon: <ShieldOff className="w-4 h-4" />,  color: "text-red-500" },
                               { label: "Suspended",  value: users.suspended,    icon: <Clock className="w-4 h-4" />,      color: "text-amber-500" },
@@ -518,7 +518,7 @@ export default function AdminStats({ stats }: Props) {
                               { label: "Success",  value: payments.success,                   color: "bg-emerald-50 text-emerald-700" },
                               { label: "Pending",  value: payments.pending,                   color: "bg-amber-50 text-amber-700" },
                               { label: "Failed",   value: payments.failed,                    color: "bg-red-50 text-red-600" },
-                              { label: "Refunded", value: payments.refunded,                  color: "bg-purple-50 text-purple-700" },
+                              { label: "Refunded", value: payments.refunded,                  color: "bg-teal-50 dark:bg-teal-950/40 text-teal-700" },
                               { label: "Refund ৳", value: fmtMoney(payments.totalRefunded),   color: "bg-pink-50 text-pink-600" },
                          ].map((p) => (
                               <div key={p.label} className={`rounded-2xl p-4 border border-gray-100 shadow-sm text-center ${p.color}`}>
@@ -540,7 +540,7 @@ export default function AdminStats({ stats }: Props) {
                               <div className="space-y-3">
                                    {topSellingMedicines.map((m, i) => (
                                         <div key={m.medicineId} className="flex items-center gap-3">
-                                             <span className="w-6 h-6 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                                             <span className="w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
                                                   {i + 1}
                                              </span>
                                              <div className="flex-1 min-w-0">
@@ -589,7 +589,7 @@ export default function AdminStats({ stats }: Props) {
                          </div>
                          <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                   <Ticket className="w-4 h-4 text-purple-400" />
+                                   <Ticket className="w-4 h-4 text-teal-400" />
                                    <span className="text-sm text-gray-500">Active Coupons</span>
                               </div>
                               <span className="text-sm font-bold text-gray-800">{coupons.active} / {coupons.total}</span>

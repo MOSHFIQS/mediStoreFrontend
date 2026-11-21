@@ -227,7 +227,7 @@ export default function MedicineDetails({
                                              key={i}
                                              onClick={() => setActiveImage(img)}
                                              className={`relative w-16 h-16 rounded-lg overflow-hidden border-2 flex-shrink-0 transition
-                                             ${activeImage === img ? "border-purple-500" : "border-transparent hover:border-gray-300"}`}
+                                             ${activeImage === img ? "border-teal-500" : "border-transparent hover:border-gray-300"}`}
                                         >
                                              <Image src={img} alt={`thumb-${i}`} fill className="object-cover" />
                                         </button>
@@ -249,7 +249,7 @@ export default function MedicineDetails({
                               </div>
                               <h1 className="text-2xl font-bold leading-tight">{medicine.name}</h1>
                               {medicine.genericName && (
-                                   <p className="text-sm text-purple-600 font-medium mt-0.5">{medicine.genericName}</p>
+                                   <p className="text-sm text-teal-600 font-medium mt-0.5">{medicine.genericName}</p>
                               )}
                          </div>
 
@@ -343,7 +343,7 @@ export default function MedicineDetails({
                                    {/* Delivery Address */}
                                    <div className="space-y-2">
                                         <p className="text-sm font-medium flex items-center gap-1.5">
-                                             <MapPin className="w-3.5 h-3.5 text-purple-500" /> Delivery Address
+                                             <MapPin className="w-3.5 h-3.5 text-teal-600" /> Delivery Address
                                         </p>
 
                                         {addresses.length > 0 && (
@@ -354,13 +354,13 @@ export default function MedicineDetails({
                                                             onClick={() => { setSelectedAddressId(addr.id); setUseNewAddress(false); }}
                                                             className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition
                                                             ${selectedAddressId === addr.id && !useNewAddress
-                                                                      ? "border-purple-400 bg-purple-50"
+                                                                      ? "border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-950/40"
                                                                       : "border-gray-200 hover:border-gray-300"
                                                                  }`}
                                                        >
                                                             <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition
                                                                  ${selectedAddressId === addr.id && !useNewAddress
-                                                                      ? "border-purple-500 bg-purple-500"
+                                                                      ? "border-teal-500 bg-teal-600"
                                                                       : "border-gray-300"
                                                                  }`}
                                                             />
@@ -370,8 +370,8 @@ export default function MedicineDetails({
                                                                            <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded">{addr.label}</span>
                                                                       )}
                                                                       {addr.isDefault && (
-                                                                           <span className="text-xs text-purple-600 font-medium flex items-center gap-1">
-                                                                                <Star className="w-3 h-3 fill-purple-500 text-purple-500" /> Default
+                                                                           <span className="text-xs text-teal-600 font-medium flex items-center gap-1">
+                                                                                <Star className="w-3 h-3 fill-teal-500 text-teal-600" /> Default
                                                                            </span>
                                                                       )}
                                                                  </div>
@@ -390,8 +390,8 @@ export default function MedicineDetails({
                                                        onClick={() => { setUseNewAddress(!useNewAddress); setSelectedAddressId(null); }}
                                                        className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition bg-white
                                                        ${useNewAddress
-                                                                 ? "border-purple-400 bg-purple-50 text-purple-700"
-                                                                 : "border-dashed border-gray-300 text-muted-foreground hover:border-purple-300"
+                                                                 ? "border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-950/40 text-teal-700"
+                                                                 : "border-dashed border-gray-300 text-muted-foreground hover:border-teal-300 dark:border-teal-700"
                                                             }`}
                                                   >
                                                        <PlusCircle className="w-4 h-4 flex-shrink-0" />
@@ -419,7 +419,7 @@ export default function MedicineDetails({
                                                   <label className="flex items-center gap-2 text-sm cursor-pointer select-none pt-1">
                                                        <input type="checkbox" checked={saveNewAddress}
                                                             onChange={(e) => setSaveNewAddress(e.target.checked)}
-                                                            className="w-4 h-4 rounded accent-purple-600" />
+                                                            className="w-4 h-4 rounded accent-teal-600" />
                                                        Save this address for future orders
                                                   </label>
                                              </div>
@@ -436,7 +436,7 @@ export default function MedicineDetails({
                                              <ShoppingCart className="w-4 h-4" /> Add to Cart
                                         </Button>
                                         <Button
-                                             className="flex-1 rounded-full gap-2 bg-purple-600 hover:bg-purple-700"
+                                             className="flex-1 rounded-full gap-2 bg-teal-600 hover:bg-teal-700"
                                              onClick={handleBuyNow}
                                              disabled={isOrdering || !isAddressValid}
                                         >
@@ -489,7 +489,7 @@ export default function MedicineDetails({
                                    <div key={review.id} className="border rounded-xl p-4 space-y-2 hover:shadow-sm transition">
                                         <div className="flex items-center justify-between">
                                              <div className="flex items-center gap-2">
-                                                  <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm flex items-center justify-center flex-shrink-0">
+                                                  <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 font-semibold text-sm flex items-center justify-center flex-shrink-0">
                                                        {review.user.name?.charAt(0).toUpperCase()}
                                                   </div>
                                                   <div>

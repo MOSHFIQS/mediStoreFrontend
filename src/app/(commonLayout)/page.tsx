@@ -1,6 +1,3 @@
-
-import { medicineServiceServer } from "@/service/medicine.server.service";
-import { categoryServiceServer } from "@/service/category.server.service";
 import { CarouselPlugin } from "@/components/banner/Banner";
 import Footer from "@/components/footer/Footer";
 import HealthTips from "@/components/healthTips/HealthTips";
@@ -14,41 +11,45 @@ import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
 import NewsletterSection from "@/components/home/NewsletterSection";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
+     let medicines: any[] = [];
+     let categories: any[] = [];
 
-     const [medRes, catRes] = await Promise.all([
-          getAllMedicinesAction(),
-          getAllCategoriesAction(),
-     ]);
+     try {
+          const [medRes, catRes] = await Promise.all([
+               getAllMedicinesAction().catch(() => ({ ok: false, data: { data: [] } })),
+               getAllCategoriesAction().catch(() => ({ ok: false, data: [] })),
+          ]);
 
-     console.log(medRes);
-     console.log(catRes);
+          if (medRes?.ok && Array.isArray(medRes.data?.data)) {
+               medicines = medRes.data.data;
+          } else if (Array.isArray(medRes?.data)) {
+               medicines = medRes.data;
+          }
 
-     if (!medRes.ok) return <p className="p-4">Failed to load medicines</p>;
-     if (!catRes.ok) return <p className="p-4">Failed to load categories</p>;
+          if (catRes?.ok && Array.isArray(catRes.data)) {
+               categories = catRes.data;
+          }
+     } catch {
+          medicines = [];
+          categories = [];
+     }
 
      return (
-          <div className="space-y-10">
+          <div className="space-y-12 sm:space-y-16 pb-6">
                <CarouselPlugin />
                <FeaturesSection />
                <FeaturedSection />
                <AllMedicines
-                    initialMedicines={medRes.data.data}
-                    categories={[]}
+                    initialMedicines={medicines}
+                    categories={categories}
                />
-               {/* 6. Statistics */}
                <StatisticsSection />
-
-               {/* 7. Testimonials */}
                <TestimonialsSection />
-
-               {/* 8. Blogs / Health Tips */}
                <HealthTips />
-
-               {/* 9. FAQs */}
                <FaqSection />
-
-               {/* 10. Newsletter */}
                <NewsletterSection />
                <Footer />
           </div>

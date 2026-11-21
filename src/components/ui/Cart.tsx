@@ -228,7 +228,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                {/* ── Header ── */}
                <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold flex items-center gap-2">
-                         <ShoppingBag className="w-6 h-6 text-purple-500" />
+                         <ShoppingBag className="w-6 h-6 text-teal-600" />
                          My Cart
                          <span className="text-base font-normal text-muted-foreground">
                               ({totalItems} item{totalItems !== 1 ? "s" : ""})
@@ -248,7 +248,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                     <button
                          onClick={() => setStep("cart")}
                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition font-medium
-            ${step === "cart" ? "bg-purple-100 text-purple-700" : "text-muted-foreground hover:text-foreground"}`}
+            ${step === "cart" ? "bg-teal-100 dark:bg-teal-950/60 text-teal-700" : "text-muted-foreground hover:text-foreground"}`}
                     >
                          <Package className="w-3.5 h-3.5" /> Review Cart
                     </button>
@@ -262,7 +262,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                          disabled={!isCustomer || !cart.length}
                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition font-medium
     ${step === "checkout"
-                                   ? "bg-purple-100 text-purple-700"
+                                   ? "bg-teal-100 dark:bg-teal-950/60 text-teal-700"
                                    : "text-muted-foreground hover:text-foreground"
                               }
     ${!isCustomer || !cart.length ? "opacity-50 cursor-not-allowed" : ""}
@@ -363,7 +363,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                    {/* Checkout button — ONLY for customers */}
                                    {isCustomer && (
                                         <Button
-                                             className="w-full rounded-full bg-purple-600 hover:bg-purple-700 h-11"
+                                             className="w-full rounded-full bg-teal-600 hover:bg-teal-700 h-11"
                                              onClick={handleProceedToCheckout}
                                         >
                                              Proceed to Checkout →
@@ -373,7 +373,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                    {/* Login button (fallback for non-logged users) */}
                                    {!user && (
                                         <Button
-                                             className="w-full rounded-full h-11 bg-purple-600 hover:bg-purple-700"
+                                             className="w-full rounded-full h-11 bg-teal-600 hover:bg-teal-700"
                                              onClick={() => router.push("/login?redirect=/cart")}
                                         >
                                              <LogIn className="w-4 h-4 mr-2" />
@@ -387,7 +387,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                               <Card>
                                    <CardHeader>
                                         <CardTitle className="flex items-center gap-2 text-base">
-                                             <MapPin className="w-4 h-4 text-purple-500" /> Delivery Address
+                                             <MapPin className="w-4 h-4 text-teal-600" /> Delivery Address
                                         </CardTitle>
                                    </CardHeader>
 
@@ -405,13 +405,13 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                                             onClick={() => { setSelectedAddressId(addr.id); setUseNewAddress(false); }}
                                                             className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition
                           ${selectedAddressId === addr.id && !useNewAddress
-                                                                      ? "border-purple-400 bg-purple-50"
+                                                                      ? "border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-950/40"
                                                                       : "border-gray-200 hover:border-gray-300"
                                                                  }`}
                                                        >
                                                             <div className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 transition
                           ${selectedAddressId === addr.id && !useNewAddress
-                                                                      ? "border-purple-500 bg-purple-500"
+                                                                      ? "border-teal-500 bg-teal-600"
                                                                       : "border-gray-300"
                                                                  }`}
                                                             />
@@ -423,8 +423,8 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                                                            </span>
                                                                       )}
                                                                       {addr.isDefault && (
-                                                                           <span className="text-xs text-purple-600 font-medium flex items-center gap-1">
-                                                                                <Star className="w-3 h-3 fill-purple-500 text-purple-500" /> Default
+                                                                           <span className="text-xs text-teal-600 font-medium flex items-center gap-1">
+                                                                                <Star className="w-3 h-3 fill-teal-500 text-teal-600" /> Default
                                                                            </span>
                                                                       )}
                                                                  </div>
@@ -447,8 +447,8 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                                        }}
                                                        className={`flex items-center gap-2 w-full p-3 rounded-xl border-2 text-sm transition
                         ${useNewAddress
-                                                                 ? "border-purple-400 bg-purple-50 text-purple-700"
-                                                                 : "border-dashed border-gray-300 text-muted-foreground hover:border-purple-300"
+                                                                 ? "border-teal-400 dark:border-teal-600 bg-teal-50 dark:bg-teal-950/40 text-teal-700"
+                                                                 : "border-dashed border-gray-300 text-muted-foreground hover:border-teal-300 dark:border-teal-700"
                                                             }`}
                                                   >
                                                        <PlusCircle className="w-4 h-4 flex-shrink-0" />
@@ -496,7 +496,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                                             type="checkbox"
                                                             checked={saveNewAddress}
                                                             onChange={(e) => setSaveNewAddress(e.target.checked)}
-                                                            className="w-4 h-4 rounded accent-purple-600"
+                                                            className="w-4 h-4 rounded accent-teal-600"
                                                        />
                                                        Save this address for future orders
                                                   </label>
@@ -519,7 +519,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                         {/* Payment info box */}
                                         <div className="bg-gray-50 rounded-xl p-4 space-y-1.5">
                                              <p className="text-sm font-medium flex items-center gap-1.5">
-                                                  <CreditCard className="w-4 h-4 text-purple-500" />
+                                                  <CreditCard className="w-4 h-4 text-teal-600" />
                                                   Payment via SSLCommerz
                                              </p>
                                              <p className="text-xs text-muted-foreground">
@@ -540,7 +540,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                                         <Button
                                              onClick={handlePlaceOrder}
                                              disabled={isPlacing}
-                                             className="flex-1 rounded-full bg-purple-600 hover:bg-purple-700 h-11"
+                                             className="flex-1 rounded-full bg-teal-600 hover:bg-teal-700 h-11"
                                         >
                                              {isPlacing ? (
                                                   <span className="flex items-center gap-2">
@@ -566,7 +566,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
                          <Card>
                               <CardHeader className="pb-3">
                                    <CardTitle className="text-sm flex items-center gap-2">
-                                        <Tag className="w-4 h-4 text-purple-500" /> Coupon Code
+                                        <Tag className="w-4 h-4 text-teal-600" /> Coupon Code
                                    </CardTitle>
                               </CardHeader>
                               <CardContent className="pt-0">
@@ -644,7 +644,7 @@ export default function Cart({ addresses }: { addresses: Address[] }) {
 
                                    <div className="flex justify-between font-bold text-base">
                                         <span>Total</span>
-                                        <span className="text-purple-600">৳{total.toFixed(2)}</span>
+                                        <span className="text-teal-600">৳{total.toFixed(2)}</span>
                                    </div>
 
                                    <p className="text-xs text-muted-foreground text-center pt-1">

@@ -163,7 +163,7 @@ export default function AllReviews({ initialReviews }: { initialReviews: Review[
                                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
                                         <Avatar className="w-10 h-10 flex-shrink-0">
                                              <AvatarImage src={review.user.image} />
-                                             <AvatarFallback className="bg-purple-100 text-purple-700 font-semibold text-sm">
+                                             <AvatarFallback className="bg-teal-100 dark:bg-teal-950/60 text-teal-700 font-semibold text-sm">
                                                   {review.user.name?.charAt(0).toUpperCase()}
                                              </AvatarFallback>
                                         </Avatar>
@@ -182,7 +182,7 @@ export default function AllReviews({ initialReviews }: { initialReviews: Review[
                                              </div>
                                              <button
                                                   onClick={() => router.push(`/medicines/${review.medicine.id}`)}
-                                                  className="text-xs text-muted-foreground hover:text-purple-600 hover:underline truncate block text-left w-full"
+                                                  className="text-xs text-muted-foreground hover:text-teal-600 hover:underline truncate block text-left w-full"
                                              >
                                                   {review.medicine.name}
                                              </button>

@@ -80,7 +80,7 @@ export default function GlobalPagination({
         <Select value={String(limit)} onValueChange={handleLimitChange}>
           <SelectTrigger
             id="select-rows-per-page"
-            className="h-7 w-[70px] text-xs rounded-md border border-purple-200 bg-[#eef0ff] shadow  dark:bg-[#1f1f23] focus:ring-1 focus:ring-violet-500"
+            className="h-7 w-[70px] text-xs rounded-md border border-teal-200 dark:border-teal-800 bg-[#eef0ff] shadow  dark:bg-[#1f1f23] focus:ring-1 focus:ring-violet-500"
           >
             <SelectValue placeholder="10" />
           </SelectTrigger>

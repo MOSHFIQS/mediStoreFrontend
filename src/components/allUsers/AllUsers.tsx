@@ -64,7 +64,7 @@ const ROLE_CONFIG: Record<
      ADMIN: {
           label: "Admin",
           icon: <Shield className="w-3 h-3" />,
-          color: "bg-purple-100 text-purple-700",
+          color: "bg-teal-100 dark:bg-teal-950/60 text-teal-700",
      },
      SELLER: {
           label: "Seller",
@@ -262,9 +262,9 @@ export default function AllUsersClient({ initialUsers }: Props) {
           if (sortKey !== k)
                return <ChevronsUpDown className="w-3 h-3 opacity-40 inline ml-1" />;
           return sortDir === "asc" ? (
-               <ChevronUp className="w-3 h-3 text-purple-600 inline ml-1" />
+               <ChevronUp className="w-3 h-3 text-teal-600 inline ml-1" />
           ) : (
-               <ChevronDown className="w-3 h-3 text-purple-600 inline ml-1" />
+               <ChevronDown className="w-3 h-3 text-teal-600 inline ml-1" />
           );
      };
 
@@ -290,7 +290,7 @@ export default function AllUsersClient({ initialUsers }: Props) {
                     <div className="flex items-center justify-between flex-wrap gap-3">
                          <div>
                               <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                   <Users className="w-5 h-5 text-purple-500" /> User Management
+                                   <Users className="w-5 h-5 text-teal-600" /> User Management
                               </h1>
                               <p className="text-sm text-gray-500 mt-0.5">
                                    Manage accounts, roles, and access control
@@ -304,8 +304,8 @@ export default function AllUsersClient({ initialUsers }: Props) {
                               {
                                    label: "Total Users",
                                    value: total,
-                                   color: "bg-purple-50 text-purple-700",
-                                   dot: "bg-purple-400",
+                                   color: "bg-teal-50 dark:bg-teal-950/40 text-teal-700",
+                                   dot: "bg-teal-400",
                               },
                               {
                                    label: "Active",
@@ -392,7 +392,7 @@ export default function AllUsersClient({ initialUsers }: Props) {
                                         setRoleFilter("ALL");
                                         setStatusFilter("ALL");
                                    }}
-                                   className="text-xs text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
+                                   className="text-xs text-teal-600 hover:text-purple-800 font-medium flex items-center gap-1"
                               >
                                    <X className="w-3 h-3" /> Clear filters
                               </button>
@@ -521,7 +521,7 @@ export default function AllUsersClient({ initialUsers }: Props) {
                                                                  >
                                                                       <SelectTrigger
                                                                            className={`w-32 h-7 text-xs rounded-full border px-2.5 font-semibold
-                                ${statusCfg.text} bg-white focus:ring-1 focus:ring-purple-300
+                                ${statusCfg.text} bg-white focus:ring-1 focus:ring-teal-300
                                 ${isUpdating ? "opacity-50" : ""}`}
                                                                       >
                                                                            <span className="flex items-center gap-1.5">

@@ -132,7 +132,7 @@ export function LoginForm() {
                                              form="login-form"
                                              type="submit"
                                              disabled={isSubmitting}
-                                             className="w-full rounded-full bg-purple-600 hover:bg-purple-700 h-11 text-base font-semibold gap-2 mt-2"
+                                             className="w-full rounded-full bg-teal-600 hover:bg-teal-700 h-11 text-base font-semibold gap-2 mt-2"
                                         >
                                              {isSubmitting ? (
                                                   <><Loader2 className="w-4 h-4 animate-spin" /> Signing in...</>
@@ -150,7 +150,7 @@ export function LoginForm() {
                               Don't have an account?{" "}
                               <Link
                                    href={`/register${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`}
-                                   className="font-semibold text-purple-600 hover:text-purple-700 hover:underline"
+                                   className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
                               >
                                    Create one free
                               </Link>

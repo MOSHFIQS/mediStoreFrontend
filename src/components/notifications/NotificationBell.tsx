@@ -43,7 +43,7 @@ export default function NotificationBell() {
      const typeColors: Record<string, string> = {
           ORDER_UPDATE: "bg-blue-50 border-blue-200",
           PAYMENT_UPDATE: "bg-green-50 border-green-200",
-          PRESCRIPTION_STATUS: "bg-purple-50 border-purple-200",
+          PRESCRIPTION_STATUS: "bg-teal-50 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800",
           PROMOTION: "bg-yellow-50 border-yellow-200",
           SYSTEM: "bg-gray-50 border-gray-200",
      };

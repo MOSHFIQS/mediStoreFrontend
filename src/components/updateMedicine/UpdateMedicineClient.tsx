@@ -174,7 +174,7 @@ export default function UpdateMedicineClient({
                          <Card className="shadow-sm">
                               <CardHeader className="pb-4 border-b">
                                    <CardTitle className="flex items-center gap-2 text-xl">
-                                        <Package className="w-5 h-5 text-purple-500" />
+                                        <Package className="w-5 h-5 text-teal-600" />
                                         Update Medicine
                                    </CardTitle>
                                    <CardDescription>Edit the details below to update this medicine</CardDescription>

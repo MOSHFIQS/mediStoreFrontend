@@ -39,7 +39,7 @@ interface UserData {
 const ROLE_CONFIG: Record<string, { className: string; icon: React.ReactNode }> = {
      ADMIN: { className: "bg-red-50 text-red-700 border border-red-200", icon: <Shield className="w-3 h-3" /> },
      SELLER: { className: "bg-blue-50 text-blue-700 border border-blue-200", icon: <BadgeCheck className="w-3 h-3" /> },
-     CUSTOMER: { className: "bg-purple-50 text-purple-700 border border-purple-200", icon: <User className="w-3 h-3" /> },
+     CUSTOMER: { className: "bg-teal-50 dark:bg-teal-950/40 text-teal-700 border border-teal-200 dark:border-teal-800", icon: <User className="w-3 h-3" /> },
 };
 
 const STATUS_CONFIG: Record<string, { className: string; icon: React.ReactNode }> = {
@@ -133,7 +133,7 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
                {/* ── Hero card ── */}
                <Card className="overflow-hidden pt-0">
                     {/* Purple banner */}
-                    <div className="h-24 bg-gradient-to-r from-purple-500 to-violet-600" />
+                    <div className="h-24 bg-gradient-to-r from-teal-600 to-emerald-600" />
 
                     <CardContent className="px-6 pb-6">
                          {/* Avatar row */}
@@ -162,8 +162,8 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
                                    <DialogContent className="max-w-md">
                                         <DialogHeader>
                                              <DialogTitle className="flex items-center gap-2">
-                                                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                                       <Pencil className="w-4 h-4 text-purple-600" />
+                                                  <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                                                       <Pencil className="w-4 h-4 text-teal-600" />
                                                   </div>
                                                   Edit Profile
                                              </DialogTitle>
@@ -215,7 +215,7 @@ export default function UserProfile({ initialUser }: { initialUser: UserData }) 
                                                   <Button
                                                        onClick={handleSubmit}
                                                        disabled={loading}
-                                                       className="flex-1 rounded-full bg-purple-600 hover:bg-purple-700"
+                                                       className="flex-1 rounded-full bg-teal-600 hover:bg-teal-700"
                                                   >
                                                        {loading ? "Saving..." : "Save Changes"}
                                                   </Button>

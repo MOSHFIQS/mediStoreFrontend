@@ -54,7 +54,7 @@ const STATUS_CONFIG: Record<string, {
      SHIPPED: {
           label: "Shipped",
           icon: <Truck className="w-3 h-3" />,
-          className: "bg-purple-50 text-purple-700 border border-purple-200",
+          className: "bg-teal-50 dark:bg-teal-950/40 text-teal-700 border border-teal-200 dark:border-teal-800",
      },
      DELIVERED: {
           label: "Delivered",
@@ -151,7 +151,7 @@ function ReviewDialog({ order }: { order: any }) {
                     <Button
                          size="sm"
                          variant="outline"
-                         className="gap-1.5 rounded-full text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700"
+                         className="gap-1.5 rounded-full text-teal-600 border-teal-200 dark:border-teal-800 hover:bg-teal-50 dark:bg-teal-950/40 hover:text-teal-700"
                     >
                          <MessageSquareText className="w-3.5 h-3.5" />
                          Review
@@ -171,7 +171,7 @@ function ReviewDialog({ order }: { order: any }) {
                                    <select
                                         value={selectedMedicineId}
                                         onChange={(e) => setSelectedMedicineId(e.target.value)}
-                                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-300"
+                                        className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-300"
                                    >
                                         {order.items.map((item: any) => (
                                              <option key={item.medicineId} value={item.medicineId}>
@@ -285,8 +285,8 @@ export default function MyOrders({ orders }: { orders: any[] }) {
 
                {/* ── Header ── */}
                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                         <ShoppingBag className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                         <ShoppingBag className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
                          <h1 className="text-2xl font-bold">My Orders</h1>
@@ -345,7 +345,7 @@ export default function MyOrders({ orders }: { orders: any[] }) {
                                                                  </p>
                                                             ))}
                                                             {order.items?.length > 2 && (
-                                                                 <p className="text-xs text-purple-500 font-medium">
+                                                                 <p className="text-xs text-teal-600 font-medium">
                                                                       +{order.items.length - 2} more
                                                                  </p>
                                                             )}
@@ -370,7 +370,7 @@ export default function MyOrders({ orders }: { orders: any[] }) {
 
                                                   {/* Total */}
                                                   <TableCell>
-                                                       <span className="font-bold tabular-nums text-purple-600">
+                                                       <span className="font-bold tabular-nums text-teal-600">
                                                             ৳{order.totalPrice?.toFixed(2)}
                                                        </span>
                                                   </TableCell>

@@ -326,8 +326,8 @@ export default function AIAssistantWidget() {
           "shadow-lg shadow-black/15 transition-all duration-200",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
           isOpen
-            ? "bg-neutral-900 dark:bg-white hover:bg-neutral-700 dark:hover:bg-neutral-200 rotate-90"
-            : "bg-neutral-900 dark:bg-white hover:bg-neutral-700 dark:hover:bg-neutral-200 hover:scale-105 active:scale-95",
+            ? "bg-slate-900 text-white rotate-90"
+            : "bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-lg shadow-teal-500/30 hover:scale-105 active:scale-95",
         ].join(" ")}
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
       >

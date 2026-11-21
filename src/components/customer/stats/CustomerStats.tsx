@@ -62,7 +62,7 @@ const ORDER_STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode
      placed:     { label: "Placed",     icon: <Clock className="w-4 h-4" />,        color: "text-blue-500",   dot: "bg-blue-400",    chartColor: "#3B82F6" },
      confirmed:  { label: "Confirmed",  icon: <CheckCircle2 className="w-4 h-4" />, color: "text-indigo-500", dot: "bg-indigo-400",  chartColor: "#6366F1" },
      processing: { label: "Processing", icon: <RefreshCw className="w-4 h-4" />,    color: "text-amber-500",  dot: "bg-amber-400",   chartColor: "#F59E0B" },
-     shipped:    { label: "Shipped",    icon: <Truck className="w-4 h-4" />,        color: "text-purple-500", dot: "bg-purple-400",  chartColor: "#A855F7" },
+     shipped:    { label: "Shipped",    icon: <Truck className="w-4 h-4" />,        color: "text-teal-600", dot: "bg-teal-400",  chartColor: "#A855F7" },
      delivered:  { label: "Delivered",  icon: <Package className="w-4 h-4" />,      color: "text-emerald-500",dot: "bg-emerald-400", chartColor: "#10B981" },
      cancelled:  { label: "Cancelled",  icon: <XCircle className="w-4 h-4" />,      color: "text-red-500",    dot: "bg-red-400",     chartColor: "#EF4444" },
      refunded:   { label: "Refunded",   icon: <RefreshCw className="w-4 h-4" />,    color: "text-gray-500",   dot: "bg-gray-400",    chartColor: "#9CA3AF" },
@@ -450,9 +450,9 @@ export default function CustomerStats({ stats }: Props) {
                               <p className="text-2xl font-bold text-blue-700">{reviews.total}</p>
                               <p className="text-xs text-blue-600 mt-0.5">Reviews Written</p>
                          </div>
-                         <div className="bg-purple-50 rounded-xl p-4 text-center">
-                              <p className="text-2xl font-bold text-purple-700">{addresses.total}</p>
-                              <p className="text-xs text-purple-600 mt-0.5">Saved Addresses</p>
+                         <div className="bg-teal-50 dark:bg-teal-950/40 rounded-xl p-4 text-center">
+                              <p className="text-2xl font-bold text-teal-700">{addresses.total}</p>
+                              <p className="text-xs text-teal-600 mt-0.5">Saved Addresses</p>
                          </div>
                     </div>
                </div>

@@ -70,8 +70,8 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
                {/* Header */}
                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                         <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                              <TicketPercent className="w-5 h-5 text-purple-600" />
+                         <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                              <TicketPercent className="w-5 h-5 text-teal-600" />
                          </div>
                          <div>
                               <h1 className="text-2xl font-bold">Coupons</h1>
@@ -81,7 +81,7 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
                          </div>
                     </div>
                     <Button
-                         className="rounded-full bg-purple-600 hover:bg-purple-700 gap-1.5"
+                         className="rounded-full bg-teal-600 hover:bg-teal-700 gap-1.5"
                          onClick={() => router.push("/admin-dashboard/coupons/create")}
                     >
                          <Plus className="w-4 h-4" /> New Coupon
@@ -92,7 +92,7 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {[
                          { label: "Active", value: activeCoupons, className: "text-green-600" },
-                         { label: "Total Used", value: totalUsed, className: "text-purple-600" },
+                         { label: "Total Used", value: totalUsed, className: "text-teal-600" },
                          { label: "Expired", value: expiredCoupons, className: "text-red-500" },
                     ].map((s) => (
                          <Card key={s.label} className="border-0 shadow-sm">
@@ -148,7 +148,7 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
 
                                                        {/* Code */}
                                                        <TableCell>
-                                                            <span className="font-mono font-bold text-sm bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-1 rounded-lg">
+                                                            <span className="font-mono font-bold text-sm bg-teal-50 dark:bg-teal-950/40 text-teal-700 border border-teal-200 dark:border-teal-800 px-2.5 py-1 rounded-lg">
                                                                  {c.code}
                                                             </span>
                                                        </TableCell>
@@ -167,7 +167,7 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
 
                                                        {/* Value */}
                                                        <TableCell>
-                                                            <span className="font-bold text-purple-600">
+                                                            <span className="font-bold text-teal-600">
                                                                  {c.discountType === "PERCENTAGE"
                                                                       ? `${c.discountValue}%`
                                                                       : `৳${c.discountValue}`}
@@ -203,7 +203,7 @@ export default function AllCoupons({ coupons }: { coupons: any[] }) {
                                                             {c.usageLimit && (
                                                                  <div className="mt-1 w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
                                                                       <div
-                                                                           className="h-full bg-purple-400 rounded-full"
+                                                                           className="h-full bg-teal-400 rounded-full"
                                                                            style={{ width: `${Math.min((c.usedCount / c.usageLimit) * 100, 100)}%` }}
                                                                       />
                                                                  </div>

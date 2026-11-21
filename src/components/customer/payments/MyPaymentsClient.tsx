@@ -33,8 +33,8 @@ export default function MyPaymentsClient({ payments }: { payments: any[] }) {
      return (
           <div className="px-4 py-6 space-y-6">
                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                         <CreditCard className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                         <CreditCard className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
                          <h1 className="text-2xl font-bold">My Payments</h1>
@@ -93,7 +93,7 @@ export default function MyPaymentsClient({ payments }: { payments: any[] }) {
                                                                  </p>
                                                             ))}
                                                             {p.order?.items?.length > 2 && (
-                                                                 <p className="text-xs text-purple-500 font-medium">
+                                                                 <p className="text-xs text-teal-600 font-medium">
                                                                       +{p.order.items.length - 2} more
                                                                  </p>
                                                             )}
@@ -119,7 +119,7 @@ export default function MyPaymentsClient({ payments }: { payments: any[] }) {
 
                                                   <TableCell>
                                                        <div>
-                                                            <p className="font-bold text-purple-600 tabular-nums">৳{p.amount?.toFixed(2)}</p>
+                                                            <p className="font-bold text-teal-600 tabular-nums">৳{p.amount?.toFixed(2)}</p>
                                                             {p.storeAmount && (
                                                                  <p className="text-[10px] text-muted-foreground">
                                                                       Net: ৳{p.storeAmount?.toFixed(2)}

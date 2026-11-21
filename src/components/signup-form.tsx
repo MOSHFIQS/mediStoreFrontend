@@ -129,14 +129,14 @@ export function SignupForm() {
                                                             className={cn(
                                                                  "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition text-center",
                                                                  field.state.value === r.value
-                                                                      ? "border-purple-500 bg-purple-50 text-purple-700"
+                                                                      ? "border-teal-500 bg-teal-50 dark:bg-teal-950/40 text-teal-700"
                                                                       : "border-gray-200 hover:border-gray-300 text-muted-foreground"
                                                             )}
                                                        >
                                                             <span className={cn(
                                                                  "w-10 h-10 rounded-xl flex items-center justify-center",
                                                                  field.state.value === r.value
-                                                                      ? "bg-purple-100 text-purple-600"
+                                                                      ? "bg-teal-100 dark:bg-teal-950/60 text-teal-600"
                                                                       : "bg-gray-100"
                                                             )}>
                                                                  {r.icon}
@@ -269,7 +269,7 @@ export function SignupForm() {
                                              form="signup-form"
                                              type="submit"
                                              disabled={isSubmitting}
-                                             className="w-full rounded-full bg-purple-600 hover:bg-purple-700 h-11 text-base font-semibold gap-2 mt-2"
+                                             className="w-full rounded-full bg-teal-600 hover:bg-teal-700 h-11 text-base font-semibold gap-2 mt-2"
                                         >
                                              {isSubmitting ? (
                                                   <><Loader2 className="w-4 h-4 animate-spin" /> Creating account...</>
@@ -287,7 +287,7 @@ export function SignupForm() {
                               Already have an account?{" "}
                               <Link
                                    href="/login"
-                                   className="font-semibold text-purple-600 hover:text-purple-700 hover:underline"
+                                   className="font-semibold text-teal-600 hover:text-teal-700 hover:underline"
                               >
                                    Sign in
                               </Link>

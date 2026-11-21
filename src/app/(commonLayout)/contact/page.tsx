@@ -197,7 +197,7 @@ const ContactFormPage = () => {
                                         <div className="col-span-1 md:col-span-2">
                                              <button
                                                   type="submit"
-                                                  className="w-full bg-orange-500 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 text-sm uppercase tracking-wide"
+                                                  className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold py-3.5 px-6 rounded-full shadow-md shadow-teal-700/20 transition-all duration-200 text-sm tracking-wide"
                                              >
                                                   Send Message
                                              </button>

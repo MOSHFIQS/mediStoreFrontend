@@ -46,8 +46,8 @@ export default function AuditLogs({ logs }: { logs: AuditLog[] }) {
 
                {/* Header */}
                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                         <Shield className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-950/60 flex items-center justify-center">
+                         <Shield className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
                          <h1 className="text-2xl font-bold">Audit Logs</h1>
@@ -111,7 +111,7 @@ export default function AuditLogs({ logs }: { logs: AuditLog[] }) {
                                                   <TableCell>
                                                        {log.user ? (
                                                             <div className="flex items-center gap-2">
-                                                                 <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                                 <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
                                                                       {log.user.name?.charAt(0).toUpperCase()}
                                                                  </div>
                                                                  <div>

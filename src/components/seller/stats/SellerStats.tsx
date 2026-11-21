@@ -56,7 +56,7 @@ function SectionTitle({ icon, title }: { icon: React.ReactNode; title: string })
 }
 
 const CATEGORY_COLORS = [
-     "bg-blue-100 text-blue-700", "bg-purple-100 text-purple-700",
+     "bg-blue-100 text-blue-700", "bg-teal-100 dark:bg-teal-950/60 text-teal-700",
      "bg-emerald-100 text-emerald-700", "bg-amber-100 text-amber-700",
      "bg-pink-100 text-pink-700", "bg-cyan-100 text-cyan-700",
 ];
@@ -174,7 +174,7 @@ export default function SellerStats({ stats }: Props) {
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                          <div className="flex items-center justify-between mb-3">
                               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Medicines</span>
-                              <Package className="w-4 h-4 text-purple-400" />
+                              <Package className="w-4 h-4 text-teal-400" />
                          </div>
                          <p className="text-3xl font-bold text-gray-900">{medicines.total}</p>
                          <p className="text-xs text-gray-400 mt-2">Active: {medicines.active}</p>

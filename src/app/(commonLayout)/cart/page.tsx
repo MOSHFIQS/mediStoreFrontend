@@ -4,26 +4,28 @@ import { sessionService } from "@/service/token.service";
 import { Roles } from "@/constants/roles";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 const CartPage = async () => {
-     const user = await sessionService.getUserFromToken();
+     let addresses: any[] = [];
 
-     const isCustomer = user?.role === Roles.customer;
+     try {
+          const user = await sessionService.getUserFromToken().catch(() => null);
+          const isCustomer = user?.role === Roles.customer;
 
-     const res = isCustomer
-          ? await getAddressesAction()
-          : null;
-
-     if (isCustomer && !res?.ok) {
-          return (
-               <p className="p-6 text-red-600">
-                    Failed to load addresses
-               </p>
-          );
+          if (isCustomer) {
+               const res = await getAddressesAction().catch(() => null);
+               if (res?.ok && res.data) {
+                    addresses = res.data;
+               }
+          }
+     } catch {
+          addresses = [];
      }
 
      return (
-          <div>
-               <Cart addresses={res?.data ?? []} />
+          <div className="py-6">
+               <Cart addresses={addresses} />
           </div>
      );
 };

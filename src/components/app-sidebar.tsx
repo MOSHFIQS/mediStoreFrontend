@@ -1,6 +1,5 @@
 "use client"
 import * as React from "react"
-
 import {
      Sidebar,
      SidebarContent,
@@ -21,8 +20,7 @@ import Link from "next/link";
 import { Route } from "@/types/routes.type";
 import { usePathname } from "next/navigation";
 import { NavUser } from "./ui/nav-user";
-
-
+import { Cross } from "lucide-react";
 
 export function AppSidebar({ user, ...props }: { user: { role: string } & React.ComponentProps<typeof Sidebar> }) {
      let routes: Route[] = []
@@ -38,45 +36,36 @@ export function AppSidebar({ user, ...props }: { user: { role: string } & React.
           case Roles.seller:
                routes = sellerRoutes
                break;
-
           default:
                routes = []
                break;
      }
 
      return (
-          <Sidebar {...props} variant="floating" >
-               <SidebarContent className="bg-[#EBD6FB] rounded-lg flex flex-col justify-between px-2 py-3 overflow-y-auto 
-  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-
+          <Sidebar {...props} variant="floating">
+               <SidebarContent className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl flex flex-col justify-between px-3 py-4 shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     {/* TOP */}
                     <div className="space-y-6">
-
                          {/* LOGO */}
-                         <Link href={"/"} className="flex items-center gap-2 px-3">
-                              <img
-                                   src="/logo.png"
-                                   className="max-h-8 dark:invert"
-                                   alt="logo"
-                              />
-                              <span className="text-lg font-semibold tracking-tight">
-                                   Medi Store
+                         <Link href={"/"} className="flex items-center gap-2.5 px-3 py-2 group">
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-teal-500/25 group-hover:scale-105 transition-transform duration-200">
+                                   <Cross className="w-4 h-4 fill-white" />
+                              </div>
+                              <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                                   Medi<span className="text-teal-600 dark:text-teal-400">Store</span>
                               </span>
                          </Link>
 
                          {/* GROUPS */}
-                         <div className="space-y-2">
+                         <div className="space-y-3">
                               {routes.map((group) => (
-                                   <SidebarGroup key={group.title}>
-
-                                        {/* GROUP TITLE */}
-                                        <SidebarGroupLabel className="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+                                   <SidebarGroup key={group.title} className="p-0">
+                                        <SidebarGroupLabel className="px-3 mb-1 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                                              {group.title}
                                         </SidebarGroupLabel>
 
                                         <SidebarGroupContent>
-                                             <SidebarMenu >
-
+                                             <SidebarMenu className="gap-1">
                                                   {group.items.map((item) => {
                                                        const isActive = pathname === item.url;
                                                        const Icon = item.icon;
@@ -85,34 +74,29 @@ export function AppSidebar({ user, ...props }: { user: { role: string } & React.
                                                             <SidebarMenuItem key={item.title}>
                                                                  <SidebarMenuButton
                                                                       asChild
-                                                                      className={`w-full px-3 py-2 font-bold rounded-md flex items-center gap-2 text-[13px] transition-all duration-200
-                                                                      ${isActive
-                                                                                ? "bg-gray-500 text-white shadow-sm rounded-full"
-                                                                                : "text-gray-700 hover:bg-white/60 hover:text-black"
-                                                                           }`}
+                                                                      className={`w-full px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-sm font-medium transition-all duration-200 ${
+                                                                           isActive
+                                                                                ? "bg-teal-600 text-white shadow-md shadow-teal-600/25 font-semibold"
+                                                                                : "text-slate-600 dark:text-slate-300 hover:bg-teal-50/80 dark:hover:bg-slate-800/80 hover:text-teal-700 dark:hover:text-teal-300"
+                                                                      }`}
                                                                  >
-                                                                      <Link href={item.url} className="flex items-center gap-2 w-full">
-                                                                           {Icon && <Icon size={18} />}
-                                                                           <span className="truncate">
-                                                                                {item.title}
-                                                                           </span>
+                                                                      <Link href={item.url} className="flex items-center gap-2.5 w-full">
+                                                                           {Icon && <Icon size={18} className={isActive ? "text-white" : "text-teal-600 dark:text-teal-400"} />}
+                                                                           <span className="truncate">{item.title}</span>
                                                                       </Link>
                                                                  </SidebarMenuButton>
                                                             </SidebarMenuItem>
                                                        );
                                                   })}
-
                                              </SidebarMenu>
                                         </SidebarGroupContent>
                                    </SidebarGroup>
                               ))}
                          </div>
                     </div>
-
-                    {/* FOOTER */}
-
                </SidebarContent>
-               <SidebarFooter className="pt-4  bg-[#EBD6FB] rounded-lg mt-2">
+
+               <SidebarFooter className="pt-2 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl mt-2 p-2 shadow-sm">
                     <NavUser />
                </SidebarFooter>
 
